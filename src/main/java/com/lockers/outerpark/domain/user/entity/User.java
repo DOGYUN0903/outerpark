@@ -26,5 +26,12 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-
+    public User(String email, String nickname, LocalDate birth, String password, Long balance, UserRole userRole) {
+        this.email = email;
+        this.nickname = nickname;
+        this.birth = birth;
+        this.password = password;
+        this.balance = balance;
+        this.userRole = userRole;
+    }
 }
