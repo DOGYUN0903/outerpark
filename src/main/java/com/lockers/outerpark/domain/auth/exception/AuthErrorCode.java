@@ -1,13 +1,12 @@
-package com.lockers.outerpark.domain.user.exception;
+package com.lockers.outerpark.domain.auth.exception;
 
 import com.lockers.outerpark.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public enum UserErrorCode implements ErrorCode {
-    INVALID_USER_ROLE("유효하지 않은 권한입니다.", 400),
-    EMAIL_ALREADY_EXISTS("이미 존재하는 이메일입니다.", 400),
-    USER_NOT_FOUND("존재하지 않는 회원입니다.", 400);
+public enum AuthErrorCode implements ErrorCode {
+    TOKEN_NOT_FOUND("토큰이 존재하지 않습니다.", 401),
+    INVALID_PASSWORD("잘못된 비밀번호입니다.", 400);
 
     private final String message;
     private final int status;
