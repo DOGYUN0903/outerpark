@@ -18,7 +18,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ReservationRepository reservationRepository;
 
 	@Override
-	public ReservationResponse createReservation(ReservationRequest request, Long id) {
+	public ReservationResponse createReservation(ReservationRequest request, Long userId) {
 		return null;
 	}
 
@@ -28,7 +28,7 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
-	public ReservationResponse getUserReservation(Pageable pageable, Long id) {
+	public ReservationResponse getUserReservation(Pageable pageable, Long userId) {
 		return null;
 	}
 
