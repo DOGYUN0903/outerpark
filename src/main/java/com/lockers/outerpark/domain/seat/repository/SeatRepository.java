@@ -27,7 +27,7 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 	 */
 	@Modifying
 	@Query("UPDATE Seat s SET s.isDeleted = true, s.deletedAt = CURRENT_TIMESTAMP WHERE s.concert.id = :concertId")
-	void softDeletedAllByConcertId(@Param("concertId") Long concertId);
+	void softDeleteAllByConcertId(@Param("concertId") Long concertId);
 
 	// ===================== Seat에서 사용 =========================
 

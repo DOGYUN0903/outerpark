@@ -1,5 +1,6 @@
 package com.lockers.outerpark.domain.seat.service;
 
+import com.lockers.outerpark.domain.concert.entity.Concert;
 import com.lockers.outerpark.domain.seat.dto.response.SeatResponse;
 
 public interface SeatService {
@@ -19,10 +20,7 @@ public interface SeatService {
 
 	// =========== Concert 필요 메서드 =============
 
-	// Concert 생성 시 좌석 자동 생성
-	void createSeatsForConcert(Long concertId);
-
-	void createSeatsForConcert(Long concertId, int seatCount);
+	void createSeatsForConcert(Concert concert, int seatCount);
 
 	// Concert 삭제 시 좌석도 삭제
 	void deleteAllSeatsByConcert(Long concertId);

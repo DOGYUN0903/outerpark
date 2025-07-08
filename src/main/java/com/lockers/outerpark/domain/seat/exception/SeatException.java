@@ -27,4 +27,10 @@ public class SeatException {
 			super(SeatErrorCode.SEAT_ALREADY_DELETED);
 		}
 	}
+
+	public static class DuplicateSeatsExistException extends BusinessException {
+		public DuplicateSeatsExistException() {
+			super(SeatErrorCode.DUPLICATE_SEATS_EXIST);
+		}
+	}
 }
