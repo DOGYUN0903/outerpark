@@ -8,4 +8,10 @@ public class ConcertException {
             super(ConcertErrorCode.CONCERT_NOT_FOUND);
         }
     }
+
+    public static class ConcertAlreadyDeletedException extends BusinessException {
+        public ConcertAlreadyDeletedException() {
+            super(ConcertErrorCode.CONCERT_ALREADY_DELETE);
+        }
+    }
 }

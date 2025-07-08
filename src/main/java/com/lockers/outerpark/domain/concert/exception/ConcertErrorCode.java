@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatus;
 import com.lockers.outerpark.common.exception.ErrorCode;
 
 public enum ConcertErrorCode implements ErrorCode {
-    CONCERT_NOT_FOUND("공연이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
+    CONCERT_NOT_FOUND("공연이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+    CONCERT_ALREADY_DELETE("이미 삭제된 공연입니다.", HttpStatus.NOT_FOUND);
 
     private final String message;
     private final HttpStatus status;

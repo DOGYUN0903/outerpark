@@ -19,5 +19,5 @@ public interface ConcertService {
 
     Page<FindConcertResponse> findConcerts(Pageable pageable);
 
-    void deleteConcert(Long userId);
+    void deleteConcert(Long userId, Long concert_id);
 }

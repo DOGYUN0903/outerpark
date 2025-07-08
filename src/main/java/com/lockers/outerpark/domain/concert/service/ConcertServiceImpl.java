@@ -137,8 +137,32 @@ public class ConcertServiceImpl implements ConcertService {
         return concerts.map(FindConcertResponse::new);
     }
 
+    /**
+     * 지정된 사용자가 작성한 콘서트를 논리적으로 삭제합니다.
+     *
+     * @param userId 현재 로그인한 사용자 ID
+     * @param concert_id 삭제 대상 콘서트 ID
+     * @throws UserException.UserNotFoundException 유효하지 않은 사용자일 경우
+     * @throws ConcertException.ConcertNotFoundException 해당 콘서트가 없거나 작성자가 일치하지 않는 경우
+     * @author kimyongjun0129
+     */
     @Override
-    public void deleteConcert(Long userId) {
+    @Transactional
+    public void deleteConcert(Long userId, Long concert_id) {
 
+        // 사용자 조회 및 유효성 검사
+        User loginUser = userService.getActiveUserById(userId);
+
+        // 콘서트 조회 및 유효성 검사
+        Concert concert = concertRepository.findByIdAndWriter(concert_id, loginUser)
+            .orElseThrow(ConcertException.ConcertNotFoundException::new);
+
+        // 이미 삭제된 공연인지 검사
+        if (concert.getIsDeleted())
+            throw new ConcertException.ConcertAlreadyDeletedException();
+
+        // 공연 논리삭제
+        concert.softDelete();
+        concertRepository.save(concert);
     }
 }
