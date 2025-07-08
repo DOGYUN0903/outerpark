@@ -1,13 +1,16 @@
 package com.lockers.outerpark.domain.concert.controller;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lockers.outerpark.common.response.ApiResponse;
+import com.lockers.outerpark.domain.concert.dto.FindConcertResponse;
 import com.lockers.outerpark.domain.concert.dto.RegisterConcertRequest;
 import com.lockers.outerpark.domain.concert.dto.RegisterConcertResponse;
 import com.lockers.outerpark.domain.concert.dto.UpdateConcertRequest;
@@ -39,5 +42,12 @@ public class ConcertController {
     ) {
         return ApiResponse.success("콘서트가 수정되었습니다.",
             concertService.updateConcert(id, request));
+    }
+
+    @GetMapping("/{concert_id}")
+    public ApiResponse<FindConcertResponse> findConcert(
+        @PathVariable Long concert_id
+    ) {
+        return ApiResponse.success("콘서트가 조회되었습니다.", concertService.findConcert(concert_id));
     }
 }

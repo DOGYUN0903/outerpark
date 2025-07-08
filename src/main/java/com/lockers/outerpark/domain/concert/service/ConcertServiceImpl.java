@@ -101,9 +101,23 @@ public class ConcertServiceImpl implements ConcertService {
         return new UpdateConcertResponse(updateConcert);
     }
 
+    /**
+     * 공연 ID를 기반으로 공연 정보를 조회합니다.
+     *
+     * @param concertId 조회할 공연 ID
+     * @return 조회된 공연 정보를 담은 {@link FindConcertResponse} 객체
+     * @throws ConcertException.ConcertNotFoundException 존재하지 않는 공연일 경우 발생
+     * @author kimyongjun0129
+     */
     @Override
+    @Transactional(readOnly = true)
     public FindConcertResponse findConcert(Long concertId) {
-        return null;
+
+        // 공연 조회 및 유효성 검사
+        Concert concert = concertRepository.findById(concertId)
+            .orElseThrow(ConcertException.ConcertNotFoundException::new);
+
+        return new FindConcertResponse(concert);
     }
 
     @Override
