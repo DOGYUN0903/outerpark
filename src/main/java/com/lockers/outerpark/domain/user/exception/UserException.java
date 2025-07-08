@@ -1,7 +1,6 @@
 package com.lockers.outerpark.domain.user.exception;
 
 import com.lockers.outerpark.common.exception.BusinessException;
-import com.lockers.outerpark.common.exception.ErrorCode;
 
 public class UserException {
 
@@ -26,6 +25,12 @@ public class UserException {
     public static class UserDeletedException extends BusinessException {
         public UserDeletedException() {
             super(UserErrorCode.USER_ALREADY_DELETED);
+        }
+    }
+
+    public static class NicknameAlreadyExistsException extends BusinessException {
+        public NicknameAlreadyExistsException() {
+            super(UserErrorCode.NICKNAME_ALREADY_EXISTS);
         }
     }
 }
