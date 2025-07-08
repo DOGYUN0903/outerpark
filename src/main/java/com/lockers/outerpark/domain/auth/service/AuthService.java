@@ -1,36 +1,38 @@
 package com.lockers.outerpark.domain.auth.service;
 
+import static com.lockers.outerpark.domain.auth.exception.AuthException.*;
+import static com.lockers.outerpark.domain.user.exception.UserException.*;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.lockers.outerpark.common.jwt.JwtUtil;
 import com.lockers.outerpark.domain.auth.dto.request.SigninRequest;
 import com.lockers.outerpark.domain.auth.dto.request.SignupRequest;
+import com.lockers.outerpark.domain.auth.dto.request.WithdrawRequest;
 import com.lockers.outerpark.domain.auth.dto.response.SigninResponse;
 import com.lockers.outerpark.domain.auth.dto.response.SignupResponse;
 import com.lockers.outerpark.domain.user.entity.User;
 import com.lockers.outerpark.domain.user.entity.UserRole;
 import com.lockers.outerpark.domain.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.lockers.outerpark.domain.user.service.UserService;
 
-import static com.lockers.outerpark.domain.auth.exception.AuthException.*;
-import static com.lockers.outerpark.domain.user.exception.UserException.*;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     @Transactional
     public SignupResponse signup(SignupRequest signupRequest) {
 
-        // 이메일 중복 체크
-        if (userRepository.existsByEmail(signupRequest.getEmail())) {
-            throw new EmailAlreadyExistsException();
-        }
+        validateDuplicateUserInfo(signupRequest.getEmail(), signupRequest.getNickname());
 
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
@@ -38,12 +40,12 @@ public class AuthService {
         UserRole userRole = UserRole.of(signupRequest.getUserRole());
 
         User user = new User(
-                signupRequest.getEmail(),
-                signupRequest.getNickname(),
-                signupRequest.getBirth(),
-                encodedPassword,
-                100000L,
-                userRole
+            signupRequest.getEmail(),
+            signupRequest.getNickname(),
+            signupRequest.getBirth(),
+            encodedPassword,
+            100000L,
+            userRole
         );
 
         User savedUser = userRepository.save(user);
@@ -53,10 +55,11 @@ public class AuthService {
         return new SignupResponse(bearerToken);
     }
 
+    @Transactional(readOnly = true)
     public SigninResponse signin(SigninRequest signinRequest) {
 
         User findUser = userRepository.findByEmail(signinRequest.getEmail())
-                .orElseThrow(UserNotFoundException::new);
+            .orElseThrow(UserNotFoundException::new);
 
         if (findUser.getIsDeleted()) {
             throw new UserDeletedException();
@@ -70,5 +73,27 @@ public class AuthService {
         String bearerToken = jwtUtil.createToken(findUser.getId(), findUser.getUserRole());
 
         return new SigninResponse(bearerToken);
+    }
+
+    @Transactional
+    public void withdraw(Long userId, WithdrawRequest withdrawRequest) {
+        // 유저 찾기 + 탈퇴 여부 확인
+        User user = userService.getActiveUserById(userId);
+
+        if (!passwordEncoder.matches(withdrawRequest.getPassword(), user.getPassword())) {
+            throw new InvalidPasswordException();
+        }
+        user.softDelete();
+    }
+
+    // 이메일 + 닉네임 중복체크
+    private void validateDuplicateUserInfo(String email, String nickname) {
+        if (userRepository.existsByEmail(email)) {
+            throw new EmailAlreadyExistsException();
+        }
+
+        if (userRepository.existsByNickname(nickname)) {
+            throw new NicknameAlreadyExistsException();
+        }
     }
 }
