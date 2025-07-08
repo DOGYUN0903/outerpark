@@ -3,6 +3,7 @@ package com.lockers.outerpark.domain.concert.entity;
 import java.time.LocalDate;
 
 import com.lockers.outerpark.common.entity.BaseEntity;
+import com.lockers.outerpark.domain.concert.dto.RegisterConcertRequest;
 import com.lockers.outerpark.domain.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -54,6 +55,17 @@ public class Concert extends BaseEntity {
 
     public Concert() {
 
+    }
+
+    public static Concert of(User writer, RegisterConcertRequest request) {
+        return new Concert(
+            writer,
+            request.getTitle(),
+            request.getRunningTime(),
+            request.getPrice(),
+            request.getLimitAge(),
+            request.getPerformanceDate()
+        );
     }
 
     public void updateTitle(String title) {

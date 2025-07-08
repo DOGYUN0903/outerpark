@@ -15,38 +15,38 @@ import com.lockers.outerpark.domain.concert.repository.ConcertRepository;
 import com.lockers.outerpark.domain.user.entity.User;
 import com.lockers.outerpark.domain.user.entity.UserRole;
 import com.lockers.outerpark.domain.user.exception.UserException;
-import com.lockers.outerpark.domain.user.repository.UserRepository;
 import com.lockers.outerpark.domain.user.service.UserService;
 
 @Service
 public class ConcertServiceImpl implements ConcertService {
 
     private final ConcertRepository concertRepository;
-    private final UserRepository userRepository;
     private final UserService userService;
 
-    public ConcertServiceImpl(ConcertRepository concertRepository, UserRepository userRepository,
-        UserService userService) {
+    public ConcertServiceImpl(ConcertRepository concertRepository, UserService userService) {
         this.concertRepository = concertRepository;
-        this.userRepository = userRepository;
         this.userService = userService;
     }
 
+    /**
+     * ADMIN 권한을 가진 사용자가 새로운 공연을 등록합니다.
+     *
+     * @param userId 등록 요청을 한 사용자 ID
+     * @param request 공연 등록에 필요한 정보(title, price, performanceDate 등)
+     * @return 등록된 공연 정보를 담은 {@link RegisterConcertResponse}
+     * @throws UserException.InvalidUserRoleException ADMIN이 아닌 경우 발생
+     * @author kimyongjun0129
+     */
     @Override
     @Transactional
     public RegisterConcertResponse registerConcert(Long userId, RegisterConcertRequest request) {
 
-        User user = userRepository.findById(userId).orElseThrow(UserException.UserNotFoundException::new);
+        User user = userService.getActiveUserById(userId);
 
         if (!user.getUserRole().equals(UserRole.ADMIN))
             throw new UserException.InvalidUserRoleException();
 
-        Concert concert = new Concert(user,
-            request.getTitle(),
-            request.getRunningTime(),
-            request.getPrice(),
-            request.getPrice(),
-            request.getPerformanceDate());
+        Concert concert = Concert.of(user, request);
 
         Concert saveConcert = concertRepository.save(concert);
         return new RegisterConcertResponse(saveConcert);
