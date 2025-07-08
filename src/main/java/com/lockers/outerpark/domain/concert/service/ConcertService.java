@@ -1,6 +1,7 @@
 package com.lockers.outerpark.domain.concert.service;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.lockers.outerpark.domain.concert.dto.FindConcertResponse;
 import com.lockers.outerpark.domain.concert.dto.RegisterConcertRequest;
@@ -16,7 +17,7 @@ public interface ConcertService {
 
     FindConcertResponse findConcert(Long concertId);
 
-    Page<FindConcertResponse> findConcerts();
+    Page<FindConcertResponse> findConcerts(Pageable pageable);
 
     void deleteConcert(Long userId);
 }

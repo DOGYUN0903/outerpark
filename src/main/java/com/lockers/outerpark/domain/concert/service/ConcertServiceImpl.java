@@ -1,6 +1,7 @@
 package com.lockers.outerpark.domain.concert.service;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -120,9 +121,20 @@ public class ConcertServiceImpl implements ConcertService {
         return new FindConcertResponse(concert);
     }
 
+    /**
+     * 콘서트 목록을 페이징 처리하여 조회합니다.
+     *
+     * @param pageable 페이징 및 정렬 정보를 담은 Pageable 객체
+     * @return 콘서트 목록을 DTO로 변환한 Page 객체
+     * @throws IllegalArgumentException 만약 Concert → DTO 변환 과정에서 문제가 생긴 경우 발생
+     * @author kimyongjun0129
+     */
     @Override
-    public Page<FindConcertResponse> findConcerts() {
-        return null;
+    @Transactional(readOnly = true)
+    public Page<FindConcertResponse> findConcerts(Pageable pageable) {
+        Page<Concert> concerts = concertRepository.findAll(pageable);
+
+        return concerts.map(FindConcertResponse::new);
     }
 
     @Override
