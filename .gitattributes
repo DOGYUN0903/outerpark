@@ -1,3 +1,13 @@
-/gradlew text eol=lf
-*.bat text eol=crlf
-*.jar binary
+# 기본적으로 모든 텍스트 파일을 Git 내부에서는 LF로 저장
+* text=auto
+
+# 명시적으로 줄바꿈 LF 적용 (주요 텍스트 기반 소스 파일들)
+*.java     text eol=lf
+*.kt       text eol=lf
+*.xml      text eol=lf
+*.yml      text eol=lf
+*.yaml     text eol=lf
+*.properties text eol=lf
+*.gradle   text eol=lf
+*.md       text eol=lf
+*.txt      text eol=lf
