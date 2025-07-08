@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 public class SeatsStatusResponse {
 	private Long concertId;
-	private Long totalSeats;
-	private Long availableSeats;
+	private int totalSeats;
+	private int availableSeats;
 	private List<SeatResponse> seats;
 }
