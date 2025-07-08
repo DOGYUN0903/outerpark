@@ -1,15 +1,21 @@
 package com.lockers.outerpark.domain.reservation.dto.response;
 
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Builder
-public class ConcertInfo {
+class ConcertInfo {
 
-    private String concertTitle;
+	private String title;
 
-    private LocalDateTime concertDate;
+	private LocalDateTime performanceDate;
+
+	private int runningTime;
+
+	private int limitAge;
+
+	private int price;
 }
