@@ -76,6 +76,10 @@ public class ConcertServiceImpl implements ConcertService {
         Concert concert = concertRepository.findByIdAndWriter(concert_id, loginUser)
             .orElseThrow(ConcertException.ConcertNotFoundException::new);
 
+        // 이미 삭제된 공연인지 검사
+        if (concert.getIsDeleted())
+            throw new ConcertException.ConcertAlreadyDeletedException();
+
         // 각 필드가 null이 아닌 경우에만 업데이트 수행
         if (request.getTitle() != null) {
             concert.updateTitle(request.getTitle());
@@ -118,6 +122,10 @@ public class ConcertServiceImpl implements ConcertService {
         Concert concert = concertRepository.findById(concertId)
             .orElseThrow(ConcertException.ConcertNotFoundException::new);
 
+        // 이미 삭제된 공연인지 검사
+        if (concert.getIsDeleted())
+            throw new ConcertException.ConcertAlreadyDeletedException();
+
         return new FindConcertResponse(concert);
     }
 
@@ -132,7 +140,7 @@ public class ConcertServiceImpl implements ConcertService {
     @Override
     @Transactional(readOnly = true)
     public Page<FindConcertResponse> findConcerts(Pageable pageable) {
-        Page<Concert> concerts = concertRepository.findAll(pageable);
+        Page<Concert> concerts = concertRepository.findAllByIsDeletedFalse(pageable);
 
         return concerts.map(FindConcertResponse::new);
     }
