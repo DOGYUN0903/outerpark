@@ -60,7 +60,7 @@ public class Seat extends BaseEntity {
 	/**
 	 * 좌석 예약 취소
 	 */
-	public void cancelReservation() {
+	public void cancelSeatReservation() {
 		if (!this.isReserved) {
 			throw new SeatException.SeatNotReservedException();
 		}

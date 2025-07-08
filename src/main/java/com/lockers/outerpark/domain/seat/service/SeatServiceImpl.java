@@ -43,7 +43,7 @@ public class SeatServiceImpl implements SeatService {
 		Seat seat = seatRepository.findByIdAndIsDeletedFalse(seatId)
 			.orElseThrow(SeatException.SeatNotFoundException::new);
 
-		seat.cancelReservation();
+		seat.cancelSeatReservation();
 	}
 
 	@Override
