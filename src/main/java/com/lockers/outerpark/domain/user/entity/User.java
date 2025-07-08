@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "users")
 public class User extends BaseEntity {
 
     @Id

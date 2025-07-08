@@ -5,17 +5,16 @@ import com.lockers.outerpark.domain.auth.dto.request.SigninRequest;
 import com.lockers.outerpark.domain.auth.dto.request.SignupRequest;
 import com.lockers.outerpark.domain.auth.dto.response.SigninResponse;
 import com.lockers.outerpark.domain.auth.dto.response.SignupResponse;
-import com.lockers.outerpark.domain.auth.exception.InvalidPasswordException;
 import com.lockers.outerpark.domain.user.entity.User;
 import com.lockers.outerpark.domain.user.entity.UserRole;
-import com.lockers.outerpark.domain.user.exception.EmailAlreadyExistsException;
-import com.lockers.outerpark.domain.user.exception.UserDeletedException;
-import com.lockers.outerpark.domain.user.exception.UserNotFoundException;
 import com.lockers.outerpark.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.lockers.outerpark.domain.auth.exception.AuthException.*;
+import static com.lockers.outerpark.domain.user.exception.UserException.*;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +48,7 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
-        String bearerToken = jwtUtil.createToken(savedUser.getId());
+        String bearerToken = jwtUtil.createToken(savedUser.getId(), savedUser.getUserRole());
 
         return new SignupResponse(bearerToken);
     }
@@ -68,7 +67,7 @@ public class AuthService {
             throw new InvalidPasswordException();
         }
 
-        String bearerToken = jwtUtil.createToken(findUser.getId());
+        String bearerToken = jwtUtil.createToken(findUser.getId(), findUser.getUserRole());
 
         return new SigninResponse(bearerToken);
     }

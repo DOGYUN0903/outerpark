@@ -1,8 +1,8 @@
 package com.lockers.outerpark.domain.user.entity;
 
-import com.lockers.outerpark.domain.user.exception.InvalidUserRoleException;
-
 import java.util.Arrays;
+
+import static com.lockers.outerpark.domain.user.exception.UserException.*;
 
 public enum UserRole {
     USER,
