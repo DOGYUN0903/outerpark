@@ -1,6 +1,17 @@
 package com.lockers.outerpark.domain.seat.entity;
 
-import jakarta.persistence.*;
+import com.lockers.outerpark.common.entity.BaseEntity;
+import com.lockers.outerpark.domain.concert.entity.Concert;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,15 +19,33 @@ import lombok.NoArgsConstructor;
 @Table(name = "seats")
 @Getter
 @NoArgsConstructor
-public class Seat {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Seat extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "concert_id")
-    private Concert concert;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private int seatNumber;
-    private Boolean isReserved = false;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "concert_id", nullable = false)
+	private Concert concert;
+
+	@Column(nullable = false)
+	private int seatNumber;
+
+	@Column(nullable = false)
+	private Boolean isReserved = false;
+
+	public Seat(Concert concert, int seatNumber, Boolean isReserved) {
+		this.concert = concert;
+		this.seatNumber = seatNumber;
+		this.isReserved = isReserved;
+	}
+
+	public void reserve() {
+		this.isReserved = true;
+	}
+
+	public void cancelReservation() {
+		this.isReserved = false;
+	}
 }
