@@ -40,7 +40,7 @@ public class AuthController {
     // 회원 탈퇴
     @DeleteMapping("/withdraw")
     public ApiResponse<Void> withdraw(@AuthenticationPrincipal Long userId,
-        @RequestBody WithdrawRequest withdrawRequest) {
+        @Valid @RequestBody WithdrawRequest withdrawRequest) {
         authService.withdraw(userId, withdrawRequest);
         return ApiResponse.success("회원 탈퇴에 성공하였습니다.", null);
     }
