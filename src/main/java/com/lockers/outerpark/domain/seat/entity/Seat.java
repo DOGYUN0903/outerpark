@@ -2,6 +2,7 @@ package com.lockers.outerpark.domain.seat.entity;
 
 import com.lockers.outerpark.common.entity.BaseEntity;
 import com.lockers.outerpark.domain.concert.entity.Concert;
+import com.lockers.outerpark.domain.seat.exception.SeatException;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,11 +42,31 @@ public class Seat extends BaseEntity {
 		this.isReserved = isReserved;
 	}
 
+	// 비즈니스 메서드
+
+	/**
+	 * 좌석 예약
+	 */
 	public void reserve() {
+		if (this.isReserved) {
+			throw SeatException.alreadyReserved();
+		}
+		if (this.getIsDeleted()) {
+			throw SeatException.alreadyDeleted();
+		}
 		this.isReserved = true;
 	}
 
+	/**
+	 * 좌석 예약 취소
+	 */
 	public void cancelReservation() {
+		if (!this.isReserved) {
+			throw SeatException.notReserved();
+		}
+		if (this.getIsDeleted()) {
+			throw SeatException.alreadyDeleted();
+		}
 		this.isReserved = false;
 	}
 }
