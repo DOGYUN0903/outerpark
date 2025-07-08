@@ -1,26 +1,30 @@
 package com.lockers.outerpark.domain.seat.exception;
 
 import com.lockers.outerpark.common.exception.BusinessException;
-import com.lockers.outerpark.common.exception.ErrorCode;
 
-public class SeatException extends BusinessException {
-	public SeatException(ErrorCode errorCode) {
-		super(errorCode);
+public class SeatException {
+
+	public static class SeatNotFoundException extends BusinessException {
+		public SeatNotFoundException() {
+			super(SeatErrorCode.SEAT_NOT_FOUND);
+		}
 	}
 
-	public static SeatException notFound() {
-		return new SeatException(SeatErrorCode.SEAT_NOT_FOUND);
+	public static class SeatAlreadyReservedException extends BusinessException {
+		public SeatAlreadyReservedException() {
+			super(SeatErrorCode.SEAT_ALREADY_RESERVED);
+		}
 	}
 
-	public static SeatException alreadyReserved() {
-		return new SeatException(SeatErrorCode.SEAT_ALREADY_RESERVED);
+	public static class SeatNotReservedException extends BusinessException {
+		public SeatNotReservedException() {
+			super(SeatErrorCode.SEAT_NOT_RESERVED);
+		}
 	}
 
-	public static SeatException notReserved() {
-		return new SeatException(SeatErrorCode.SEAT_NOT_RESERVED);
-	}
-
-	public static SeatException alreadyDeleted() {
-		return new SeatException(SeatErrorCode.SEAT_ALREADY_DELETED);
+	public static class SeatAlreadyDeletedException extends BusinessException {
+		public SeatAlreadyDeletedException() {
+			super(SeatErrorCode.SEAT_ALREADY_DELETED);
+		}
 	}
 }

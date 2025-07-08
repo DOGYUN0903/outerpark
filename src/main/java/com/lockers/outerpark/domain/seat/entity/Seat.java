@@ -36,10 +36,10 @@ public class Seat extends BaseEntity {
 	@Column(nullable = false)
 	private Boolean isReserved = false;
 
-	public Seat(Concert concert, int seatNumber, Boolean isReserved) {
+	public Seat(Concert concert, int seatNumber) {
 		this.concert = concert;
 		this.seatNumber = seatNumber;
-		this.isReserved = isReserved;
+		this.isReserved = false;
 	}
 
 	// 비즈니스 메서드
@@ -49,10 +49,10 @@ public class Seat extends BaseEntity {
 	 */
 	public void reserve() {
 		if (this.isReserved) {
-			throw SeatException.alreadyReserved();
+			throw new SeatException.SeatAlreadyReservedException();
 		}
 		if (this.getIsDeleted()) {
-			throw SeatException.alreadyDeleted();
+			throw new SeatException.SeatAlreadyDeletedException();
 		}
 		this.isReserved = true;
 	}
@@ -62,10 +62,10 @@ public class Seat extends BaseEntity {
 	 */
 	public void cancelReservation() {
 		if (!this.isReserved) {
-			throw SeatException.notReserved();
+			throw new SeatException.SeatNotReservedException();
 		}
 		if (this.getIsDeleted()) {
-			throw SeatException.alreadyDeleted();
+			throw new SeatException.SeatAlreadyDeletedException();
 		}
 		this.isReserved = false;
 	}
