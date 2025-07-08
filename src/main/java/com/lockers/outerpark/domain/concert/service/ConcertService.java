@@ -13,7 +13,7 @@ public interface ConcertService {
     RegisterConcertResponse registerConcert(Long userId,
         RegisterConcertRequest request);
 
-    UpdateConcertResponse updateConcert(Long userId, UpdateConcertRequest request);
+    UpdateConcertResponse updateConcert(Long userId, Long concert_id, UpdateConcertRequest request);
 
     FindConcertResponse findConcert(Long concertId);
 

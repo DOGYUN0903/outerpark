@@ -67,13 +67,13 @@ public class ConcertServiceImpl implements ConcertService {
      */
     @Override
     @Transactional
-    public UpdateConcertResponse updateConcert(Long userId, UpdateConcertRequest request) {
+    public UpdateConcertResponse updateConcert(Long userId, Long concert_id, UpdateConcertRequest request) {
 
         // 사용자 조회 및 유효성 검사
         User loginUser = userService.getActiveUserById(userId);
 
         // 콘서트 조회 및 유효성 검사
-        Concert concert = concertRepository.findConcertByWriter(loginUser)
+        Concert concert = concertRepository.findByIdAndWriter(concert_id, loginUser)
             .orElseThrow(ConcertException.ConcertNotFoundException::new);
 
         // 각 필드가 null이 아닌 경우에만 업데이트 수행

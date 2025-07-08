@@ -9,5 +9,5 @@ import com.lockers.outerpark.domain.user.entity.User;
 
 public interface ConcertRepository extends JpaRepository<Concert, Long> {
 
-    Optional<Concert> findConcertByWriter(User writer);
+    Optional<Concert> findByIdAndWriter(Long id, User writer);
 }

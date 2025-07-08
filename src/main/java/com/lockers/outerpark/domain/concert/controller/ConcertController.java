@@ -37,13 +37,14 @@ public class ConcertController {
         return ApiResponse.success("콘서트가 등록되었습니다.", concertService.registerConcert(id, request));
     }
 
-    @PatchMapping
+    @PatchMapping("/{concert_id}")
     public ApiResponse<UpdateConcertResponse> updateConcert(
         @AuthenticationPrincipal Long id,
+        @PathVariable Long concert_id,
         @RequestBody UpdateConcertRequest request
     ) {
         return ApiResponse.success("콘서트가 수정되었습니다.",
-            concertService.updateConcert(id, request));
+            concertService.updateConcert(id, concert_id, request));
     }
 
     @GetMapping("/{concert_id}")
