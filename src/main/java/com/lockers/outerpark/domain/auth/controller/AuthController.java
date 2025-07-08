@@ -1,5 +1,6 @@
 package com.lockers.outerpark.domain.auth.controller;
 
+import com.lockers.outerpark.common.response.ApiResponse;
 import com.lockers.outerpark.domain.auth.dto.request.SigninRequest;
 import com.lockers.outerpark.domain.auth.dto.request.SignupRequest;
 import com.lockers.outerpark.domain.auth.dto.response.SigninResponse;
@@ -20,12 +21,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public SignupResponse signup(@Valid @RequestBody SignupRequest signupRequest) {
-        return authService.signup(signupRequest);
+    public ApiResponse<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
+        return ApiResponse.success("회원가입에 성공하였습니다.", authService.signup(signupRequest));
     }
 
     @PostMapping("/signin")
-    public SigninResponse signin(@Valid @RequestBody SigninRequest signinRequest) {
-        return authService.signin(signinRequest);
+    public ApiResponse<SigninResponse> signin(@Valid @RequestBody SigninRequest signinRequest) {
+        return ApiResponse.success("로그인에 성공하였습니다.", authService.signin(signinRequest));
     }
 }
