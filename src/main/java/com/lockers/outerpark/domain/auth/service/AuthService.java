@@ -9,6 +9,7 @@ import com.lockers.outerpark.domain.auth.exception.InvalidPasswordException;
 import com.lockers.outerpark.domain.user.entity.User;
 import com.lockers.outerpark.domain.user.entity.UserRole;
 import com.lockers.outerpark.domain.user.exception.EmailAlreadyExistsException;
+import com.lockers.outerpark.domain.user.exception.UserDeletedException;
 import com.lockers.outerpark.domain.user.exception.UserNotFoundException;
 import com.lockers.outerpark.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,10 @@ public class AuthService {
 
         User findUser = userRepository.findByEmail(signinRequest.getEmail())
                 .orElseThrow(UserNotFoundException::new);
+
+        if (findUser.getIsDeleted()) {
+            throw new UserDeletedException();
+        }
 
         // 로그인 시 이메일과 비밀번호가 일치하지 않을 경우 401 반환
         if (!passwordEncoder.matches(signinRequest.getPassword(), findUser.getPassword())) {
