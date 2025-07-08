@@ -55,4 +55,24 @@ public class Concert extends BaseEntity {
     public Concert() {
 
     }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateRunningTime(Integer runningTime) {
+        this.runningTime = runningTime;
+    }
+
+    public void updatePrice(Integer price) {
+        this.price = price;
+    }
+
+    public void updateLimitAge(Integer limitAge) {
+        this.limitAge = limitAge;
+    }
+
+    public void updatePerformanceDate(LocalDate performanceDate) {
+        this.performanceDate = performanceDate;
+    }
 }
