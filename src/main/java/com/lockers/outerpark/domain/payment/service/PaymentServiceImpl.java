@@ -32,6 +32,8 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	@Transactional
 	public PaymentResponse savePaymentHistory(PaymentRequest request, Long userId) {
+
+		//결제 실패 시 롤백
 		Reservation reservation = processReservationPayment(request, userId);
 		try {
 
@@ -43,50 +45,52 @@ public class PaymentServiceImpl implements PaymentService {
 		} catch (DataIntegrityViolationException
 				 | ConstraintViolationException
 				 | PersistenceException e) {
-			//todo: 예약 내역 취소 로직
+			reservationService.cancelReservation(reservation.getId());
 			throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_REQUEST);
 		} catch (Exception e) {
-			//todo: 예약 내역 취소 로직
+			reservationService.cancelReservation(reservation.getId());
 			throw new PaymentException(PaymentErrorCode.INSUFFICIENT_BALANCE);
 		}
 	}
 
+	//결제 내용 정합성 검사
 	private Reservation processReservationPayment(PaymentRequest request, Long userId) {
 
 		//todo : Reservation Entity 객체 필요
 		//Reservation reservation = reservationService.findReservationById(request.getReservationId())
+		Reservation reservation = new Reservation();
+
+		if (!"SUCCESS".equals(request.getStatus())) {
+			reservationService.cancelReservation(reservation.getId());
+			return reservation;
+		}
 
 		int totalAmount = request.getTotalAmount();
 
-		Reservation reservation = new Reservation();
-
 		if (totalAmount != reservation.getAmount()) {
-			//todo: 예약 내역 취소 로직
+			reservationService.cancelReservation(reservation.getId());
 			throw new PaymentException(PaymentErrorCode.INVALID_AMOUNT_REQUEST);
 		}
 
 		if (!updatePaymentStatus(totalAmount, userId)) {
-			//todo: 예약 내역 취소 로직
+			reservationService.cancelReservation(reservation.getId());
 			throw new PaymentException(PaymentErrorCode.NOT_ENOUGH_BALANCE);
 		}
 
 		return reservation;
 	}
 
-	private boolean updatePaymentStatus(int totalAmount, Long userId) {
-		//todo : User Entity 객체 필요
-		//User user = userService.getUserById(userId);
+	private boolean updatePaymentStatus(int paidAmount, Long userId) {
+		User user = userService.getActiveUserById(userId);
 
-		User user = new User();
+		Long nowBalance = user.getBalance();
 
-		Long balance = user.getBalance();
-
-		if (balance < totalAmount) {
+		if (nowBalance < paidAmount) {
 			return false;
 		}
 
-		//todo: user 보유 balance 변경(setBalance 필요)
-
+		//결제 처리
+		user.updateBalance(nowBalance - paidAmount);
 		return true;
 	}
 }
