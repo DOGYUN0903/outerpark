@@ -1,28 +1,19 @@
 package com.lockers.outerpark.domain.seat.service;
 
-import com.lockers.outerpark.domain.concert.entity.Concert;
-import com.lockers.outerpark.domain.seat.dto.response.SeatResponse;
+import java.util.List;
+
+import com.lockers.outerpark.domain.seat.entity.Seat;
 
 public interface SeatService {
 
-	// =========== Reservation 필요 메서드 =============
+	/**
+	 * 전체 좌석 조회
+	 */
+	List<Seat> getAllSeats();
 
-	// 좌석 예약 처리
-	void reserveSeat(Long seatId);
-
-	// =========== Reservation & Payment 필요 메서드 =============
-
-	// 좌석 예약 취소
-	void cancelSeatReservation(Long seatId);
-
-	// 좌석 정보 조회 (단건)
-	SeatResponse getSeat(Long seatId); // ResponseDto로 수정
-
-	// =========== Concert 필요 메서드 =============
-
-	void createSeatsForConcert(Concert concert, int seatCount);
-
-	// Concert 삭제 시 좌석도 삭제
-	void deleteAllSeatsByConcert(Long concertId);
+	/**
+	 * 좌석 ID 유효성 검증
+	 */
+	Seat getSeat(Long seatId);
 
 }
