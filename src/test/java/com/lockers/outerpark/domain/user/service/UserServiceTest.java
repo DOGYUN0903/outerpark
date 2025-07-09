@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.lockers.outerpark.domain.user.dto.response.UserResponse;
 import com.lockers.outerpark.domain.user.entity.User;
 import com.lockers.outerpark.domain.user.entity.UserRole;
 import com.lockers.outerpark.domain.user.repository.UserRepository;
@@ -71,4 +72,25 @@ class UserServiceTest {
         assertThat(findUser).isEqualTo(user);
     }
     // getActiveUserById 단위 테스트 끝
+
+    // 회원 프로필 조회 단위 테스트 시작
+    @Test
+    @DisplayName("프로필 조회 성공")
+    void 프로필_조회_성공() {
+        // given
+        Long userId = 1L;
+        User user = new User("test@email.com", "nickname", LocalDate.parse("2000-01-01"), "1234", 100000L,
+            UserRole.USER);
+        given(userRepository.findById(userId)).willReturn(Optional.of(user));
+
+        // when
+        UserResponse userResponse = userService.getUserProfile(userId);
+
+        // then
+        assertThat(userResponse.getId()).isEqualTo(user.getId());
+        assertThat(userResponse.getNickname()).isEqualTo(user.getNickname());
+        assertThat(userResponse.getBalance()).isEqualTo(user.getBalance());
+        assertThat(userResponse.getBirth()).isEqualTo(user.getBirth());
+        assertThat(userResponse.getUserRole()).isEqualTo(user.getUserRole());
+    }
 }
