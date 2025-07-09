@@ -1,10 +1,12 @@
 package com.lockers.outerpark.domain.auth.service;
 
+import static com.lockers.outerpark.domain.auth.exception.AuthException.*;
 import static com.lockers.outerpark.domain.user.exception.UserException.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.lockers.outerpark.common.jwt.JwtUtil;
+import com.lockers.outerpark.domain.auth.dto.request.SigninRequest;
 import com.lockers.outerpark.domain.auth.dto.request.SignupRequest;
+import com.lockers.outerpark.domain.auth.dto.response.SigninResponse;
 import com.lockers.outerpark.domain.auth.dto.response.SignupResponse;
 import com.lockers.outerpark.domain.user.entity.User;
 import com.lockers.outerpark.domain.user.entity.UserRole;
@@ -36,6 +40,7 @@ class AuthServiceTest {
     @InjectMocks
     private AuthService authService;
 
+    // 회원가입 단위테스트 시작
     @Test
     @DisplayName("이메일 중복이면 예외가 발생한다")
     void 이메일_중복이면_예외가_발생한다() {
@@ -82,4 +87,69 @@ class AuthServiceTest {
         // then
         assertThat(response.getToken()).isEqualTo("token123");
     }
+    // 회원가입 단위테스트 끝
+
+    // 로그인 단위테스트 시작
+    @Test
+    @DisplayName("유저가 없으면 예외발생")
+    void 유저가_없으면_예외발생() {
+        // given
+        SigninRequest signinRequest = new SigninRequest("test@email.com", "1234");
+        given(userRepository.findByEmail(signinRequest.getEmail())).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> authService.signin(signinRequest))
+            .isInstanceOf(UserNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("탈퇴한 유저라면 예외발생")
+    void 탈퇴한_유저라면_예외발생() {
+        // given
+        SigninRequest signinRequest = new SigninRequest("test@email.com", "1234");
+        User deletedUser = new User("test@email.com", "nickname", LocalDate.parse("2000-01-01"), "1234", 100000L,
+            UserRole.USER);
+        deletedUser.softDelete();
+
+        given(userRepository.findByEmail(signinRequest.getEmail())).willReturn(Optional.of(deletedUser));
+
+        // when & then
+        assertThatThrownBy(() -> authService.signin(signinRequest))
+            .isInstanceOf(UserDeletedException.class);
+    }
+
+    @Test
+    @DisplayName("비밀번호가 틀리면 예외발생")
+    void 비밀번호가_틀리면_예외발생() {
+        // given
+        SigninRequest signinRequest = new SigninRequest("test@email.com", "wrongPassword");
+        User user = new User("test@email.com", "nickname", LocalDate.parse("2000-01-01"), "truePassword", 100000L,
+            UserRole.USER);
+
+        given(userRepository.findByEmail(signinRequest.getEmail())).willReturn(Optional.of(user));
+        given(passwordEncoder.matches(signinRequest.getPassword(), user.getPassword())).willReturn(false);
+
+        assertThatThrownBy(() -> authService.signin(signinRequest))
+            .isInstanceOf(InvalidPasswordException.class);
+    }
+
+    @Test
+    @DisplayName("로그인 성공")
+    void 로그인_성공() {
+        // given
+        SigninRequest signinRequest = new SigninRequest("test@email.com", "1234");
+        User user = new User("test@email.com", "nickname", LocalDate.parse("2000-01-01"), "1234", 100000L,
+            UserRole.USER);
+
+        given(userRepository.findByEmail(signinRequest.getEmail())).willReturn(Optional.of(user));
+        given(passwordEncoder.matches(signinRequest.getPassword(), user.getPassword())).willReturn(true);
+        given(jwtUtil.createToken(any(), any())).willReturn("token1234");
+
+        // when
+        SigninResponse signinResponse = authService.signin(signinRequest);
+
+        // then
+        assertThat(signinResponse.getToken()).isEqualTo("token1234");
+    }
+    // 로그인 단위테스트 끝
 }
