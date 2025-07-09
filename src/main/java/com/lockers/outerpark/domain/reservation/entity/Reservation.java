@@ -6,7 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.lockers.outerpark.domain.seat.entity.Seat;
+import com.lockers.outerpark.domain.concert.entity.Concert;
 import com.lockers.outerpark.domain.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -20,7 +20,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,11 +40,14 @@ public class Reservation {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "seat_id", nullable = false)
-	private Seat seat;
-	@Column(name = "reservation_number", nullable = false)
-	private String reservationNumber;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "concert_id", nullable = false)
+	private Concert concert;
+	// TODO: 중간테이블 엔티티와 매핑
+	// @OneToMany(mappedBy = "reservation_id", cascade = CascadeType.PERSIST)
+	// private List<ReservationSeat> reservationSeats = new ArrayList<>();
+	@Column(nullable = false)
+	private int count;
 	@Column(nullable = false)
 	private int amount;
 
@@ -57,10 +59,18 @@ public class Reservation {
 	@Column(name = "cancelled_at")
 	private LocalDate cancelledAt;
 
-	public Reservation(User user, Seat seat, String reservationNumber, int amount) {
+	public Reservation(User user, Concert concert, int count, int amount) {
 		this.user = user;
-		this.seat = seat;
-		this.reservationNumber = reservationNumber;
+		this.concert = concert;
+		this.count = count;
 		this.amount = amount;
 	}
+
+	/**
+	 * 양방향 편의 관계 메서드
+	 */
+	// public void addReservationSeat(ReservationSeat reservationSeat) {
+	// 	reservationSeats.add(reservationSeat);
+	// 	reservationSeat.setReservation(this);
+	// }
 }
