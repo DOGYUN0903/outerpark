@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.lockers.outerpark.common.jwt.JwtUtil;
 import com.lockers.outerpark.domain.auth.dto.request.SigninRequest;
 import com.lockers.outerpark.domain.auth.dto.request.SignupRequest;
+import com.lockers.outerpark.domain.auth.dto.request.WithdrawRequest;
 import com.lockers.outerpark.domain.auth.dto.response.SigninResponse;
 import com.lockers.outerpark.domain.auth.dto.response.SignupResponse;
 import com.lockers.outerpark.domain.user.entity.User;
@@ -152,4 +153,40 @@ class AuthServiceTest {
         assertThat(signinResponse.getToken()).isEqualTo("token1234");
     }
     // 로그인 단위테스트 끝
+
+    // 회원 탈퇴 단위테스트 시작
+    @Test
+    @DisplayName("회원 탈퇴시 비밀번호가 틀리면 예외발생")
+    void 회원_탈퇴시_비밀번호가_틀리면_예외발생() {
+        // given
+        Long userId = 1L;
+        User user = new User("test@email.com", "nickname", LocalDate.parse("2000-01-01"), "1234", 100000L,
+            UserRole.USER);
+        WithdrawRequest withdrawRequest = new WithdrawRequest("password");
+
+        given(userService.getActiveUserById(userId)).willReturn(user);
+        given(passwordEncoder.matches(withdrawRequest.getPassword(), user.getPassword())).willReturn(false);
+
+        assertThatThrownBy(() -> authService.withdraw(userId, withdrawRequest))
+            .isInstanceOf(InvalidPasswordException.class);
+    }
+
+    @Test
+    @DisplayName("회원 탈퇴 성공")
+    void 회원_탈퇴_성공() {
+        // given
+        Long userId = 1L;
+        User user = new User("test@email.com", "nickname", LocalDate.parse("2000-01-01"), "1234", 100000L,
+            UserRole.USER);
+        WithdrawRequest withdrawRequest = new WithdrawRequest("password");
+
+        given(userService.getActiveUserById(userId)).willReturn(user);
+        given(passwordEncoder.matches(withdrawRequest.getPassword(), user.getPassword())).willReturn(true);
+
+        // when
+        authService.withdraw(userId, withdrawRequest);
+
+        assertThat(user.getIsDeleted()).isTrue();
+    }
+    // 회원 탈퇴 단위테스트 끝
 }
