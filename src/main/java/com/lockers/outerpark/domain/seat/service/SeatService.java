@@ -1,19 +1,24 @@
 package com.lockers.outerpark.domain.seat.service;
 
-import java.util.List;
-
-import com.lockers.outerpark.domain.seat.entity.Seat;
+import com.lockers.outerpark.domain.seat.dto.response.SeatsStatusResponse;
 
 public interface SeatService {
 
-	/**
-	 * 전체 좌석 조회
-	 */
-	List<Seat> getAllSeats();
+	// ================= 기본  좌석 메서드 ================
 
 	/**
-	 * 좌석 ID 유효성 검증
+	 * 좌석 예약 가능 여부 확인
 	 */
-	Seat getSeat(Long seatId);
+	boolean isAvailable(Long seatId);
+
+	/**
+	 * 좌석 상태 확인 (AVAILABLE / PENDING / RESERVED)
+	 */
+	String getSeatStatus(Long seatId);
+
+	/**
+	 * 특정 콘서트의 모든 좌석과 상태 조회
+	 */
+	SeatsStatusResponse getSeatsForConcert(Long concertId);
 
 }
