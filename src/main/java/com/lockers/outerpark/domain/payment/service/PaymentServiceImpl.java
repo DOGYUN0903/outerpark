@@ -2,9 +2,10 @@ package com.lockers.outerpark.domain.payment.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.lockers.outerpark.domain.payment.dto.PaymentRequest;
-import com.lockers.outerpark.domain.payment.dto.PaymentResponse;
+import com.lockers.outerpark.domain.payment.dto.request.PaymentRequest;
+import com.lockers.outerpark.domain.payment.dto.response.PaymentResponse;
 import com.lockers.outerpark.domain.payment.entity.Payment;
 import com.lockers.outerpark.domain.payment.exception.PaymentErrorCode;
 import com.lockers.outerpark.domain.payment.exception.PaymentException;
@@ -15,7 +16,6 @@ import com.lockers.outerpark.domain.user.entity.User;
 import com.lockers.outerpark.domain.user.service.UserService;
 
 import jakarta.persistence.PersistenceException;
-import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 
@@ -33,7 +33,6 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional
 	public PaymentResponse savePaymentHistory(PaymentRequest request, Long userId) {
 
-		//결제 실패 시 롤백
 		Reservation reservation = processReservationPayment(request, userId);
 		try {
 
@@ -53,6 +52,31 @@ public class PaymentServiceImpl implements PaymentService {
 		}
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public PaymentResponse findOnePaymentHistory(Long paymentId) {
+		Payment payment = paymentRepository.findById(paymentId)
+			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUNT_PAYMENT));
+		return PaymentResponse.from(payment, payment.getReservation().getId());
+	}
+
+	@Override
+	@Transactional
+	public PaymentResponse cancelPaymentHistory(Long paymentId, Long userId) {
+		Payment payment = paymentRepository.findById(paymentId)
+			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUNT_PAYMENT));
+
+		if (!"SUCCESS".equals(payment.getStatus())) {
+			throw new PaymentException(PaymentErrorCode.ALREADY_CANCEL);
+		}
+
+		payment.updateStatus("CANCEL");
+
+		refundPayment(payment.getTotalAmount(), userId);
+
+		return null;
+	}
+
 	//결제 내용 정합성 검사
 	private Reservation processReservationPayment(PaymentRequest request, Long userId) {
 
@@ -60,6 +84,7 @@ public class PaymentServiceImpl implements PaymentService {
 		//Reservation reservation = reservationService.findReservationById(request.getReservationId())
 		Reservation reservation = new Reservation();
 
+		//결제 실패 시 롤백
 		if (!"SUCCESS".equals(request.getStatus())) {
 			reservationService.cancelReservation(reservation.getId());
 			return reservation;
@@ -72,7 +97,7 @@ public class PaymentServiceImpl implements PaymentService {
 			throw new PaymentException(PaymentErrorCode.INVALID_AMOUNT_REQUEST);
 		}
 
-		if (!updatePaymentStatus(totalAmount, userId)) {
+		if (!chargePayment(totalAmount, userId)) {
 			reservationService.cancelReservation(reservation.getId());
 			throw new PaymentException(PaymentErrorCode.NOT_ENOUGH_BALANCE);
 		}
@@ -80,7 +105,7 @@ public class PaymentServiceImpl implements PaymentService {
 		return reservation;
 	}
 
-	private boolean updatePaymentStatus(int paidAmount, Long userId) {
+	private boolean chargePayment(int paidAmount, Long userId) {
 		User user = userService.getActiveUserById(userId);
 
 		Long nowBalance = user.getBalance();
@@ -92,5 +117,14 @@ public class PaymentServiceImpl implements PaymentService {
 		//결제 처리
 		user.updateBalance(nowBalance - paidAmount);
 		return true;
+	}
+
+	private void refundPayment(int paidAmount, Long userId) {
+		User user = userService.getActiveUserById(userId);
+
+		Long nowBalance = user.getBalance();
+
+		//결제 처리
+		user.updateBalance(nowBalance + paidAmount);
 	}
 }

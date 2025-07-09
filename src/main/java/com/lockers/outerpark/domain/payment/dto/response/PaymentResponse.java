@@ -1,4 +1,4 @@
-package com.lockers.outerpark.domain.payment.dto;
+package com.lockers.outerpark.domain.payment.dto.response;
 
 import java.time.LocalDateTime;
 
@@ -22,15 +22,15 @@ public class PaymentResponse {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 
-	public static PaymentResponse from(Payment savedPayment, Long reservationId) {
+	public static PaymentResponse from(Payment payment, Long reservationId) {
 		return PaymentResponse.builder()
-			.id(savedPayment.getId())
+			.id(payment.getId())
 			.reservationId(reservationId)
-			.totalAmount(savedPayment.getTotalAmount())
-			.method(savedPayment.getMethod())
-			.status(savedPayment.getStatus())
-			.createdAt(savedPayment.getCreatedAt())
-			.updatedAt(savedPayment.getUpdatedAt())
+			.totalAmount(payment.getTotalAmount())
+			.method(payment.getMethod())
+			.status(payment.getStatus())
+			.createdAt(payment.getCreatedAt())
+			.updatedAt(payment.getUpdatedAt())
 			.build();
 	}
 }

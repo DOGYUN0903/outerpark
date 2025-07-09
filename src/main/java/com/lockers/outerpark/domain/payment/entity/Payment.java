@@ -44,4 +44,8 @@ public class Payment extends BaseEntity {
 		this.method = method;
 		this.status = status;
 	}
+
+	public void updateStatus(String status) {
+		this.status = status;
+	}
 }
