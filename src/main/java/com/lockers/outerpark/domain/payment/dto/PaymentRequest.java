@@ -16,11 +16,10 @@ public class PaymentRequest {
 
 	private Long reservationId;
 	private int totalAmount;
-	private int count;
 	private String method;
 	private String status;
 
 	public Payment toEntity(Reservation reservation) {
-		return new Payment(reservation, this.totalAmount, this.count, this.method, this.status);
+		return new Payment(reservation, this.totalAmount, this.method, this.status);
 	}
 }

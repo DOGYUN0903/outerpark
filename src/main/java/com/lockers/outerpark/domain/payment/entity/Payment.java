@@ -33,18 +33,14 @@ public class Payment extends BaseEntity {
 	private int totalAmount;
 
 	@Column(nullable = false)
-	private int count;
-
-	@Column(nullable = false)
 	private String method;
 
 	@Column(nullable = false)
 	private String status;
 
-	public Payment(Reservation reservation, int totalAmount, int count, String method, String status) {
+	public Payment(Reservation reservation, int totalAmount, String method, String status) {
 		this.reservation = reservation;
 		this.totalAmount = totalAmount;
-		this.count = count;
 		this.method = method;
 		this.status = status;
 	}

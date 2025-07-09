@@ -17,7 +17,6 @@ public class PaymentResponse {
 	private Long id;
 	private Long reservationId;
 	private int totalAmount;
-	private int count;
 	private String method;
 	private String status;
 	private LocalDateTime createdAt;
@@ -28,7 +27,6 @@ public class PaymentResponse {
 			.id(savedPayment.getId())
 			.reservationId(reservationId)
 			.totalAmount(savedPayment.getTotalAmount())
-			.count(savedPayment.getCount())
 			.method(savedPayment.getMethod())
 			.status(savedPayment.getStatus())
 			.createdAt(savedPayment.getCreatedAt())
