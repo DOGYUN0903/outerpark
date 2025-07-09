@@ -1,12 +1,16 @@
 package com.lockers.outerpark.domain.seat.entity;
 
 import com.lockers.outerpark.common.entity.BaseEntity;
+import com.lockers.outerpark.domain.concert.entity.Concert;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,10 +25,16 @@ public class Seat extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "concert_id", nullable = false)
+	private Concert concert;
+
 	@Column(nullable = false)
 	private int seatNumber;
 
-	public Seat(int seatNumber) {
+	// 생성자
+	public Seat(Concert concert, int seatNumber) {
+		this.concert = concert;
 		this.seatNumber = seatNumber;
 	}
 
