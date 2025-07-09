@@ -1,12 +1,16 @@
 package com.lockers.outerpark.domain.payment.entity;
 
 import com.lockers.outerpark.common.entity.BaseEntity;
+import com.lockers.outerpark.domain.reservation.entity.Reservation;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +25,9 @@ public class Payment extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	//todo: Reservation 외래키 적용
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "reservation_id", nullable = false)
+	private Reservation reservation;
 
 	@Column(nullable = false)
 	private int totalAmount;
@@ -34,4 +40,12 @@ public class Payment extends BaseEntity {
 
 	@Column(nullable = false)
 	private String status;
+
+	public Payment(Reservation reservation, int totalAmount, int count, String method, String status) {
+		this.reservation = reservation;
+		this.totalAmount = totalAmount;
+		this.count = count;
+		this.method = method;
+		this.status = status;
+	}
 }
