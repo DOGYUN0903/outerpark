@@ -24,8 +24,9 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 	// ============= Concert 좌석 조회 =====================
 
 	/**
-	 * 특정 콘서트의 삭제되지 않은 모든 좌석을 조
+	 * 특정 콘서트의 삭제되지 않은 모든 좌석 조회
 	 */
+	List<Seat> findByConcertIdAndIsDeletedFalse(Long concertId);
 
 	/**
 	 * 특정 콘서트의 삭제되지 않은 모든 좌석 개수 조회
@@ -36,5 +37,10 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 	 * 특정 콘서트의 좌석을 좌석 번호 순으로 조회
 	 */
 	List<Seat> findByConcertIdAndIsDeletedFalseOrderBySeatNumber(Long concertId);
+
+	/**
+	 * 해당 좌석의 유무를 확인
+	 */
+	boolean existsByIdAndIsDeletedFalse(Long seatId);
 
 }
