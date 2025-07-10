@@ -5,9 +5,9 @@ import com.lockers.outerpark.domain.payment.dto.response.PaymentResponse;
 
 public interface PaymentService {
 
-	PaymentResponse savePaymentHistory(PaymentRequest request, Long reservationId, Long userId);
+	PaymentResponse savePayment(PaymentRequest request, Long reservationId, Long userId);
 
-	PaymentResponse findOnePaymentHistory(Long userId);
+	PaymentResponse findOnePayment(Long userId);
 
-	PaymentResponse cancelPaymentHistory(Long paymentId, Long userId);
+	PaymentResponse cancelPayment(Long paymentId, Long userId);
 }

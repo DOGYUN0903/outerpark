@@ -34,7 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public PaymentResponse savePaymentHistory(PaymentRequest request, Long reservationId, Long userId) {
+	public PaymentResponse savePayment(PaymentRequest request, Long reservationId, Long userId) {
 
 		Reservation reservation = processReservationPayment(request, reservationId, userId);
 		try {
@@ -57,7 +57,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public PaymentResponse findOnePaymentHistory(Long paymentId) {
+	public PaymentResponse findOnePayment(Long paymentId) {
 		Payment payment = paymentRepository.findById(paymentId)
 			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUNT_PAYMENT));
 		return PaymentResponse.from(payment, payment.getReservation().getId());
@@ -65,7 +65,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public PaymentResponse cancelPaymentHistory(Long paymentId, Long userId) {
+	public PaymentResponse cancelPayment(Long paymentId, Long userId) {
 		Payment payment = paymentRepository.findByIdAndStatus(paymentId, PaymentStatus.SUCCESS)
 			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUNT_PAYMENT));
 
