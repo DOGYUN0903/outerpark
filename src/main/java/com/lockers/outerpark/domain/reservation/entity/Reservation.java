@@ -53,7 +53,7 @@ public class Reservation {
 	@Column(nullable = false)
 	private int count;
 	@Column(nullable = false, name = "total_amount")
-	private int totalAmount;
+	private int amount;
 
 	@CreatedDate
 	@Column(name = "reserved_at")
@@ -67,7 +67,7 @@ public class Reservation {
 		this.user = user;
 		this.concert = concert;
 		this.count = count;
-		this.totalAmount = totalAmount;
+		this.amount = totalAmount;
 	}
 
 	/**

@@ -47,7 +47,7 @@ public class ReservationResponse {
 					Collectors.toList()))
 			.count(reservation.getCount())
 			.status(reservation.getStatus())
-			.totalAmount(reservation.getTotalAmount())
+			.totalAmount(reservation.getAmount())
 			.concertInfo(new ConcertInfo(reservation.getConcert().getId(), reservation.getConcert().getTitle(),
 				reservation.getConcert().getPerformanceDate()))
 			.reservedAt(reservation.getReservedAt())

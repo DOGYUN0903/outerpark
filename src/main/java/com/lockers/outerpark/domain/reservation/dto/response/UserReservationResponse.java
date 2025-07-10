@@ -26,7 +26,7 @@ public class UserReservationResponse {
 				reservation.getConcert().getId(),
 				reservation.getConcert().getTitle(),
 				reservation.getConcert().getPerformanceDate()))
-			.totalAmount(reservation.getTotalAmount())
+			.totalAmount(reservation.getAmount())
 			.seatsInfo(new SeatsInfo(
 				reservation.getReservationSeats().stream()
 					.map(rs -> rs.getSeat().getId())
