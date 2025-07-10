@@ -8,6 +8,7 @@ import com.lockers.outerpark.domain.concert.dto.RegisterConcertRequest;
 import com.lockers.outerpark.domain.concert.dto.RegisterConcertResponse;
 import com.lockers.outerpark.domain.concert.dto.UpdateConcertRequest;
 import com.lockers.outerpark.domain.concert.dto.UpdateConcertResponse;
+import com.lockers.outerpark.domain.concert.entity.Concert;
 
 public interface ConcertService {
     RegisterConcertResponse registerConcert(Long userId,
@@ -20,4 +21,6 @@ public interface ConcertService {
     Page<FindConcertResponse> findConcerts(Pageable pageable);
 
     void deleteConcert(Long userId, Long concert_id);
+
+    Concert getActiveConcert(Long concertId);
 }

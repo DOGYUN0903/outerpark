@@ -1,5 +1,10 @@
 package com.lockers.outerpark.domain.payment.exception;
 
-public class PaymentException {
+import com.lockers.outerpark.common.exception.BusinessException;
 
+public class PaymentException extends BusinessException {
+
+	public PaymentException(PaymentErrorCode errorCode) {
+		super(errorCode);
+	}
 }
