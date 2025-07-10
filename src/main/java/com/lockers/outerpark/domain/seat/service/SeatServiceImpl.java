@@ -33,8 +33,9 @@ public class SeatServiceImpl implements SeatService {
 	@Override
 	@Transactional(readOnly = true)
 	public boolean isAvailable(Long seatId, Long concertId) {
-		seatRepository.findByIdAndIsDeletedFalse(seatId)
-			.orElseThrow(SeatException.SeatNotFoundException::new);
+		if (!seatRepository.existsByIdAndIsDeletedFalse(seatId)) {
+			throw new SeatException.SeatNotFoundException();
+		}
 
 		Optional<ReservationSeat> activeReservation =
 			reservationSeatRepository.findActiveBySeatIdAndConcertId(seatId, concertId);
@@ -64,9 +65,9 @@ public class SeatServiceImpl implements SeatService {
 		}
 
 		// TODO: PENDING 아직 없음 * 추가 예정
-		if (reservationStatus == ReservationStatus.PENDING) {
-			return SeatStatus.PENDING.name();
-		}
+		// if (reservationStatus == ReservationStatus.PENDING) {
+		// 	return SeatStatus.PENDING.name();
+		// }
 
 		if (reservationStatus == ReservationStatus.CONFIRMED) {
 			return SeatStatus.CONFIRMED.name();
