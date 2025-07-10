@@ -7,11 +7,11 @@ import lombok.Getter;
 @Getter
 class ConcertInfo {
 
-	private Long id;
+	private final Long id;
 
-	private String title;
+	private final String title;
 
-	private LocalDate performanceDate;
+	private final LocalDate performanceDate;
 
 	public ConcertInfo(Long id, String title, LocalDate performanceDate) {
 		this.id = id;

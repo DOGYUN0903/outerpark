@@ -3,6 +3,8 @@ package com.lockers.outerpark.domain.reservation.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +12,7 @@ import com.lockers.outerpark.domain.concert.entity.Concert;
 import com.lockers.outerpark.domain.concert.service.ConcertService;
 import com.lockers.outerpark.domain.reservation.dto.request.ReservationRequest;
 import com.lockers.outerpark.domain.reservation.dto.response.ReservationResponse;
+import com.lockers.outerpark.domain.reservation.dto.response.UserReservationResponse;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 import com.lockers.outerpark.domain.reservation.entity.ReservationStatus;
 import com.lockers.outerpark.domain.reservation.repository.ReservationRepository;
@@ -49,7 +52,7 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation savedReservation = reservationRepository.save(
 			reservationAddReservationSeats(seats, reservation, concert));
 
-		return ReservationResponse.fromEntity(savedReservation, concert, seats);
+		return ReservationResponse.fromEntity(savedReservation, seats);
 	}
 
 	@Override
@@ -71,10 +74,11 @@ public class ReservationServiceImpl implements ReservationService {
 		reservation.confirm();
 	}
 
-	// @Override
-	// public void getUserReservations(Long userId, Pageable pageable) {
-	// 	Page<Reservation> userReservations = reservationRepository.findByUserId(userId, pageable);
-	// }
+	@Override
+	public Page<UserReservationResponse> getUserReservations(Long userId, Pageable pageable) {
+		return reservationRepository.findAllByUserIdAndStatus(userId,
+			ReservationStatus.CONFIRMED, pageable).map(UserReservationResponse::fromEntity);
+	}
 
 	@Override
 	public boolean existsReservation(Long reservationId) {

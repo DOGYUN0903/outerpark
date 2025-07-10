@@ -1,9 +1,11 @@
 package com.lockers.outerpark.domain.reservation.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.lockers.outerpark.domain.reservation.dto.request.ReservationRequest;
 import com.lockers.outerpark.domain.reservation.dto.response.ReservationResponse;
+import com.lockers.outerpark.domain.reservation.dto.response.UserReservationResponse;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 
 public interface ReservationService {
@@ -22,7 +24,13 @@ public interface ReservationService {
 	 */
 	void confirmReservation(Long reservationId);
 
-	ReservationResponse getUserReservation(Pageable pageable, Long id);
+	/**
+	 * UserController /api/users/me/reservations 에서 호출
+	 * @param userId 회원 ID
+	 * @param pageable default
+	 * @return 해당 ID의 회원(로그인한 유저)의 예매 목록들을 페이징으로 조회
+	 */
+	Page<UserReservationResponse> getUserReservations(Long userId, Pageable pageable);
 
 	/**
 	 * reservationId의 예매가 존재하는지 true/false 반환

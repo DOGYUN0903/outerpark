@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.lockers.outerpark.domain.concert.entity.Concert;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 import com.lockers.outerpark.domain.reservation.entity.ReservationStatus;
 import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
@@ -35,7 +34,7 @@ public class ReservationResponse {
 
 	private final LocalDate cancelledAt;
 
-	public static ReservationResponse fromEntity(Reservation reservation, Concert concert, List<Seat> seats) {
+	public static ReservationResponse fromEntity(Reservation reservation, List<Seat> seats) {
 		return ReservationResponse.builder()
 			.reservationId(reservation.getId())
 			.seatId(seats.stream().map(Seat::getId).collect(Collectors.toList()))
@@ -46,7 +45,8 @@ public class ReservationResponse {
 					Collectors.toList()))
 			.status(reservation.getStatus())
 			.amount(reservation.getAmount())
-			.concertInfo(new ConcertInfo(concert.getId(), concert.getTitle(), concert.getPerformanceDate()))
+			.concertInfo(new ConcertInfo(reservation.getConcert().getId(), reservation.getConcert().getTitle(),
+				reservation.getConcert().getPerformanceDate()))
 			.reservedAt(reservation.getReservedAt())
 			.cancelledAt(reservation.getCancelledAt())
 			.build();
