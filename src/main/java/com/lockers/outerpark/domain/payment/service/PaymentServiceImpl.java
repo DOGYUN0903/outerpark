@@ -31,9 +31,9 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public PaymentResponse savePaymentHistory(PaymentRequest request, Long userId) {
+	public PaymentResponse savePaymentHistory(PaymentRequest request, Long reservationId, Long userId) {
 
-		Reservation reservation = processReservationPayment(request, userId);
+		Reservation reservation = processReservationPayment(request, reservationId, userId);
 		try {
 
 			Payment payment = request.toEntity(reservation);
@@ -63,12 +63,8 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	@Transactional
 	public PaymentResponse cancelPaymentHistory(Long paymentId, Long userId) {
-		Payment payment = paymentRepository.findById(paymentId)
+		Payment payment = paymentRepository.findByIdAndStatus(paymentId, "SUCCESS")
 			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUNT_PAYMENT));
-
-		if (!"SUCCESS".equals(payment.getStatus())) {
-			throw new PaymentException(PaymentErrorCode.ALREADY_CANCEL);
-		}
 
 		payment.updateStatus("CANCEL");
 
@@ -78,10 +74,10 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	//결제 내용 정합성 검사
-	private Reservation processReservationPayment(PaymentRequest request, Long userId) {
+	private Reservation processReservationPayment(PaymentRequest request, Long reservationId, Long userId) {
 
 		//todo : Reservation Entity 객체 필요
-		//Reservation reservation = reservationService.findReservationById(request.getReservationId())
+		//Reservation reservation = reservationService.findReservationById(reservationId)
 		Reservation reservation = new Reservation();
 
 		//결제 실패 시 롤백
@@ -105,6 +101,7 @@ public class PaymentServiceImpl implements PaymentService {
 		return reservation;
 	}
 
+	//결제 Balance 처리
 	private boolean chargePayment(int paidAmount, Long userId) {
 		User user = userService.getActiveUserById(userId);
 
@@ -119,6 +116,7 @@ public class PaymentServiceImpl implements PaymentService {
 		return true;
 	}
 
+	//결제 취소 Balance 처리
 	private void refundPayment(int paidAmount, Long userId) {
 		User user = userService.getActiveUserById(userId);
 

@@ -13,15 +13,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PaymentRequest {
 
-	private Long reservationId;
-
 	@Positive
 	private int totalAmount;
-
 	private String method;
 	private String status;
 
 	public Payment toEntity(Reservation reservation) {
-		return new Payment(reservation, this.totalAmount, this.method, this.status);
+		return Payment.builder()
+			.reservation(reservation)
+			.totalAmount(this.totalAmount)
+			.method(this.method)
+			.status(this.status)
+			.build();
 	}
 }

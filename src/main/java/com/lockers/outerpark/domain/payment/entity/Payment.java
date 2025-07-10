@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -38,7 +39,9 @@ public class Payment extends BaseEntity {
 	@Column(nullable = false)
 	private String status;
 
-	public Payment(Reservation reservation, int totalAmount, String method, String status) {
+	@Builder
+	public Payment(Long id, Reservation reservation, int totalAmount, String method, String status) {
+		this.id = id;
 		this.reservation = reservation;
 		this.totalAmount = totalAmount;
 		this.method = method;

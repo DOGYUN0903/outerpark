@@ -1,7 +1,10 @@
 package com.lockers.outerpark.domain.payment.controller;
 
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.bind.annotation.AuthenticationPrincipal;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,22 +24,29 @@ public class PaymentController {
 
 	private final PaymentService paymentService;
 
-	@PostMapping("/api/payments")
-	public ApiResponse<PaymentResponse> savePaymentHistory(@AuthenticationPrincipal UserDetails userDetails,
+	@PostMapping("/api/payments/reservations/{reservationId}")
+	public ResponseEntity<ApiResponse<PaymentResponse>> savePaymentHistory(
+		@AuthenticationPrincipal Long userId,
+		@PathVariable Long reservationId,
 		@RequestBody @Valid PaymentRequest paymentRequest) {
 
-		Long userId = 1L; //todo : user 정보 얻는 로직 추가 후 삭제 예정
-		return ApiResponse.success("Payments Create", paymentService.savePaymentHistory(paymentRequest, userId));
+		return new ResponseEntity<>(
+			ApiResponse.success("Payments Create",
+				paymentService.savePaymentHistory(paymentRequest, reservationId, userId)),
+			HttpStatus.CREATED);
 	}
 
-	@PostMapping("/api/payments/{paymentId}")
-	public ApiResponse<PaymentResponse> findOnePaymentHistory(@PathVariable Long paymentId) {
-		return ApiResponse.success("Payments Create", paymentService.findOnePaymentHistory(paymentId));
+	@GetMapping("/api/payments/{paymentId}")
+	public ResponseEntity<ApiResponse<PaymentResponse>> findOnePaymentHistory(@PathVariable Long paymentId) {
+		return new ResponseEntity<>(
+			ApiResponse.success("Payments Create", paymentService.findOnePaymentHistory(paymentId)), HttpStatus.OK);
 	}
 
-	@PostMapping("/api/payments/{paymentId}")
-	public ApiResponse<PaymentResponse> cancelPaymentHistory(@PathVariable Long paymentId) {
-		Long userId = 1L; //todo : user 정보 얻는 로직 추가 후 삭제 예정
-		return ApiResponse.success("Payments Create", paymentService.cancelPaymentHistory(paymentId, userId));
+	@PatchMapping("/api/payments/{paymentId}")
+	public ResponseEntity<ApiResponse<PaymentResponse>> cancelPaymentHistory(@AuthenticationPrincipal Long userId,
+		@PathVariable Long paymentId) {
+		return new ResponseEntity<>(
+			ApiResponse.success("Payments Create", paymentService.cancelPaymentHistory(paymentId, userId)),
+			HttpStatus.OK);
 	}
 }
