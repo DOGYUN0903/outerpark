@@ -1,5 +1,6 @@
 package com.lockers.outerpark.domain.seat.entity;
 
+
 import com.lockers.outerpark.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
