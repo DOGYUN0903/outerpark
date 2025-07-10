@@ -14,7 +14,6 @@ import com.lockers.outerpark.domain.concert.entity.Concert;
 import com.lockers.outerpark.domain.concert.exception.ConcertException;
 import com.lockers.outerpark.domain.concert.repository.ConcertRepository;
 import com.lockers.outerpark.domain.user.entity.User;
-import com.lockers.outerpark.domain.user.entity.UserRole;
 import com.lockers.outerpark.domain.user.exception.UserException;
 import com.lockers.outerpark.domain.user.service.UserService;
 
@@ -43,9 +42,6 @@ public class ConcertServiceImpl implements ConcertService {
     public RegisterConcertResponse registerConcert(Long userId, RegisterConcertRequest request) {
 
         User user = userService.getActiveUserById(userId);
-
-        if (!user.getUserRole().equals(UserRole.ADMIN))
-            throw new UserException.InvalidUserRoleException();
 
         Concert concert = Concert.of(user, request);
 
@@ -101,9 +97,9 @@ public class ConcertServiceImpl implements ConcertService {
             concert.updateLimitAge(request.getLimitAge());
         }
 
-        Concert updateConcert = concertRepository.save(concert);
+        // Concert updateConcert = concertRepository.save(concert);
 
-        return new UpdateConcertResponse(updateConcert);
+        return new UpdateConcertResponse(concert);
     }
 
     /**
@@ -172,5 +168,17 @@ public class ConcertServiceImpl implements ConcertService {
         // 공연 논리삭제
         concert.softDelete();
         concertRepository.save(concert);
+    }
+
+    @Transactional(readOnly = true)
+    public Concert getActiveConcert(Long concertId) {
+        Concert concert = concertRepository.findById(concertId)
+            .orElseThrow(ConcertException.ConcertNotFoundException::new);
+
+        if (concert.getIsDeleted()) {
+            throw new ConcertException.ConcertAlreadyDeletedException();
+        }
+
+        return concert;
     }
 }
