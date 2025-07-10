@@ -1,14 +1,18 @@
 package com.lockers.outerpark.domain.reservation.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.lockers.outerpark.domain.concert.entity.Concert;
+import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
 import com.lockers.outerpark.domain.user.entity.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -20,6 +24,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +38,7 @@ public class Reservation {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private final ReservationStatus status = ReservationStatus.CONFIRMED;
+	private ReservationStatus status = ReservationStatus.CONFIRMED;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -44,8 +49,8 @@ public class Reservation {
 	@JoinColumn(name = "concert_id", nullable = false)
 	private Concert concert;
 	// TODO: 중간테이블 엔티티와 매핑
-	// @OneToMany(mappedBy = "reservation_id", cascade = CascadeType.PERSIST)
-	// private List<ReservationSeat> reservationSeats = new ArrayList<>();
+	@OneToMany(mappedBy = "reservation_id", cascade = CascadeType.PERSIST)
+	private List<ReservationSeat> reservationSeats = new ArrayList<>();
 	@Column(nullable = false)
 	private int count;
 	@Column(nullable = false)
@@ -69,8 +74,8 @@ public class Reservation {
 	/**
 	 * 양방향 편의 관계 메서드
 	 */
-	// public void addReservationSeat(ReservationSeat reservationSeat) {
-	// 	reservationSeats.add(reservationSeat);
-	// 	reservationSeat.setReservation(this);
-	// }
+	public void addReservationSeat(ReservationSeat reservationSeat) {
+		reservationSeats.add(reservationSeat);
+		reservationSeat.setReservation(this);
+	}
 }

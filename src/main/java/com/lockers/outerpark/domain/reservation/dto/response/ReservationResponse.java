@@ -1,10 +1,14 @@
 package com.lockers.outerpark.domain.reservation.dto.response;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.lockers.outerpark.domain.concert.entity.Concert;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 import com.lockers.outerpark.domain.reservation.entity.ReservationStatus;
+import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
+import com.lockers.outerpark.domain.seat.entity.Seat;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -15,11 +19,11 @@ public class ReservationResponse {
 
 	private final Long reservationId;
 
-	private final Long seatId;
+	private final List<Long> seatId;
 
 	private final Long userId;
 
-	private final String reservationNumber;
+	private final List<String> reservationNumber;
 
 	private final ReservationStatus status;
 
@@ -31,20 +35,21 @@ public class ReservationResponse {
 
 	private final LocalDate cancelledAt;
 
-	public static ReservationResponse fromEntity(Reservation reservation, Concert concert) {
+	public static ReservationResponse fromEntity(Reservation reservation, Concert concert, List<Seat> seats) {
 		return ReservationResponse.builder()
 			.reservationId(reservation.getId())
-			.seatId(reservation.getSeat().getId())
+			.seatId(seats.stream().map(Seat::getId).collect(Collectors.toList()))
 			.userId(reservation.getUser().getId())
-			.reservationNumber(reservation.getReservationNumber())
+			.reservationNumber(
+				// TODO: N+1 생기는지 확인 (List이기때문에 N+1가능성있지만 savedReservation이기때문에 영속성 컨텍스트에서 가져온다면 문제없음)
+				reservation.getReservationSeats().stream().map(ReservationSeat::getReservationNumber).collect(
+					Collectors.toList()))
 			.status(reservation.getStatus())
 			.amount(reservation.getAmount())
 			.concertInfo(ConcertInfo.builder()
+				.id(concert.getId())
 				.title(concert.getTitle())
 				.performanceDate(concert.getPerformanceDate())
-				.runningTime(concert.getRunningTime())
-				.limitAge(concert.getLimitAge())
-				.price(concert.getPrice())
 				.build())
 			.reservedAt(reservation.getReservedAt())
 			.cancelledAt(reservation.getCancelledAt())

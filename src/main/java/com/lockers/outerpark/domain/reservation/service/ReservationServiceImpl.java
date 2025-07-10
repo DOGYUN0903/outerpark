@@ -8,10 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lockers.outerpark.domain.concert.entity.Concert;
+import com.lockers.outerpark.domain.concert.service.ConcertService;
 import com.lockers.outerpark.domain.reservation.dto.request.ReservationRequest;
 import com.lockers.outerpark.domain.reservation.dto.response.ReservationResponse;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 import com.lockers.outerpark.domain.reservation.repository.ReservationRepository;
+import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
+import com.lockers.outerpark.domain.seat.entity.Seat;
+import com.lockers.outerpark.domain.seat.service.SeatService;
 import com.lockers.outerpark.domain.user.entity.User;
 import com.lockers.outerpark.domain.user.service.UserService;
 
@@ -22,31 +26,41 @@ import lombok.RequiredArgsConstructor;
 public class ReservationServiceImpl implements ReservationService {
 
 	private final UserService userService;
+	private final ConcertService concertService;
+	private final SeatService seatService;
 	private final ReservationRepository reservationRepository;
 
 	@Override
 	@Transactional
 	public ReservationResponse createReservation(ReservationRequest request, Long userId, Long concertId) {
 		User user = userService.getActiveUserById(userId);
+		// TODO: seat, concert 수정
+		Concert concert = new Concert();
 		List<Long> seatIds = request.getSeatIds();
-		List<Integer> seatNumbers = new ArrayList<>();
+		List<Seat> seats = new ArrayList<>();
 
-		// for (Long seatId : seatIds) {
-		// 	seatNumbers.add(seat.getSeatNumber());
-		// 	seatService.reserveSeat(seatId);
-		// 	String reservationNumber = CreateReservationNumber(concert, seat.getSeatNumber());
-		// 	Reservation reservation = new Reservation(user, seat, reservationNumber,
-		// 		request.getAmount() / seatIds.size());
-		// }
+		for (Long seatId : seatIds) {
+			seats.add(new Seat());
+		}
 
-		// ReservationResponse.fromEntity(savedReservation, concert);
+		Reservation reservation = new Reservation(user, concert, seatIds.size(), concert.getPrice() * seatIds.size());
 
-		return null;
+		// TODO: Seat 엔티티 객체 가져오는 메서드 필요
+		for (Seat seat : seats) {
+			String reservationNumber = createReservationNumber(concert, seat.getSeatNumber());
+			ReservationSeat reservationSeat = new ReservationSeat(reservation, seat, reservationNumber);
+
+			reservation.addReservationSeat(reservationSeat);
+		}
+
+		Reservation savedReservation = reservationRepository.save(reservation);
+
+		return ReservationResponse.fromEntity(savedReservation, concert, seats);
 	}
 
 	@Override
 	public void cancelReservation(Long reservationId) {
-
+		
 	}
 
 	@Override
@@ -63,7 +77,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	public Reservation findReservationById(Long reservationId) {
-		return reservationRepository.findById(reservationId).orElseThrow();
+		return reservationRepository.findById(reservationId).orElseThrow(() -> new RuntimeException());
 	}
 
 	/**
