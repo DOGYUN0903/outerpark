@@ -96,9 +96,14 @@ public class SeatServiceImpl implements SeatService {
 			})
 			.toList();
 
+		int totalSeats = seatResponses.size();
+		int reservedSeats = (int)seatResponses.stream().filter(
+			seat -> "PENDING".equals(seat.getStatus()) || "CONFIRMED".equals(seat.getStatus())).count();
+		int availableSeats = totalSeats - reservedSeats;
+
 		log.info("콘서트 {}의 좌석 현황 조회 완료: 총 {}석", concertId, seats.size());
 
-		return SeatsStatusResponse.ofWithStatus(concertId, seatResponses);
+		return SeatsStatusResponse.of(concertId, totalSeats, availableSeats, reservedSeats, seatResponses);
 	}
 
 	@Override
