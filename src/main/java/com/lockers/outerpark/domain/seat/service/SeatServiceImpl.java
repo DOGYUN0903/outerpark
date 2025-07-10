@@ -37,15 +37,7 @@ public class SeatServiceImpl implements SeatService {
 			throw new SeatException.SeatNotFoundException();
 		}
 
-		Optional<ReservationSeat> activeReservation =
-			reservationSeatRepository.findActiveBySeatIdAndConcertId(seatId, concertId);
-
-		if (activeReservation.isEmpty()) {
-			return true;
-		}
-
-		ReservationStatus status = activeReservation.get().getReservation().getStatus();
-		return status == ReservationStatus.CANCELLED;
+		return !reservationSeatRepository.existsActiveBySeatIdAndConcertId(seatId, concertId);
 	}
 
 	@Override
@@ -79,30 +71,34 @@ public class SeatServiceImpl implements SeatService {
 	@Override
 	@Transactional(readOnly = true)
 	public SeatsStatusResponse getSeatsForConcert(Long concertId) {
-		List<Seat> seats = seatRepository.findByConcertIdAndIsDeletedFalseOrderBySeatNumber(concertId);
+		List<Seat> allSeats = seatRepository.findAllActiveSeatsOrderBySeatNumber();
 
 		// DTO Projection을 활용한 성능 최적화
-		List<SeatStatusDto> seatStatusList = reservationSeatRepository.findSeatStatusByConcertId(concertId);
-		Map<Long, String> seatStatusMap = seatStatusList.stream()
+		List<SeatStatusDto> reservedSeatsStatus = reservationSeatRepository.findSeatStatusByConcertId(concertId);
+		Map<Long, String> seatStatusMap = reservedSeatsStatus.stream()
 			.collect(Collectors.toMap(
 				SeatStatusDto::getSeatId,
 				SeatStatusDto::getDisplayStatus,
 				(existing, replacement) -> existing
 			));
 
-		List<SeatResponse> seatResponses = seats.stream()
+		// 전체 좌석에 예약 상태 매핑
+		List<SeatResponse> seatResponses = allSeats.stream()
 			.map(seat -> {
 				String status = seatStatusMap.get(seat.getId());
 				return SeatResponse.fromEntityWithStatus(seat, status);
 			})
 			.toList();
 
+		// 통계 계산
 		int totalSeats = seatResponses.size();
-		int reservedSeats = (int)seatResponses.stream().filter(
-			seat -> "PENDING".equals(seat.getStatus()) || "CONFIRMED".equals(seat.getStatus())).count();
+		int reservedSeats = (int)seatResponses.stream()
+			.filter(seat -> "PENDING".equals(seat.getStatus()) || "CONFIRMED".equals(seat.getStatus()))
+			.count();
 		int availableSeats = totalSeats - reservedSeats;
 
-		log.info("콘서트 {}의 좌석 현황 조회 완료: 총 {}석", concertId, seats.size());
+		log.info("콘서트 {}의 좌석 현황: 총 {}석, 예약 가능 {}석, 예약됨 {}석",
+			concertId, totalSeats, availableSeats, reservedSeats);
 
 		return SeatsStatusResponse.of(concertId, totalSeats, availableSeats, reservedSeats, seatResponses);
 	}
@@ -113,9 +109,9 @@ public class SeatServiceImpl implements SeatService {
 		Seat seat = seatRepository.findByIdAndIsDeletedFalse(seatId)
 			.orElseThrow(SeatException.SeatNotFoundException::new);
 
-		// 콘서트 ID 검증
-		if (!seat.getConcert().getId().equals(concertId)) {
-			log.warn("좌석 {}이 콘서트 {}에 속하지 않음", seatId, concertId);
+		// 좌석 예약 가능성 검증
+		if (!isAvailable(seatId, concertId)) {
+			log.warn("좌석 {}은 콘서트 {}에서 이미 예약됨", seatId, concertId);
 			throw new SeatException.SeatNotFoundException();
 		}
 

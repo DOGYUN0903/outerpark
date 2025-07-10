@@ -1,14 +1,26 @@
 package com.lockers.outerpark.domain.seat.dto.response;
 
-import lombok.AllArgsConstructor;
+import com.lockers.outerpark.domain.reservation.entity.ReservationStatus;
+
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class SeatStatusDto {
 	private Long seatId;
-	private int seatNumber;
+	private String seatNumber;
 	private String reservationStatus;
+
+	public SeatStatusDto(Long seatId, String seatNumber, String reservationStatus) {
+		this.seatId = seatId;
+		this.seatNumber = seatNumber;
+		this.reservationStatus = reservationStatus;
+	}
+
+	public SeatStatusDto(Long seatId, String seatNumber, ReservationStatus reservationStatus) {
+		this.seatId = seatId;
+		this.seatNumber = seatNumber;
+		this.reservationStatus = reservationStatus != null ? reservationStatus.name() : null;
+	}
 
 	public String getDisplayStatus() {
 		if (reservationStatus == null || "CANCELLED".equals(reservationStatus)) {

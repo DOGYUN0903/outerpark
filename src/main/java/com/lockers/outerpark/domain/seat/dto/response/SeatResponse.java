@@ -9,7 +9,7 @@ import lombok.Getter;
 @Builder
 public class SeatResponse {
 	private Long seatId;
-	private int seatNumber;
+	private String seatNumber;
 	private String status;
 
 	/**

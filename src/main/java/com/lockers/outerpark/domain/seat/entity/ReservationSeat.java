@@ -3,7 +3,6 @@ package com.lockers.outerpark.domain.seat.entity;
 import com.lockers.outerpark.common.entity.BaseEntity;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -35,12 +34,12 @@ public class ReservationSeat extends BaseEntity {
 	@JoinColumn(name = "seat_id", nullable = false)
 	private Seat seat;
 
-	@Column(nullable = false)
-	private String reservationNumber;
-
-	public ReservationSeat(Reservation reservation, Seat seat, String reservationNumber) {
+	/**
+	 * 예약과 좌석을 연결하는 ReservationSeat 생성
+	 */
+	public ReservationSeat(Reservation reservation, Seat seat) {
 		this.reservation = reservation;
 		this.seat = seat;
-		this.reservationNumber = reservationNumber;
 	}
+	
 }

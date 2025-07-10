@@ -18,21 +18,34 @@ public interface ReservationSeatRepository extends JpaRepository<ReservationSeat
 	@Query("SELECT rs FROM ReservationSeat rs " +
 		"JOIN FETCH rs.reservation r " +
 		"WHERE rs.seat.id = :seatId " +
-		"AND rs.seat.concert.id = :concertId " +
-		"AND rs.isDeleted = false")
+		"AND r.concert.id = :concertId " +
+		"AND rs.isDeleted = false " +
+		"AND r.status != 'CANCELLED'")
 	Optional<ReservationSeat> findActiveBySeatIdAndConcertId(@Param("seatId") Long seatId,
 		@Param("concertId") Long concertId);
 
 	/**
 	 * DTO Projection을 활용한 성능 최적화 쿼리 (콘서트, 좌석, 예매 상태만 조회)
 	 */
-	@Query("SELECT new com.lockers.outerpark.domain.seat.dto.response.SeatStatusDto(" +
-		"s.id, s.seatNumber, r.status) " +
-		"FROM ReservationSeat rs " +
-		"JOIN rs.seat s " +
-		"JOIN rs.reservation r " +
-		"WHERE s.concert.id = :concertId " +
-		"AND r.status != 'CANCELLED' " +
-		"AND rs.isDeleted = false")
+	@Query("SELECT new com.lockers.outerpark.domain.seat.dto.response.SeatStatusDto("
+		+ "s.id, s.seatNumber, r.status) "
+		+ "FROM ReservationSeat rs "
+		+ "JOIN rs.seat s "
+		+ "JOIN rs.reservation r "
+		+ "WHERE r.concert.id = :concertId "
+		+ "AND r.status != 'CANCELLED' "
+		+ "AND rs.isDeleted = false")
 	List<SeatStatusDto> findSeatStatusByConcertId(@Param("concertId") Long concertId);
+
+	/**
+	 * 특정 콘서트에서 특정 좌석의 활성 예약 존재 여부 확인
+	 */
+	@Query("SELECT COUNT(rs) > 0 FROM ReservationSeat rs " +
+		"JOIN rs.reservation r " +
+		"WHERE rs.seat.id = :seatId " +
+		"AND r.concert.id = :concertId " +
+		"AND rs.isDeleted = false " +
+		"AND r.status IN ('PENDING', 'CONFIRMED')")
+	boolean existsActiveBySeatIdAndConcertId(@Param("seatId") Long seatId,
+		@Param("concertId") Long concertId);
 }
