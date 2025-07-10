@@ -19,7 +19,6 @@ public class UserReservationResponse {
 
 	private final SeatsInfo seatsInfo;
 
-	// TODO: N+1 해결하기
 	public static UserReservationResponse fromEntity(Reservation reservation) {
 		return UserReservationResponse.builder()
 			.reservationId(reservation.getId())
@@ -27,7 +26,7 @@ public class UserReservationResponse {
 				reservation.getConcert().getId(),
 				reservation.getConcert().getTitle(),
 				reservation.getConcert().getPerformanceDate()))
-			.totalAmount(reservation.getAmount())
+			.totalAmount(reservation.getTotalAmount())
 			.seatsInfo(new SeatsInfo(
 				reservation.getReservationSeats().stream()
 					.map(rs -> rs.getSeat().getId())

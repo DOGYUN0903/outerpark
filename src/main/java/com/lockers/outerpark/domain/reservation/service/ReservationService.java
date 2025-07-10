@@ -43,6 +43,4 @@ public interface ReservationService {
 	 * @return Reservation 엔티티 객체
 	 */
 	Reservation findReservationById(Long reservationId);
-
-	ReservationResponse getConcertReservations(Long userId, Long concertId);
 }

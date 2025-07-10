@@ -52,8 +52,8 @@ public class Reservation {
 	private List<ReservationSeat> reservationSeats = new ArrayList<>();
 	@Column(nullable = false)
 	private int count;
-	@Column(nullable = false)
-	private int amount;
+	@Column(nullable = false, name = "total_amount")
+	private int totalAmount;
 
 	@CreatedDate
 	@Column(name = "reserved_at")
@@ -63,11 +63,11 @@ public class Reservation {
 	@Column(name = "cancelled_at")
 	private LocalDate cancelledAt;
 
-	public Reservation(User user, Concert concert, int count, int amount) {
+	public Reservation(User user, Concert concert, int count, int totalAmount) {
 		this.user = user;
 		this.concert = concert;
 		this.count = count;
-		this.amount = amount;
+		this.totalAmount = totalAmount;
 	}
 
 	/**

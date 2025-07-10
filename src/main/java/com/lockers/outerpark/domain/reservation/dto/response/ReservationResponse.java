@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 import com.lockers.outerpark.domain.reservation.entity.ReservationStatus;
 import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
-import com.lockers.outerpark.domain.seat.entity.Seat;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -18,15 +17,17 @@ public class ReservationResponse {
 
 	private final Long reservationId;
 
-	private final List<Long> seatId;
+	private final List<Long> seatIds;
 
 	private final Long userId;
 
-	private final List<String> reservationNumber;
+	private final List<String> reservationNumbers;
+
+	private final int count;
 
 	private final ReservationStatus status;
 
-	private final int amount;
+	private final int totalAmount;
 
 	private final ConcertInfo concertInfo;
 
@@ -34,17 +35,19 @@ public class ReservationResponse {
 
 	private final LocalDate cancelledAt;
 
-	public static ReservationResponse fromEntity(Reservation reservation, List<Seat> seats) {
+	public static ReservationResponse fromEntity(Reservation reservation) {
 		return ReservationResponse.builder()
 			.reservationId(reservation.getId())
-			.seatId(seats.stream().map(Seat::getId).collect(Collectors.toList()))
+			.seatIds(
+				reservation.getReservationSeats().stream().map(rs -> rs.getSeat().getId()).collect(Collectors.toList()))
 			.userId(reservation.getUser().getId())
-			.reservationNumber(
-				// TODO: N+1 생기는지 확인 (List이기때문에 N+1가능성있지만 savedReservation이기때문에 영속성 컨텍스트에서 가져온다면 문제없음)
+			.reservationNumbers(
+				// TODO: N+1 생기는지 확인 (List는 N+1가능성있지만 savedReservation 이기때문에 영속성 컨텍스트에서 가져온다면 문제없음)
 				reservation.getReservationSeats().stream().map(ReservationSeat::getReservationNumber).collect(
 					Collectors.toList()))
+			.count(reservation.getCount())
 			.status(reservation.getStatus())
-			.amount(reservation.getAmount())
+			.totalAmount(reservation.getTotalAmount())
 			.concertInfo(new ConcertInfo(reservation.getConcert().getId(), reservation.getConcert().getTitle(),
 				reservation.getConcert().getPerformanceDate()))
 			.reservedAt(reservation.getReservedAt())

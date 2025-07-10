@@ -1,6 +1,5 @@
 package com.lockers.outerpark.domain.reservation.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -15,6 +14,8 @@ import com.lockers.outerpark.domain.reservation.dto.response.ReservationResponse
 import com.lockers.outerpark.domain.reservation.dto.response.UserReservationResponse;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 import com.lockers.outerpark.domain.reservation.entity.ReservationStatus;
+import com.lockers.outerpark.domain.reservation.exception.ReservationErrorCode;
+import com.lockers.outerpark.domain.reservation.exception.ReservationException;
 import com.lockers.outerpark.domain.reservation.repository.ReservationRepository;
 import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
 import com.lockers.outerpark.domain.seat.entity.Seat;
@@ -37,31 +38,23 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional
 	public ReservationResponse createReservation(ReservationRequest request, Long userId, Long concertId) {
 		User user = userService.getActiveUserById(userId);
-		// TODO: seat, concert 수정
 		Concert concert = concertService.getActiveConcert(concertId);
-		List<Long> seatIds = request.getSeatIds();
-		List<Seat> seats = new ArrayList<>();
+		List<Seat> seats = seatService.getSeatsForReservation(request.getSeatIds());
 
-		for (Long seatId : seatIds) {
-			seats.add(new Seat());
-		}
+		Reservation reservation = new Reservation(user, concert, seats.size(),
+			concert.getPrice() * seats.size());
 
-		Reservation reservation = new Reservation(user, concert, seatIds.size(),
-			concert.getPrice() * seatIds.size());
-
-		// TODO: Seat 엔티티 객체 가져오는 메서드 필요
 		Reservation savedReservation = reservationRepository.save(
 			reservationAddReservationSeats(seats, reservation, concert));
 
-		return ReservationResponse.fromEntity(savedReservation, seats);
+		return ReservationResponse.fromEntity(savedReservation);
 	}
 
 	@Override
 	@Transactional
 	public void cancelReservation(Long reservationId) {
-		// TODO: 커스텀 예외 처리 추가
 		Reservation reservation = reservationRepository.findByIdAndStatusNot(reservationId, ReservationStatus.CANCELLED)
-			.orElseThrow(() -> new RuntimeException());
+			.orElseThrow(() -> new ReservationException(ReservationErrorCode.NOT_FOUND));
 
 		reservation.cancel();
 	}
@@ -70,7 +63,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Transactional
 	public void confirmReservation(Long reservationId) {
 		Reservation reservation = reservationRepository.findByIdAndStatus(reservationId, ReservationStatus.PENDING)
-			.orElseThrow(() -> new RuntimeException());
+			.orElseThrow(() -> new ReservationException(ReservationErrorCode.NOT_FOUND));
 
 		reservation.confirm();
 	}
@@ -93,13 +86,8 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	@Transactional(readOnly = true)
 	public Reservation findReservationById(Long reservationId) {
-		return reservationRepository.findById(reservationId).orElseThrow(() -> new RuntimeException());
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public ReservationResponse getConcertReservations(Long userId, Long concertId) {
-		return null;
+		return reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationException(ReservationErrorCode.NOT_FOUND));
 	}
 
 	/**

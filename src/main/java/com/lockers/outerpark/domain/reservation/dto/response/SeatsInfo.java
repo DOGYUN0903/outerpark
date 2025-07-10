@@ -5,14 +5,14 @@ import java.util.List;
 import lombok.Getter;
 
 @Getter
-public class SeatsInfo {
+class SeatsInfo {
 
-	private final List<Long> seatId;
+	private final List<Long> seatIds;
 
-	private final List<String> seatNumber;
+	private final List<String> seatNumbers;
 
-	public SeatsInfo(List<Long> seatId, List<String> seatNumber) {
-		this.seatId = seatId;
-		this.seatNumber = seatNumber;
+	public SeatsInfo(List<Long> seatIds, List<String> seatNumbers) {
+		this.seatIds = seatIds;
+		this.seatNumbers = seatNumbers;
 	}
 }
