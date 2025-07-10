@@ -77,7 +77,7 @@ public class ConcertServiceImpl implements ConcertService {
             throw new ConcertException.ConcertAlreadyDeletedException();
 
         // 각 필드가 null이 아닌 경우에만 업데이트 수행
-        if (request.getTitle() != null) {
+        if (!request.getTitle().isBlank()) {
             concert.updateTitle(request.getTitle());
         }
 
@@ -96,8 +96,6 @@ public class ConcertServiceImpl implements ConcertService {
         if (request.getLimitAge() != null) {
             concert.updateLimitAge(request.getLimitAge());
         }
-
-        // Concert updateConcert = concertRepository.save(concert);
 
         return new UpdateConcertResponse(concert);
     }
@@ -122,7 +120,7 @@ public class ConcertServiceImpl implements ConcertService {
         if (concert.getIsDeleted())
             throw new ConcertException.ConcertAlreadyDeletedException();
 
-        return new FindConcertResponse(concert);
+        return FindConcertResponse.of(concert);
     }
 
     /**
@@ -138,7 +136,7 @@ public class ConcertServiceImpl implements ConcertService {
     public Page<FindConcertResponse> findConcerts(Pageable pageable) {
         Page<Concert> concerts = concertRepository.findAllByIsDeletedFalse(pageable);
 
-        return concerts.map(FindConcertResponse::new);
+        return concerts.map(FindConcertResponse::of);
     }
 
     /**
@@ -167,7 +165,6 @@ public class ConcertServiceImpl implements ConcertService {
 
         // 공연 논리삭제
         concert.softDelete();
-        concertRepository.save(concert);
     }
 
     @Transactional(readOnly = true)
