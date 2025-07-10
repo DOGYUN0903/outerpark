@@ -1,6 +1,6 @@
 package com.lockers.outerpark.domain.reservation.dto.response;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import lombok.Getter;
 
@@ -11,9 +11,9 @@ class ConcertInfo {
 
 	private String title;
 
-	private LocalDateTime performanceDate;
+	private LocalDate performanceDate;
 
-	public ConcertInfo(Long id, String title, LocalDateTime performanceDate) {
+	public ConcertInfo(Long id, String title, LocalDate performanceDate) {
 		this.id = id;
 		this.title = title;
 		this.performanceDate = performanceDate;
