@@ -49,7 +49,7 @@ public class Reservation {
 	@JoinColumn(name = "concert_id", nullable = false)
 	private Concert concert;
 	// TODO: 중간테이블 엔티티와 매핑
-	@OneToMany(mappedBy = "reservation_id", cascade = CascadeType.PERSIST)
+	@OneToMany(mappedBy = "reservation", cascade = CascadeType.PERSIST)
 	private List<ReservationSeat> reservationSeats = new ArrayList<>();
 	@Column(nullable = false)
 	private int count;

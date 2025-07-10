@@ -77,6 +77,11 @@ public class ReservationServiceImpl implements ReservationService {
 		reservation.confirm();
 	}
 
+	// @Override
+	// public void userReservations(Long userId, Pageable pageable) {
+	// 	Page<Reservation> userReservations = reservationRepository.findByUserId(userId, pageable);
+	// }
+
 	@Override
 	public ReservationResponse getUserReservation(Pageable pageable, Long userId) {
 		return null;
@@ -92,6 +97,11 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public Reservation findReservationById(Long reservationId) {
 		return reservationRepository.findById(reservationId).orElseThrow(() -> new RuntimeException());
+	}
+
+	@Override
+	public ReservationResponse getConcertReservations(Long userId, Long concertId) {
+		return null;
 	}
 
 	/**

@@ -46,11 +46,7 @@ public class ReservationResponse {
 					Collectors.toList()))
 			.status(reservation.getStatus())
 			.amount(reservation.getAmount())
-			.concertInfo(ConcertInfo.builder()
-				.id(concert.getId())
-				.title(concert.getTitle())
-				.performanceDate(concert.getPerformanceDate())
-				.build())
+			.concertInfo(new ConcertInfo(concert.getId(), concert.getTitle(), concert.getPerformanceDate()))
 			.reservedAt(reservation.getReservedAt())
 			.cancelledAt(reservation.getCancelledAt())
 			.build();
