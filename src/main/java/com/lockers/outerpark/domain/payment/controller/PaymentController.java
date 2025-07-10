@@ -31,7 +31,7 @@ public class PaymentController {
 		@RequestBody @Valid PaymentRequest paymentRequest) {
 
 		return new ResponseEntity<>(
-			ApiResponse.success("Payments Create",
+			ApiResponse.success("결제 내역이 생성 되었습니다.",
 				paymentService.savePaymentHistory(paymentRequest, reservationId, userId)),
 			HttpStatus.CREATED);
 	}
@@ -39,14 +39,14 @@ public class PaymentController {
 	@GetMapping("/api/payments/{paymentId}")
 	public ResponseEntity<ApiResponse<PaymentResponse>> findOnePaymentHistory(@PathVariable Long paymentId) {
 		return new ResponseEntity<>(
-			ApiResponse.success("Payments Create", paymentService.findOnePaymentHistory(paymentId)), HttpStatus.OK);
+			ApiResponse.success("결제 내역이 조회 되었습니다.", paymentService.findOnePaymentHistory(paymentId)), HttpStatus.OK);
 	}
 
 	@PatchMapping("/api/payments/{paymentId}")
 	public ResponseEntity<ApiResponse<PaymentResponse>> cancelPaymentHistory(@AuthenticationPrincipal Long userId,
 		@PathVariable Long paymentId) {
 		return new ResponseEntity<>(
-			ApiResponse.success("Payments Create", paymentService.cancelPaymentHistory(paymentId, userId)),
+			ApiResponse.success("결제 취소가 완료 되었습니다.", paymentService.cancelPaymentHistory(paymentId, userId)),
 			HttpStatus.OK);
 	}
 }
