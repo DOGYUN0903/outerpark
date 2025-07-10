@@ -12,6 +12,7 @@ import com.lockers.outerpark.domain.concert.service.ConcertService;
 import com.lockers.outerpark.domain.reservation.dto.request.ReservationRequest;
 import com.lockers.outerpark.domain.reservation.dto.response.ReservationResponse;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
+import com.lockers.outerpark.domain.reservation.entity.ReservationStatus;
 import com.lockers.outerpark.domain.reservation.repository.ReservationRepository;
 import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
 import com.lockers.outerpark.domain.seat.entity.Seat;
@@ -59,8 +60,21 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
+	@Transactional
 	public void cancelReservation(Long reservationId) {
-		
+		Reservation reservation = reservationRepository.findByIdAndStatusNot(reservationId, ReservationStatus.CANCELLED)
+			.orElseThrow(() -> new RuntimeException());
+
+		reservation.cancel();
+	}
+
+	@Transactional
+	@Override
+	public void confirmReservation(Long reservationId) {
+		Reservation reservation = reservationRepository.findByIdAndStatus(reservationId, ReservationStatus.PENDING)
+			.orElseThrow(() -> new RuntimeException());
+
+		reservation.confirm();
 	}
 
 	@Override

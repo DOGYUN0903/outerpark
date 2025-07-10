@@ -10,7 +10,17 @@ public interface ReservationService {
 
 	ReservationResponse createReservation(ReservationRequest request, Long userId, Long concertId);
 
+	/**
+	 * 결제 실패또는 예매를 취소할 때, 예매의 status를 CANCELLED로 변경하는 메서드
+	 * @param reservationId 예매 ID
+	 */
 	void cancelReservation(Long reservationId);
+
+	/**
+	 * 결제가 성공적으로 완료 후, 예매의 status를 CONFIRMED로 변경하는 메서드
+	 * @param reservationId 예매 ID
+	 */
+	void confirmReservation(Long reservationId);
 
 	ReservationResponse getUserReservation(Pageable pageable, Long id);
 

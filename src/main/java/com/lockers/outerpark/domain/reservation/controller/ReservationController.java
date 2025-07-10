@@ -3,6 +3,7 @@ package com.lockers.outerpark.domain.reservation.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +29,15 @@ public class ReservationController {
 	public ResponseEntity<ApiResponse<ReservationResponse>> createReservation(
 		@Valid @RequestBody ReservationRequest request, @AuthenticationPrincipal Long userId,
 		@PathVariable Long concertId) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(
-			ApiResponse.success("예매에 성공하였습니다.", reservationService.createReservation(request, userId, concertId)));
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(
+				ApiResponse.success("예매에 성공하였습니다.", reservationService.createReservation(request, userId, concertId)));
+	}
+
+	@DeleteMapping("/{reservationId}")
+	public ResponseEntity<ApiResponse<Void>> cancelReservation(@PathVariable Long reservationId) {
+		reservationService.cancelReservation(reservationId);
+
+		return ResponseEntity.ok(ApiResponse.success("예매를 취소하였습니다.", null));
 	}
 }

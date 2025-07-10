@@ -38,7 +38,7 @@ public class Reservation {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private ReservationStatus status = ReservationStatus.CONFIRMED;
+	private ReservationStatus status = ReservationStatus.PENDING;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -77,5 +77,19 @@ public class Reservation {
 	public void addReservationSeat(ReservationSeat reservationSeat) {
 		reservationSeats.add(reservationSeat);
 		reservationSeat.setReservation(this);
+	}
+
+	/**
+	 * 예약 상태 CONFIRMED로 변경
+	 */
+	public void confirm() {
+		this.status = ReservationStatus.CONFIRMED;
+	}
+
+	/**
+	 * 예약 상태 CANCELLED로 변경
+	 */
+	public void cancel() {
+		this.status = ReservationStatus.CANCELLED;
 	}
 }
