@@ -1,20 +1,21 @@
 package com.lockers.outerpark.common.jwt;
 
-import com.lockers.outerpark.common.jwt.exception.InvalidTokenException;
-import com.lockers.outerpark.domain.user.entity.User;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import com.lockers.outerpark.domain.auth.exception.AuthException;
 import com.lockers.outerpark.domain.user.entity.UserRole;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.Date;
 
 @Component
 public class JwtUtil {
@@ -36,27 +37,27 @@ public class JwtUtil {
         Date date = new Date();
 
         return BEARER_PREFIX +
-                Jwts.builder()
-                        .setSubject(String.valueOf(userId))
-                        .claim("userRole", userRole)
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME))
-                        .setIssuedAt(date) // 발급일
-                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+            Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .claim("userRole", userRole)
+                .setExpiration(new Date(date.getTime() + TOKEN_TIME))
+                .setIssuedAt(date) // 발급일
+                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                .compact();
     }
 
     public String substringToken(String tokenValue) {
         if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
             return tokenValue.substring(7);
         }
-        throw new InvalidTokenException();
+        throw new AuthException.InvalidTokenException();
     }
 
     public Claims extractClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
     }
 }
