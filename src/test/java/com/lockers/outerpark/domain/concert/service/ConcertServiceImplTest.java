@@ -241,12 +241,12 @@ class ConcertServiceImplTest {
 
         //then
         assertNotNull(findConcertResponse);
-        assertEquals("제목", findConcertResponse.getTitle());
-        assertEquals(180, findConcertResponse.getRunningTime());
-        assertEquals(75000, findConcertResponse.getPrice());
-        assertEquals(19, findConcertResponse.getLimitAge());
-        assertEquals(LocalDate.parse("2025-07-09"), findConcertResponse.getPerformanceDate());
-        assertEquals(user.getNickname(), findConcertResponse.getWriter().getNickname());
+        assertEquals("제목", findConcertResponse.title());
+        assertEquals(180, findConcertResponse.runningTime());
+        assertEquals(75000, findConcertResponse.price());
+        assertEquals(19, findConcertResponse.limitAge());
+        assertEquals(LocalDate.parse("2025-07-09"), findConcertResponse.performanceDate());
+        assertEquals(user.getNickname(), findConcertResponse.writer().getNickname());
     }
 
     @Test
@@ -335,16 +335,16 @@ class ConcertServiceImplTest {
         assertEquals(2, concerts.getContent().size());
 
         FindConcertResponse first = concerts.getContent().get(0);
-        assertEquals("제목1", first.getTitle());
-        assertEquals(180, first.getRunningTime());
-        assertEquals(75000, first.getPrice());
-        assertEquals("닉네임", first.getWriter().getNickname());
+        assertEquals("제목1", first.title());
+        assertEquals(180, first.runningTime());
+        assertEquals(75000, first.price());
+        assertEquals("닉네임", first.writer().getNickname());
 
         FindConcertResponse second = concerts.getContent().get(1);
-        assertEquals("제목2", second.getTitle());
-        assertEquals(200, second.getRunningTime());
-        assertEquals(65000, second.getPrice());
-        assertEquals("닉네임", second.getWriter().getNickname());
+        assertEquals("제목2", second.title());
+        assertEquals(200, second.runningTime());
+        assertEquals(65000, second.price());
+        assertEquals("닉네임", second.writer().getNickname());
 
         verify(concertRepository).findAllByIsDeletedFalse(pageable);
     }
