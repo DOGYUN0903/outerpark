@@ -3,7 +3,6 @@ package com.lockers.outerpark.domain.reservation.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,14 +46,8 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = new Reservation(user, concert, seatIds.size(), concert.getPrice() * seatIds.size());
 
 		// TODO: Seat 엔티티 객체 가져오는 메서드 필요
-		for (Seat seat : seats) {
-			String reservationNumber = createReservationNumber(concert, seat.getSeatNumber());
-			ReservationSeat reservationSeat = new ReservationSeat(reservation, seat, reservationNumber);
-
-			reservation.addReservationSeat(reservationSeat);
-		}
-
-		Reservation savedReservation = reservationRepository.save(reservation);
+		Reservation savedReservation = reservationRepository.save(
+			reservationAddReservationSeats(seats, reservation, concert));
 
 		return ReservationResponse.fromEntity(savedReservation, concert, seats);
 	}
@@ -62,6 +55,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	@Transactional
 	public void cancelReservation(Long reservationId) {
+		// TODO: 커스텀 예외 처리 추가
 		Reservation reservation = reservationRepository.findByIdAndStatusNot(reservationId, ReservationStatus.CANCELLED)
 			.orElseThrow(() -> new RuntimeException());
 
@@ -78,14 +72,9 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	// @Override
-	// public void userReservations(Long userId, Pageable pageable) {
+	// public void getUserReservations(Long userId, Pageable pageable) {
 	// 	Page<Reservation> userReservations = reservationRepository.findByUserId(userId, pageable);
 	// }
-
-	@Override
-	public ReservationResponse getUserReservation(Pageable pageable, Long userId) {
-		return null;
-	}
 
 	@Override
 	public boolean existsReservation(Long reservationId) {
@@ -107,6 +96,17 @@ public class ReservationServiceImpl implements ReservationService {
 	/**
 	 * private 메서드
 	 */
+	private Reservation reservationAddReservationSeats(List<Seat> seats, Reservation reservation, Concert concert) {
+		for (Seat seat : seats) {
+			String reservationNumber = createReservationNumber(concert, seat.getSeatNumber());
+			ReservationSeat reservationSeat = new ReservationSeat(reservation, seat, reservationNumber);
+
+			reservation.addReservationSeat(reservationSeat);
+		}
+
+		return reservation;
+	}
+
 	private String createReservationNumber(Concert concert, int seatNumber) {
 		return "T" + String.format("%04d", concert.getId()) + String.format("%02d",
 			concert.getPerformanceDate().getDayOfMonth()) + String.format("%03d", seatNumber);
