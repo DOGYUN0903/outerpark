@@ -9,14 +9,28 @@ import lombok.Getter;
 @Builder
 public class SeatResponse {
 	private Long seatId;
-	private int seatNumber;
-	private Boolean isReserved;
+	private String seatNumber;
+	private String status;
 
+	/**
+	 * Seat 엔티티로부터 SeatResponse 생성
+	 */
 	public static SeatResponse fromEntity(Seat seat) {
 		return SeatResponse.builder()
 			.seatId(seat.getId())
 			.seatNumber(seat.getSeatNumber())
-			.isReserved(seat.getIsReserved())
+			.status("AVAILABLE")
+			.build();
+	}
+
+	/**
+	 * 좌석 상태와 함께 SeatResponse 생성
+	 */
+	public static SeatResponse fromEntityWithStatus(Seat seat, String status) {
+		return SeatResponse.builder()
+			.seatId(seat.getId())
+			.seatNumber(seat.getSeatNumber())
+			.status(status)
 			.build();
 	}
 }

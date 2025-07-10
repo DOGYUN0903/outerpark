@@ -1,14 +1,28 @@
 package com.lockers.outerpark.domain.reservation.entity;
 
-import com.lockers.outerpark.domain.user.entity.User;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.time.LocalDate;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
+import com.lockers.outerpark.domain.concert.entity.Concert;
+import com.lockers.outerpark.domain.user.entity.User;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "reservations")
@@ -17,39 +31,48 @@ import java.time.LocalDate;
 @EntityListeners(AuditingEntityListener.class)
 public class Reservation {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id", nullable = false)
+	private User user;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "seat_id", nullable = false)
-//    private Seat seat;
+	//    @OneToOne(fetch = FetchType.LAZY)
+	//    @JoinColumn(name = "seat_id", nullable = false)
+	//    private Seat seat;
 
-    @Column(name = "reservation_number", nullable = false)
-    private String reservationNumber;
+	/**
+	 * 임시 concertId 필드 (ERD의 concert_id 컬럼)
+	 * TODO: 향후 Concert 엔티티 완성 후 @ManyToOne 관계로 변경
+	 */
+	@ManyToOne
+	@JoinColumn(name = "concert_id", nullable = false)
+	private Concert concert;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ReservationStatus status = ReservationStatus.CONFIRMED;
+	@Column(name = "reservation_number", nullable = false)
+	private String reservationNumber;
 
-    @Column(nullable = false)
-    private int amount;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private ReservationStatus status = ReservationStatus.CONFIRMED;
 
-    @CreatedDate
-    @Column(name = "reserved_at")
-    private LocalDate reservedAt;
+	@Column(nullable = false)
+	private int amount;
 
-    @LastModifiedDate
-    @Column(name = "cancelled_at")
-    private LocalDate cancelledAt;
+	@CreatedDate
+	@Column(name = "reserved_at")
+	private LocalDate reservedAt;
 
-    public Reservation(User user, String reservationNumber, int amount) {
-        this.user = user;
-        this.reservationNumber = reservationNumber;
-        this.amount = amount;
-    }
+	@LastModifiedDate
+	@Column(name = "cancelled_at")
+	private LocalDate cancelledAt;
+
+	public Reservation(User user, String reservationNumber, int amount) {
+		this.user = user;
+		this.reservationNumber = reservationNumber;
+		this.amount = amount;
+	}
+
 }
