@@ -12,6 +12,7 @@ import com.lockers.outerpark.domain.payment.entity.Payment;
 import com.lockers.outerpark.domain.payment.exception.PaymentErrorCode;
 import com.lockers.outerpark.domain.payment.exception.PaymentException;
 import com.lockers.outerpark.domain.payment.repository.PaymentRepository;
+import com.lockers.outerpark.domain.payment.type.PaymentStatus;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 import com.lockers.outerpark.domain.reservation.service.ReservationService;
 import com.lockers.outerpark.domain.user.entity.User;
@@ -65,12 +66,12 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	@Transactional
 	public PaymentResponse cancelPaymentHistory(Long paymentId, Long userId) {
-		Payment payment = paymentRepository.findByIdAndStatus(paymentId, "SUCCESS")
+		Payment payment = paymentRepository.findByIdAndStatus(paymentId, PaymentStatus.SUCCESS)
 			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUNT_PAYMENT));
 
 		validateCancelable(paymentId);
 
-		payment.updateStatus("CANCEL");
+		payment.updateStatus(PaymentStatus.CANCEL);
 
 		refundPayment(payment.getTotalAmount(), userId);
 
@@ -85,7 +86,7 @@ public class PaymentServiceImpl implements PaymentService {
 		Reservation reservation = new Reservation(); // todo: 임시 구현 삭제 예정
 
 		//결제 실패 시 롤백
-		if (!"SUCCESS".equals(request.getStatus())) {
+		if (request.getStatus() != PaymentStatus.SUCCESS) {
 			reservationService.cancelReservation(reservation.getId());
 			return reservation;
 		}

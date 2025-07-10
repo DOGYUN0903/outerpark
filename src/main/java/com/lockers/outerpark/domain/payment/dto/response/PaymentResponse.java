@@ -28,7 +28,7 @@ public class PaymentResponse {
 			.reservationId(reservationId)
 			.totalAmount(payment.getTotalAmount())
 			.method(payment.getMethod())
-			.status(payment.getStatus())
+			.status(String.valueOf(payment.getStatus()))
 			.createdAt(payment.getCreatedAt())
 			.updatedAt(payment.getUpdatedAt())
 			.build();

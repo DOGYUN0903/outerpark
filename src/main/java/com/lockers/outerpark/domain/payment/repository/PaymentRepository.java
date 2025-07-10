@@ -7,9 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.lockers.outerpark.domain.payment.entity.Payment;
+import com.lockers.outerpark.domain.payment.type.PaymentStatus;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
-	Optional<Payment> findByIdAndStatus(Long id, String status);
+	Optional<Payment> findByIdAndStatus(Long id, PaymentStatus status);
 
 	@Query("""
 		SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END

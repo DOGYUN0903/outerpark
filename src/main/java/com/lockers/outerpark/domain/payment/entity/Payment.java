@@ -1,10 +1,13 @@
 package com.lockers.outerpark.domain.payment.entity;
 
 import com.lockers.outerpark.common.entity.BaseEntity;
+import com.lockers.outerpark.domain.payment.type.PaymentStatus;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,11 +39,12 @@ public class Payment extends BaseEntity {
 	@Column(nullable = false)
 	private String method;
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private String status;
+	private PaymentStatus status;
 
 	@Builder
-	public Payment(Long id, Reservation reservation, int totalAmount, String method, String status) {
+	public Payment(Long id, Reservation reservation, int totalAmount, String method, PaymentStatus status) {
 		this.id = id;
 		this.reservation = reservation;
 		this.totalAmount = totalAmount;
@@ -48,7 +52,7 @@ public class Payment extends BaseEntity {
 		this.status = status;
 	}
 
-	public void updateStatus(String status) {
+	public void updateStatus(PaymentStatus status) {
 		this.status = status;
 	}
 }

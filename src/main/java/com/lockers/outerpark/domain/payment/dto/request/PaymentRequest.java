@@ -1,6 +1,7 @@
 package com.lockers.outerpark.domain.payment.dto.request;
 
 import com.lockers.outerpark.domain.payment.entity.Payment;
+import com.lockers.outerpark.domain.payment.type.PaymentStatus;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 
 import jakarta.validation.constraints.Positive;
@@ -16,7 +17,7 @@ public class PaymentRequest {
 	@Positive
 	private int totalAmount;
 	private String method;
-	private String status;
+	private PaymentStatus status;
 
 	public Payment toEntity(Reservation reservation) {
 		return Payment.builder()
