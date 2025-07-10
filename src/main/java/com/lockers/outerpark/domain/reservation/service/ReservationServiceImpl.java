@@ -38,7 +38,7 @@ public class ReservationServiceImpl implements ReservationService {
 	public ReservationResponse createReservation(ReservationRequest request, Long userId, Long concertId) {
 		User user = userService.getActiveUserById(userId);
 		// TODO: seat, concert 수정
-		Concert concert = new Concert();
+		Concert concert = concertService.getActiveConcert(concertId);
 		List<Long> seatIds = request.getSeatIds();
 		List<Seat> seats = new ArrayList<>();
 
@@ -46,7 +46,8 @@ public class ReservationServiceImpl implements ReservationService {
 			seats.add(new Seat());
 		}
 
-		Reservation reservation = new Reservation(user, concert, seatIds.size(), concert.getPrice() * seatIds.size());
+		Reservation reservation = new Reservation(user, concert, seatIds.size(),
+			concert.getPrice() * seatIds.size());
 
 		// TODO: Seat 엔티티 객체 가져오는 메서드 필요
 		Reservation savedReservation = reservationRepository.save(
@@ -65,8 +66,8 @@ public class ReservationServiceImpl implements ReservationService {
 		reservation.cancel();
 	}
 
-	@Transactional
 	@Override
+	@Transactional
 	public void confirmReservation(Long reservationId) {
 		Reservation reservation = reservationRepository.findByIdAndStatus(reservationId, ReservationStatus.PENDING)
 			.orElseThrow(() -> new RuntimeException());
@@ -75,12 +76,14 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<UserReservationResponse> getUserReservations(Long userId, Pageable pageable) {
 		return reservationRepository.findAllByUserIdAndStatus(userId,
 			ReservationStatus.CONFIRMED, pageable).map(UserReservationResponse::fromEntity);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public boolean existsReservation(Long reservationId) {
 		if (reservationId == null)
 			return false;
@@ -88,11 +91,13 @@ public class ReservationServiceImpl implements ReservationService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Reservation findReservationById(Long reservationId) {
 		return reservationRepository.findById(reservationId).orElseThrow(() -> new RuntimeException());
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public ReservationResponse getConcertReservations(Long userId, Long concertId) {
 		return null;
 	}
@@ -111,8 +116,8 @@ public class ReservationServiceImpl implements ReservationService {
 		return reservation;
 	}
 
-	private String createReservationNumber(Concert concert, int seatNumber) {
+	private String createReservationNumber(Concert concert, String seatNumber) {
 		return "T" + String.format("%04d", concert.getId()) + String.format("%02d",
-			concert.getPerformanceDate().getDayOfMonth()) + String.format("%03d", seatNumber);
+			concert.getPerformanceDate().getDayOfMonth()) + seatNumber;
 	}
 }

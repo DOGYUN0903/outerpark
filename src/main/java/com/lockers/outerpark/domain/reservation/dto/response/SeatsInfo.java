@@ -9,9 +9,9 @@ public class SeatsInfo {
 
 	private final List<Long> seatId;
 
-	private final List<Integer> seatNumber;
+	private final List<String> seatNumber;
 
-	public SeatsInfo(List<Long> seatId, List<Integer> seatNumber) {
+	public SeatsInfo(List<Long> seatId, List<String> seatNumber) {
 		this.seatId = seatId;
 		this.seatNumber = seatNumber;
 	}
