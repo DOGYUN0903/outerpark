@@ -30,11 +30,16 @@ public class Seat extends BaseEntity {
 	private Concert concert;
 
 	@Column(nullable = false)
-	private int seatNumber;
+	private String seatNumber;
 
 	// 생성자
-	public Seat(Concert concert, int seatNumber) {
+	public Seat(Concert concert, String seatNumber) {
 		this.concert = concert;
+		this.seatNumber = seatNumber;
+	}
+
+	// 임시 생성자
+	public Seat(String seatNumber) {
 		this.seatNumber = seatNumber;
 	}
 

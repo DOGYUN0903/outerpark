@@ -24,7 +24,7 @@ public class OuterparkApplication {
 
 		if (seatRepository.count() == 0) {
 			for (int i = 1; i <= 100; i++) {
-				seatRepository.save(new Seat(i));
+				seatRepository.save(new Seat("A-" + i));
 			}
 			log.info("좌석 1~100개 데이터 생성 완료");
 		} else {
