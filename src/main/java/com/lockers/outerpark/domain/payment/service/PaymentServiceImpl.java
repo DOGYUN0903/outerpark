@@ -1,7 +1,5 @@
 package com.lockers.outerpark.domain.payment.service;
 
-import java.time.LocalDateTime;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +59,7 @@ public class PaymentServiceImpl implements PaymentService {
 		} catch (Exception e) {
 			//원인을 알 수 없는 문제 발생 시 롤백 및 예외처리
 			reservationService.cancelReservation(reservation.getId());
-			throw new PaymentException(PaymentErrorCode.INSUFFICIENT_BALANCE);
+			throw new PaymentException(PaymentErrorCode.PAYMENT_FAILED);
 		}
 	}
 
@@ -69,7 +67,7 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional(readOnly = true)
 	public PaymentResponse findOnePayment(Long paymentId) {
 		Payment payment = paymentRepository.findById(paymentId)
-			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUNT_PAYMENT));
+			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUND_PAYMENT));
 		return PaymentResponse.from(payment, payment.getReservation().getId());
 	}
 
@@ -78,7 +76,7 @@ public class PaymentServiceImpl implements PaymentService {
 	public void cancelPayment(Long paymentId, Long userId) {
 		//PaymentStatus 가 SUCCESS 인 경우 가져옴
 		Payment payment = paymentRepository.findByIdAndStatus(paymentId, PaymentStatus.SUCCESS)
-			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUNT_PAYMENT));
+			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUND_PAYMENT));
 
 		//공연 날짜가 당일 포함 지났을 경우 환불 불가 (예외처리)
 		validateCancelable(paymentId);
@@ -100,7 +98,7 @@ public class PaymentServiceImpl implements PaymentService {
 		//결제 실패 시 예약 롤백 및 예외
 		if (request.getStatus() != PaymentStatus.SUCCESS) {
 			reservationService.cancelReservation(reservationId);
-			throw new PaymentException(PaymentErrorCode.INSUFFICIENT_BALANCE);
+			throw new PaymentException(PaymentErrorCode.PAYMENT_FAILED);
 		}
 
 		int totalAmount = request.getTotalAmount();
@@ -140,7 +138,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	//공연 날짜가 당일 포함 지났을 경우 예외처리
 	public void validateCancelable(Long paymentId) {
-		if (!paymentRepository.isCancelable(paymentId, LocalDateTime.now())) {
+		if (!paymentRepository.isCancelable(paymentId)) {
 			throw new PaymentException(PaymentErrorCode.CANCELLATION_PERIOD_EXPIRED);
 		}
 	}
