@@ -46,7 +46,7 @@ public class ConcertServiceImpl implements ConcertService {
         Concert concert = Concert.of(user, request);
 
         Concert saveConcert = concertRepository.save(concert);
-        return new RegisterConcertResponse(saveConcert);
+        return RegisterConcertResponse.of(saveConcert);
     }
 
     /**
@@ -70,10 +70,6 @@ public class ConcertServiceImpl implements ConcertService {
 
         Concert concert = getActiveConcert(concertId);
 
-        // 이미 삭제된 공연인지 검사
-        if (concert.getIsDeleted())
-            throw new ConcertException.ConcertAlreadyDeletedException();
-
         // 각 필드가 null이 아닌 경우에만 업데이트 수행
         // String의 경우 빈칸이 아닌 경우에만도 업데이트하도록 수정
         if (!request.getTitle().isBlank()) {
@@ -96,7 +92,7 @@ public class ConcertServiceImpl implements ConcertService {
             concert.updateLimitAge(request.getLimitAge());
         }
 
-        return new UpdateConcertResponse(concert);
+        return UpdateConcertResponse.of(concert);
     }
 
     /**
@@ -112,10 +108,6 @@ public class ConcertServiceImpl implements ConcertService {
     public FindConcertResponse findConcert(Long concertId) {
 
         Concert concert = getActiveConcert(concertId);
-
-        // 이미 삭제된 공연인지 검사
-        if (concert.getIsDeleted())
-            throw new ConcertException.ConcertAlreadyDeletedException();
 
         return FindConcertResponse.of(concert);
     }
