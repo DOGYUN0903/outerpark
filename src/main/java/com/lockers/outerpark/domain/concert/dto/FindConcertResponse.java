@@ -6,25 +6,18 @@ import java.time.LocalDateTime;
 import com.lockers.outerpark.common.dto.UserDto;
 import com.lockers.outerpark.domain.concert.entity.Concert;
 
-import lombok.Getter;
+public record FindConcertResponse(String title, Integer runningTime, UserDto writer, Integer price, Integer limitAge,
+                                  LocalDate performanceDate, LocalDateTime updatedAt) {
 
-@Getter
-public class FindConcertResponse {
-    private final String title;
-    private final Integer runningTime;
-    private final UserDto writer;
-    private final Integer price;
-    private final Integer limitAge;
-    private final LocalDate performanceDate;
-    private final LocalDateTime updatedAt;
-
-    public FindConcertResponse(Concert concert) {
-        this.title = concert.getTitle();
-        this.runningTime = concert.getRunningTime();
-        this.writer = new UserDto(concert.getWriter());
-        this.price = concert.getPrice();
-        this.limitAge = concert.getLimitAge();
-        this.performanceDate = concert.getPerformanceDate();
-        this.updatedAt = concert.getUpdatedAt();
+    public static FindConcertResponse of(Concert concert) {
+        return new FindConcertResponse(
+            concert.getTitle(),
+            concert.getRunningTime(),
+            new UserDto(concert.getWriter()),
+            concert.getPrice(),
+            concert.getLimitAge(),
+            concert.getPerformanceDate(),
+            concert.getUpdatedAt()
+        );
     }
 }
