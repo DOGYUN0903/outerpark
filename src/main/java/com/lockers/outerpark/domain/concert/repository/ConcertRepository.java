@@ -7,11 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.lockers.outerpark.domain.concert.entity.Concert;
-import com.lockers.outerpark.domain.user.entity.User;
 
 public interface ConcertRepository extends JpaRepository<Concert, Long> {
 
-    Optional<Concert> findByIdAndWriter(Long id, User writer);
+    Optional<Concert> findByIdAndIsDeletedFalse(Long id);
 
     Page<Concert> findAllByIsDeletedFalse(Pageable pageable);
 }

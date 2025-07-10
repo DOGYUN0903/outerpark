@@ -63,20 +63,19 @@ public class ConcertServiceImpl implements ConcertService {
      */
     @Override
     @Transactional
-    public UpdateConcertResponse updateConcert(Long userId, Long concert_id, UpdateConcertRequest request) {
+    public UpdateConcertResponse updateConcert(Long userId, Long concertId, UpdateConcertRequest request) {
 
         // 사용자 조회 및 유효성 검사
         User loginUser = userService.getActiveUserById(userId);
 
-        // 콘서트 조회 및 유효성 검사
-        Concert concert = concertRepository.findByIdAndWriter(concert_id, loginUser)
-            .orElseThrow(ConcertException.ConcertNotFoundException::new);
+        Concert concert = getActiveConcert(concertId);
 
         // 이미 삭제된 공연인지 검사
         if (concert.getIsDeleted())
             throw new ConcertException.ConcertAlreadyDeletedException();
 
         // 각 필드가 null이 아닌 경우에만 업데이트 수행
+        // String의 경우 빈칸이 아닌 경우에만도 업데이트하도록 수정
         if (!request.getTitle().isBlank()) {
             concert.updateTitle(request.getTitle());
         }
@@ -112,9 +111,7 @@ public class ConcertServiceImpl implements ConcertService {
     @Transactional(readOnly = true)
     public FindConcertResponse findConcert(Long concertId) {
 
-        // 공연 조회 및 유효성 검사
-        Concert concert = concertRepository.findById(concertId)
-            .orElseThrow(ConcertException.ConcertNotFoundException::new);
+        Concert concert = getActiveConcert(concertId);
 
         // 이미 삭제된 공연인지 검사
         if (concert.getIsDeleted())
@@ -143,39 +140,29 @@ public class ConcertServiceImpl implements ConcertService {
      * 지정된 사용자가 작성한 콘서트를 논리적으로 삭제합니다.
      *
      * @param userId 현재 로그인한 사용자 ID
-     * @param concert_id 삭제 대상 콘서트 ID
+     * @param concertId 삭제 대상 콘서트 ID
      * @throws UserException.UserNotFoundException 유효하지 않은 사용자일 경우
      * @throws ConcertException.ConcertNotFoundException 해당 콘서트가 없거나 작성자가 일치하지 않는 경우
      * @author kimyongjun0129
      */
     @Override
     @Transactional
-    public void deleteConcert(Long userId, Long concert_id) {
+    public void deleteConcert(Long userId, Long concertId) {
 
         // 사용자 조회 및 유효성 검사
         User loginUser = userService.getActiveUserById(userId);
 
-        // 콘서트 조회 및 유효성 검사
-        Concert concert = concertRepository.findByIdAndWriter(concert_id, loginUser)
-            .orElseThrow(ConcertException.ConcertNotFoundException::new);
-
-        // 이미 삭제된 공연인지 검사
-        if (concert.getIsDeleted())
-            throw new ConcertException.ConcertAlreadyDeletedException();
+        Concert concert = getActiveConcert(concertId);
 
         // 공연 논리삭제
         concert.softDelete();
     }
 
+    //콘서트 조회 및 유효성 검사
     @Transactional(readOnly = true)
     public Concert getActiveConcert(Long concertId) {
-        Concert concert = concertRepository.findById(concertId)
+
+        return concertRepository.findByIdAndIsDeletedFalse(concertId)
             .orElseThrow(ConcertException.ConcertNotFoundException::new);
-
-        if (concert.getIsDeleted()) {
-            throw new ConcertException.ConcertAlreadyDeletedException();
-        }
-
-        return concert;
     }
 }
