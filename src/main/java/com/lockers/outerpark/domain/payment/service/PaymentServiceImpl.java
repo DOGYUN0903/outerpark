@@ -36,20 +36,29 @@ public class PaymentServiceImpl implements PaymentService {
 	@Transactional
 	public PaymentResponse savePayment(PaymentRequest request, Long reservationId, Long userId) {
 
+		//결제 정합성 검사(결제 금액 및 예약 번호 확인)
 		Reservation reservation = processReservationPayment(request, reservationId, userId);
-		try {
 
+		//결제 정보 Balance 반영
+		chargePayment(request.getTotalAmount(), reservationId, userId);
+		try {
+			//RequestDto 를 Entity 로 변환
 			Payment payment = request.toEntity(reservation);
 
+			//결제 정보 저장
 			Payment savedPayment = paymentRepository.save(payment);
 
+			//결제 정보 반환
 			return PaymentResponse.from(savedPayment, savedPayment.getReservation().getId());
+
 		} catch (DataIntegrityViolationException
 				 | ConstraintViolationException
 				 | PersistenceException e) {
+			//save 과정 중 문제 있을 시 롤백 및 예외 처리
 			reservationService.cancelReservation(reservation.getId());
 			throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_REQUEST);
 		} catch (Exception e) {
+			//원인을 알 수 없는 문제 발생 시 롤백 및 예외처리
 			reservationService.cancelReservation(reservation.getId());
 			throw new PaymentException(PaymentErrorCode.INSUFFICIENT_BALANCE);
 		}
@@ -66,71 +75,71 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	@Transactional
 	public PaymentResponse cancelPayment(Long paymentId, Long userId) {
+		//PaymentStatus 가 SUCCESS 인 경우 가져옴
 		Payment payment = paymentRepository.findByIdAndStatus(paymentId, PaymentStatus.SUCCESS)
 			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUNT_PAYMENT));
 
+		//공연 날짜가 당일 포함 지났을 경우 환불 불가 (예외처리)
 		validateCancelable(paymentId);
 
+		//결제 정보 CANCEL 업데이트
 		payment.updateStatus(PaymentStatus.CANCEL);
 
+		//유저 Balance 업데이트
 		refundPayment(payment.getTotalAmount(), userId);
 
-		return null;
+		return PaymentResponse.from(payment, payment.getReservation().getId());
 	}
 
-	//결제 내용 정합성 검사
+	//결제 정합성 검사
 	private Reservation processReservationPayment(PaymentRequest request, Long reservationId, Long userId) {
 
 		//todo : Reservation Entity 객체 필요
 		//Reservation reservation = reservationService.findReservationById(reservationId)
 		Reservation reservation = new Reservation(); // todo: 임시 구현 삭제 예정
 
-		//결제 실패 시 롤백
+		//결제 실패 시 예약 롤백 및 예외
 		if (request.getStatus() != PaymentStatus.SUCCESS) {
-			reservationService.cancelReservation(reservation.getId());
-			return reservation;
+			reservationService.cancelReservation(reservationId);
+			throw new PaymentException(PaymentErrorCode.INSUFFICIENT_BALANCE);
 		}
 
 		int totalAmount = request.getTotalAmount();
 
+		//결제 금액이 맞지 않을 경우 예약 롤백 및 예외
 		if (totalAmount != reservation.getAmount()) {
-			reservationService.cancelReservation(reservation.getId());
+			reservationService.cancelReservation(reservationId);
 			throw new PaymentException(PaymentErrorCode.INVALID_AMOUNT_REQUEST);
-		}
-
-		if (!chargePayment(totalAmount, userId)) {
-			reservationService.cancelReservation(reservation.getId());
-			throw new PaymentException(PaymentErrorCode.NOT_ENOUGH_BALANCE);
 		}
 
 		return reservation;
 	}
 
 	//결제 Balance 처리
-	private boolean chargePayment(int paidAmount, Long userId) {
+	private void chargePayment(int paidAmount, Long reservationId, Long userId) {
 		User user = userService.getActiveUserById(userId);
 
 		Long nowBalance = user.getBalance();
 
+		//자금이 결제 금액보다 적을 경우 예약 롤백 및 예외
 		if (nowBalance < paidAmount) {
-			return false;
+			reservationService.cancelReservation(reservationId);
+			throw new PaymentException(PaymentErrorCode.NOT_ENOUGH_BALANCE);
 		}
 
 		//결제 처리
 		user.updateBalance(nowBalance - paidAmount);
-		return true;
 	}
 
 	//결제 취소 Balance 처리
 	private void refundPayment(int paidAmount, Long userId) {
 		User user = userService.getActiveUserById(userId);
 
-		Long nowBalance = user.getBalance();
-
 		//결제 처리
-		user.updateBalance(nowBalance + paidAmount);
+		user.updateBalance(user.getBalance() + paidAmount);
 	}
 
+	//공연 날짜가 당일 포함 지났을 경우 예외처리
 	public void validateCancelable(Long paymentId) {
 		if (!paymentRepository.isCancelable(paymentId, LocalDateTime.now())) {
 			throw new PaymentException(PaymentErrorCode.CANCELLATION_PERIOD_EXPIRED);
