@@ -65,9 +65,6 @@ public class ConcertServiceImpl implements ConcertService {
     @Transactional
     public UpdateConcertResponse updateConcert(Long userId, Long concertId, UpdateConcertRequest request) {
 
-        // 사용자 조회 및 유효성 검사
-        User loginUser = userService.getActiveUserById(userId);
-
         Concert concert = getActiveConcert(concertId);
 
         // 각 필드가 null이 아닌 경우에만 업데이트 수행
