@@ -1,5 +1,7 @@
 package com.lockers.outerpark.domain.payment.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,6 +68,8 @@ public class PaymentServiceImpl implements PaymentService {
 		Payment payment = paymentRepository.findByIdAndStatus(paymentId, "SUCCESS")
 			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUNT_PAYMENT));
 
+		validateCancelable(paymentId);
+
 		payment.updateStatus("CANCEL");
 
 		refundPayment(payment.getTotalAmount(), userId);
@@ -78,7 +82,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 		//todo : Reservation Entity 객체 필요
 		//Reservation reservation = reservationService.findReservationById(reservationId)
-		Reservation reservation = new Reservation();
+		Reservation reservation = new Reservation(); // todo: 임시 구현 삭제 예정
 
 		//결제 실패 시 롤백
 		if (!"SUCCESS".equals(request.getStatus())) {
@@ -124,5 +128,11 @@ public class PaymentServiceImpl implements PaymentService {
 
 		//결제 처리
 		user.updateBalance(nowBalance + paidAmount);
+	}
+
+	public void validateCancelable(Long paymentId) {
+		if (!paymentRepository.isCancelable(paymentId, LocalDateTime.now())) {
+			throw new PaymentException(PaymentErrorCode.CANCELLATION_PERIOD_EXPIRED);
+		}
 	}
 }
