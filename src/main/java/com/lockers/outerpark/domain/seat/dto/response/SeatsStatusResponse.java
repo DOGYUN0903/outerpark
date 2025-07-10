@@ -2,8 +2,6 @@ package com.lockers.outerpark.domain.seat.dto.response;
 
 import java.util.List;
 
-import com.lockers.outerpark.domain.seat.entity.Seat;
-
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,22 +11,20 @@ public class SeatsStatusResponse {
 	private Long concertId;
 	private int totalSeats;
 	private int availableSeats;
+	private int reservedSeats;
 	private List<SeatResponse> seats;
 
-	public static SeatsStatusResponse of(Long concertId, List<Seat> seats) {
-		List<SeatResponse> seatResponses = seats.stream()
-			.map(SeatResponse::fromEntity)
-			.toList();
-
-		int availableSeats = (int)seats.stream()
-			.filter(seat -> !seat.getIsReserved())
-			.count();
-
+	/**
+	 * 계산된 값들과 함께 SeatsStatusResponse 생성
+	 */
+	public static SeatsStatusResponse of(Long concertId, int totalSeats, int availableSeats,
+		int reservedSeats, List<SeatResponse> seats) {
 		return SeatsStatusResponse.builder()
 			.concertId(concertId)
-			.totalSeats(seats.size())
+			.totalSeats(totalSeats)
 			.availableSeats(availableSeats)
-			.seats(seatResponses)
+			.reservedSeats(reservedSeats)
+			.seats(seats)
 			.build();
 	}
 }
