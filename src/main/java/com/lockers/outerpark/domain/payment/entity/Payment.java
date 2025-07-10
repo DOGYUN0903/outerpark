@@ -1,13 +1,21 @@
 package com.lockers.outerpark.domain.payment.entity;
 
 import com.lockers.outerpark.common.entity.BaseEntity;
+import com.lockers.outerpark.domain.payment.type.PaymentStatus;
+import com.lockers.outerpark.domain.reservation.entity.Reservation;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,17 +29,30 @@ public class Payment extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	//todo: Reservation 외래키 적용
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "reservation_id", nullable = false)
+	private Reservation reservation;
 
 	@Column(nullable = false)
 	private int totalAmount;
 
 	@Column(nullable = false)
-	private int count;
-
-	@Column(nullable = false)
 	private String method;
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private String status;
+	private PaymentStatus status;
+
+	@Builder
+	public Payment(Long id, Reservation reservation, int totalAmount, String method, PaymentStatus status) {
+		this.id = id;
+		this.reservation = reservation;
+		this.totalAmount = totalAmount;
+		this.method = method;
+		this.status = status;
+	}
+
+	public void updateStatus(PaymentStatus status) {
+		this.status = status;
+	}
 }
