@@ -9,8 +9,15 @@ public class UserDto {
     private final Long userId;
     private final String nickname;
 
-    public UserDto(User user) {
-        this.userId = user.getId();
-        this.nickname = user.getNickname();
+    private UserDto(Long id, String nickname) {
+        this.userId = id;
+        this.nickname = nickname;
+    }
+
+    public static UserDto of(User user) {
+        return new UserDto(
+            user.getId(),
+            user.getNickname()
+        );
     }
 }

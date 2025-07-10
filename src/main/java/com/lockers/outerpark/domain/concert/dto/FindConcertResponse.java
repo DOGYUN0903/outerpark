@@ -13,7 +13,7 @@ public record FindConcertResponse(String title, Integer runningTime, UserDto wri
         return new FindConcertResponse(
             concert.getTitle(),
             concert.getRunningTime(),
-            new UserDto(concert.getWriter()),
+            UserDto.of(concert.getWriter()),
             concert.getPrice(),
             concert.getLimitAge(),
             concert.getPerformanceDate(),

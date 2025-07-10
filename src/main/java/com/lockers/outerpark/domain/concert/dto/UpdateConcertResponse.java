@@ -10,7 +10,7 @@ public record UpdateConcertResponse(String title, UserDto writer, LocalDateTime 
     public static UpdateConcertResponse of(Concert concert) {
         return new UpdateConcertResponse(
             concert.getTitle(),
-            new UserDto(concert.getWriter()),
+            UserDto.of(concert.getWriter()),
             concert.getCreatedAt(),
             concert.getUpdatedAt()
         );

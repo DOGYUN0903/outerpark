@@ -10,7 +10,7 @@ public record RegisterConcertResponse(String title, UserDto user, LocalDateTime 
     public static RegisterConcertResponse of(Concert concert) {
         return new RegisterConcertResponse(
             concert.getTitle(),
-            new UserDto(concert.getWriter()),
+            UserDto.of(concert.getWriter()),
             concert.getCreatedAt(),
             concert.getUpdatedAt()
         );
