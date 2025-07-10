@@ -1,5 +1,7 @@
 package com.lockers.outerpark.domain.auth.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,21 +29,27 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ApiResponse<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
-        return ApiResponse.success("회원가입에 성공하였습니다.", authService.signup(signupRequest));
+    public ResponseEntity<ApiResponse<SignupResponse>> signup(@Valid @RequestBody SignupRequest signupRequest) {
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(ApiResponse.success("회원가입에 성공하였습니다.", authService.signup(signupRequest)));
     }
 
     // 로그인
     @PostMapping("/signin")
-    public ApiResponse<SigninResponse> signin(@Valid @RequestBody SigninRequest signinRequest) {
-        return ApiResponse.success("로그인에 성공하였습니다.", authService.signin(signinRequest));
+    public ResponseEntity<ApiResponse<SigninResponse>> signin(@Valid @RequestBody SigninRequest signinRequest) {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.success("로그인에 성공하였습니다.", authService.signin(signinRequest)));
     }
 
     // 회원 탈퇴
     @DeleteMapping("/withdraw")
-    public ApiResponse<Void> withdraw(@AuthenticationPrincipal Long userId,
-        @RequestBody WithdrawRequest withdrawRequest) {
+    public ResponseEntity<ApiResponse<Void>> withdraw(@AuthenticationPrincipal Long userId,
+        @Valid @RequestBody WithdrawRequest withdrawRequest) {
         authService.withdraw(userId, withdrawRequest);
-        return ApiResponse.success("회원 탈퇴에 성공하였습니다.", null);
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(ApiResponse.success("회원 탈퇴에 성공하였습니다.", null));
     }
 }

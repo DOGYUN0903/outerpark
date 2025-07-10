@@ -37,15 +37,13 @@ public class AuthService {
         // 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
 
-        UserRole userRole = UserRole.of(signupRequest.getUserRole());
-
         User user = new User(
             signupRequest.getEmail(),
             signupRequest.getNickname(),
             signupRequest.getBirth(),
             encodedPassword,
             100000L,
-            userRole
+            UserRole.USER
         );
 
         User savedUser = userRepository.save(user);
