@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lockers.outerpark.domain.payment.dto.request.PaymentRequest;
 import com.lockers.outerpark.domain.payment.dto.response.PaymentResponse;
+import com.lockers.outerpark.domain.payment.dto.response.PaymentSaveResponse;
 import com.lockers.outerpark.domain.payment.entity.Payment;
 import com.lockers.outerpark.domain.payment.exception.PaymentErrorCode;
 import com.lockers.outerpark.domain.payment.exception.PaymentException;
@@ -34,7 +35,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public PaymentResponse savePayment(PaymentRequest request, Long reservationId, Long userId) {
+	public PaymentSaveResponse savePayment(PaymentRequest request, Long reservationId, Long userId) {
 
 		//결제 정합성 검사(결제 금액 및 예약 번호 확인)
 		Reservation reservation = processReservationPayment(request, reservationId, userId);
@@ -48,8 +49,8 @@ public class PaymentServiceImpl implements PaymentService {
 			//결제 정보 저장
 			Payment savedPayment = paymentRepository.save(payment);
 
-			//결제 정보 반환
-			return PaymentResponse.from(savedPayment, savedPayment.getReservation().getId());
+			//결제 정보 ID 반환
+			return new PaymentSaveResponse(savedPayment.getId());
 
 		} catch (DataIntegrityViolationException
 				 | ConstraintViolationException
@@ -74,7 +75,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public PaymentResponse cancelPayment(Long paymentId, Long userId) {
+	public void cancelPayment(Long paymentId, Long userId) {
 		//PaymentStatus 가 SUCCESS 인 경우 가져옴
 		Payment payment = paymentRepository.findByIdAndStatus(paymentId, PaymentStatus.SUCCESS)
 			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUNT_PAYMENT));
@@ -87,8 +88,6 @@ public class PaymentServiceImpl implements PaymentService {
 
 		//유저 Balance 업데이트
 		refundPayment(payment.getTotalAmount(), userId);
-
-		return PaymentResponse.from(payment, payment.getReservation().getId());
 	}
 
 	//결제 정합성 검사

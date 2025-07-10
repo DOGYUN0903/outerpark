@@ -2,6 +2,7 @@ package com.lockers.outerpark.domain.payment.service;
 
 import com.lockers.outerpark.domain.payment.dto.request.PaymentRequest;
 import com.lockers.outerpark.domain.payment.dto.response.PaymentResponse;
+import com.lockers.outerpark.domain.payment.dto.response.PaymentSaveResponse;
 import com.lockers.outerpark.domain.payment.exception.PaymentException;
 
 public interface PaymentService {
@@ -14,7 +15,7 @@ public interface PaymentService {
 	 * @return 저장된 결제 응답 정보
 	 * @throws PaymentException 결제 처리 중 오류가 발생한 경우
 	 */
-	PaymentResponse savePayment(PaymentRequest request, Long reservationId, Long userId);
+	PaymentSaveResponse savePayment(PaymentRequest request, Long reservationId, Long userId);
 
 	/**
 	 * 현재 사용자의 결제 정보를 단건 조회합니다.
@@ -33,5 +34,5 @@ public interface PaymentService {
 	 * @return 취소된 결제 응답 정보
 	 * @throws PaymentException 취소 기한이 지났거나 권한이 없는 경우
 	 */
-	PaymentResponse cancelPayment(Long paymentId, Long userId);
+	void cancelPayment(Long paymentId, Long userId);
 }

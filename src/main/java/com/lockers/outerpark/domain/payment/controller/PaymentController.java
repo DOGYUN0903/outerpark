@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.lockers.outerpark.common.response.ApiResponse;
 import com.lockers.outerpark.domain.payment.dto.request.PaymentRequest;
 import com.lockers.outerpark.domain.payment.dto.response.PaymentResponse;
+import com.lockers.outerpark.domain.payment.dto.response.PaymentSaveResponse;
 import com.lockers.outerpark.domain.payment.service.PaymentService;
 
 import jakarta.validation.Valid;
@@ -33,7 +34,7 @@ public class PaymentController {
 	 * @return 결제 생성 성공 응답 (201 Created)
 	 */
 	@PostMapping("/api/payments/reservations/{reservationId}")
-	public ResponseEntity<ApiResponse<PaymentResponse>> savePayment(
+	public ResponseEntity<ApiResponse<PaymentSaveResponse>> savePayment(
 		@AuthenticationPrincipal Long userId,
 		@PathVariable Long reservationId,
 		@RequestBody @Valid PaymentRequest paymentRequest) {
@@ -53,7 +54,7 @@ public class PaymentController {
 	@GetMapping("/api/payments/{paymentId}")
 	public ResponseEntity<ApiResponse<PaymentResponse>> findOnePayment(@PathVariable Long paymentId) {
 		return new ResponseEntity<>(
-			ApiResponse.success("결제 내역이 조회 되었습니다.", paymentService.findOnePayment(paymentId)), HttpStatus.OK);
+			ApiResponse.success("결제 정보를 조회했습니다.", paymentService.findOnePayment(paymentId)), HttpStatus.OK);
 	}
 
 	/**
@@ -66,8 +67,9 @@ public class PaymentController {
 	@PatchMapping("/api/payments/{paymentId}")
 	public ResponseEntity<ApiResponse<PaymentResponse>> cancelPayment(@AuthenticationPrincipal Long userId,
 		@PathVariable Long paymentId) {
+		paymentService.cancelPayment(paymentId, userId);
 		return new ResponseEntity<>(
-			ApiResponse.success("결제 취소가 완료 되었습니다.", paymentService.cancelPayment(paymentId, userId)),
-			HttpStatus.OK);
+			ApiResponse.success("결제가 취소되었습니다.", null),
+			HttpStatus.NO_CONTENT);
 	}
 }
