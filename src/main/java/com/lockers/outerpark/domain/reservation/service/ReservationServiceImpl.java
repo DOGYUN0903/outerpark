@@ -37,6 +37,12 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	@Transactional
 	public ReservationResponse createReservation(ReservationRequest request, Long userId, Long concertId) {
+
+		//같은 공연에 이미 PENDING 중인 예약이 있을경우 예외
+		if (reservationRepository.existsByUserIdAndConcertIdAndStatus(userId, concertId, ReservationStatus.PENDING)) {
+			throw new ReservationException(ReservationErrorCode.ALREADY_PENDING);
+		}
+
 		List<Seat> seats = seatService.getSeatsForReservation(request.getSeatIds(), concertId);
 		User user = userService.getActiveUserById(userId);
 		Concert concert = concertService.getActiveConcert(concertId);
@@ -109,7 +115,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private Reservation reservationAddReservationSeats(List<Seat> seats, Reservation reservation, Concert concert) {
 		for (Seat seat : seats) {
 			String reservationNumber = createReservationNumber(concert, seat.getSeatNumber());
-			ReservationSeat reservationSeat = new ReservationSeat(reservation, seat, reservationNumber);
+			ReservationSeat reservationSeat = new ReservationSeat(seat, reservationNumber);
 
 			reservation.addReservationSeat(reservationSeat);
 		}
