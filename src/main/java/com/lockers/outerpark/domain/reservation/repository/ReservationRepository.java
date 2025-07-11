@@ -16,7 +16,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
 	Optional<Reservation> findByIdAndStatusNot(Long reservationId, ReservationStatus reservationStatus);
 
-	@EntityGraph(attributePaths = {"reservationSeats", "reservationSeats.seat"})
+	@EntityGraph(attributePaths = {"reservationSeats", "reservationSeats.seat", "concert"})
 	@Query("SELECT r FROM Reservation r WHERE r.user.id = :userId AND r.status = :status")
 	Page<Reservation> findAllByUserIdAndStatus(Long userId, ReservationStatus status, Pageable pageable);
 }
