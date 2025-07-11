@@ -6,7 +6,6 @@ import com.lockers.outerpark.domain.reservation.entity.Reservation;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentRequest {
-
-	@Positive(message = "숫자는 0보다 커야합니다.")
-	private int totalAmount;
 
 	@NotBlank(message = "결제 수단은 필수입니다.")
 	private String method;
@@ -28,7 +24,7 @@ public class PaymentRequest {
 	public Payment toEntity(Reservation reservation) {
 		return Payment.builder()
 			.reservation(reservation)
-			.totalAmount(this.totalAmount)
+			.totalAmount(reservation.getAmount())
 			.method(this.method)
 			.status(this.status)
 			.build();
