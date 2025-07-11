@@ -38,11 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
 	public PaymentSaveResponse savePayment(PaymentRequest request, Long concertId, Long userId) {
 
 		//결제 정합성 검사(결제 금액 및 예약 번호 확인)
-<<<<<<< HEAD
-		Reservation reservation = processReservationPayment(request, reservationId);
-=======
 		Reservation reservation = processReservationPayment(request, concertId, userId);
->>>>>>> dev
 
 		//결제 정보 Balance 반영
 		chargePayment(reservation, userId);
@@ -99,11 +95,7 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	//결제 정합성 검사
-<<<<<<< HEAD
-	private Reservation processReservationPayment(PaymentRequest request, Long reservationId) {
-=======
 	private Reservation processReservationPayment(PaymentRequest request, Long concertId, Long userId) {
->>>>>>> dev
 
 		Reservation reservation = reservationService.findReservationByUserIdAndConsortId(userId, concertId);
 
