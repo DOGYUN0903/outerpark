@@ -29,19 +29,19 @@ public class PaymentController {
 	 * 예약 ID와 결제 요청 정보를 바탕으로 결제를 생성합니다.
 	 *
 	 * @param userId 인증된 사용자 ID (스프링 시큐리티에서 주입)
-	 * @param reservationId 결제 대상 예약 ID
+	 * @param concertId 결제 대상 예약 ID
 	 * @param paymentRequest 결제 요청 정보 (결제 수단, 금액 등)
 	 * @return 결제 생성 성공 응답 (201 Created)
 	 */
-	@PostMapping("/api/payments/reservations/{reservationId}")
+	@PostMapping("/api/payments/conserts/{consortsId}")
 	public ResponseEntity<ApiResponse<PaymentSaveResponse>> savePayment(
 		@AuthenticationPrincipal Long userId,
-		@PathVariable Long reservationId,
+		@PathVariable Long concertId,
 		@RequestBody @Valid PaymentRequest paymentRequest) {
 
 		return new ResponseEntity<>(
 			ApiResponse.success("결제 내역이 생성 되었습니다.",
-				paymentService.savePayment(paymentRequest, reservationId, userId)),
+				paymentService.savePayment(paymentRequest, concertId, userId)),
 			HttpStatus.CREATED);
 	}
 
