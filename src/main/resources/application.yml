@@ -19,4 +19,4 @@ spring:
 
 jwt:
   secret:
-    key: aswidbeigfubsdkjfhsefiuhsefkjhajbefuarbetgkajdsbfgaOUEBFSEF
+    key: ${JWT_SECRET_KEY}
