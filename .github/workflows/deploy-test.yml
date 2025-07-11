@@ -17,10 +17,10 @@ jobs:
           token: ${{ secrets.CLOUDTYPE_TOKEN }}
           ghtoken: ${{ secrets.GHP_TOKEN }}
 
-      - name: Set environment variables
-        run: |
-          touch ./.env
-          echo "${{ secrets.SERVER_ENV }}" >> ./.env
+#      - name: Set environment variables
+#        run: |
+#          touch ./.env
+#          echo "${{ secrets.SERVER_ENV }}" >> ./.env
 
       - name: Deploy
         uses: cloudtype-github-actions/deploy@v1
