@@ -1,5 +1,7 @@
 package com.lockers.outerpark.domain.payment.service;
 
+import java.time.LocalDate;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -131,7 +133,8 @@ public class PaymentServiceImpl implements PaymentService {
 
 	//공연 날짜가 당일 포함 지났을 경우 예외처리
 	public void validateCancelable(Long paymentId) {
-		if (!paymentRepository.isCancelable(paymentId)) {
+
+		if (paymentRepository.countCancelable(paymentId, LocalDate.now().plusDays(1)) == 0) {
 			throw new PaymentException(PaymentErrorCode.CANCELLATION_PERIOD_EXPIRED);
 		}
 	}
