@@ -42,7 +42,6 @@ public class ReservationResponse {
 				reservation.getReservationSeats().stream().map(rs -> rs.getSeat().getId()).collect(Collectors.toList()))
 			.userId(reservation.getUser().getId())
 			.reservationNumbers(
-				// TODO: N+1 생기는지 확인 (List는 N+1가능성있지만 savedReservation 이기때문에 영속성 컨텍스트에서 가져온다면 문제없음)
 				reservation.getReservationSeats().stream().map(ReservationSeat::getReservationNumber).collect(
 					Collectors.toList()))
 			.count(reservation.getCount())
