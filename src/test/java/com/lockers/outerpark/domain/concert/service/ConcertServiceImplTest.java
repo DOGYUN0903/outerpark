@@ -172,7 +172,7 @@ class ConcertServiceImplTest {
         assertEquals(request.getPrice(), findConcertResponse.price());
         assertEquals(request.getLimitAge(), findConcertResponse.limitAge());
         assertEquals(request.getPerformanceDate(), findConcertResponse.performanceDate());
-        assertEquals(user.getNickname(), findConcertResponse.writer().getNickname());
+        assertEquals(user.getId(), findConcertResponse.writerId());
     }
 
     @Test
@@ -232,13 +232,11 @@ class ConcertServiceImplTest {
         assertEquals("제목1", first.title());
         assertEquals(180, first.runningTime());
         assertEquals(75000, first.price());
-        assertEquals("닉네임", first.writer().getNickname());
 
         FindConcertResponse second = concerts.getContent().get(1);
         assertEquals("제목2", second.title());
         assertEquals(200, second.runningTime());
         assertEquals(65000, second.price());
-        assertEquals("닉네임", second.writer().getNickname());
 
         verify(concertRepository).findAllByIsDeletedFalse(pageable);
     }

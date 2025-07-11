@@ -47,7 +47,7 @@ class AuthServiceTest {
     void 이메일_중복이면_예외가_발생한다() {
         // given
         SignupRequest signupRequest = new SignupRequest("test@email.com", "test", LocalDate.parse("2000-01-01"),
-            "Test1234@", "USER");
+            "Test1234@");
         given(userRepository.existsByEmail(signupRequest.getEmail())).willReturn(true);
         // when & then
         assertThatThrownBy(() -> authService.signup(signupRequest))
@@ -59,7 +59,7 @@ class AuthServiceTest {
     void 닉네임_중복이면_예외가_발생한다() {
         // given
         SignupRequest signupRequest = new SignupRequest("test1@email.com", "test1", LocalDate.parse("2000-09-03"),
-            "Test1234@", "USER");
+            "Test1234@");
         given(userRepository.existsByEmail(signupRequest.getEmail())).willReturn(false);
         given(userRepository.existsByNickname(signupRequest.getNickname())).willReturn(true);
 
@@ -73,7 +73,7 @@ class AuthServiceTest {
     void 회원가입_성공() {
         // given
         SignupRequest signupRequest = new SignupRequest("test1@email.com", "test1", LocalDate.parse("2000-09-03"),
-            "Test1234@", "USER");
+            "Test1234@");
         given(userRepository.existsByEmail(signupRequest.getEmail())).willReturn(false);
         given(userRepository.existsByNickname(signupRequest.getNickname())).willReturn(false);
         given(passwordEncoder.encode(signupRequest.getPassword())).willReturn("Test1234@");
