@@ -33,13 +33,14 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public PaymentSaveResponse savePayment(PaymentRequest request, Long reservationId, Long userId) {
+	public PaymentSaveResponse savePayment(PaymentRequest request, Long concertId, Long userId) {
 
 		//결제 정합성 검사(결제 금액 및 예약 번호 확인)
-		Reservation reservation = processReservationPayment(request, reservationId, userId);
+		Reservation reservation = processReservationPayment(request, concertId, userId);
 
 		//결제 정보 Balance 반영
-		chargePayment(request.getTotalAmount(), reservationId, userId);
+		chargePayment(reservation, userId);
+
 		try {
 			//RequestDto 를 Entity 로 변환
 			Payment payment = request.toEntity(reservation);
@@ -89,38 +90,30 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	//결제 정합성 검사
-	private Reservation processReservationPayment(PaymentRequest request, Long reservationId, Long userId) {
+	private Reservation processReservationPayment(PaymentRequest request, Long concertId, Long userId) {
 
-		//todo : Reservation Entity 객체 필요
-		//Reservation reservation = reservationService.findReservationById(reservationId)
-		Reservation reservation = new Reservation(); // todo: 임시 구현 삭제 예정
+		Reservation reservation = reservationService.findReservationByUserIdAndConsortId(userId, concertId);
 
 		//결제 실패 시 예약 롤백 및 예외
 		if (request.getStatus() != PaymentStatus.SUCCESS) {
-			reservationService.cancelReservation(reservationId);
+			reservationService.cancelReservation(reservation.getId());
 			throw new PaymentException(PaymentErrorCode.PAYMENT_FAILED);
-		}
-
-		int totalAmount = request.getTotalAmount();
-
-		//결제 금액이 맞지 않을 경우 예약 롤백 및 예외
-		if (totalAmount != reservation.getAmount()) {
-			reservationService.cancelReservation(reservationId);
-			throw new PaymentException(PaymentErrorCode.INVALID_AMOUNT_REQUEST);
 		}
 
 		return reservation;
 	}
 
 	//결제 Balance 처리
-	private void chargePayment(int paidAmount, Long reservationId, Long userId) {
+	private void chargePayment(Reservation reservation, Long userId) {
 		User user = userService.getActiveUserById(userId);
 
 		Long nowBalance = user.getBalance();
 
+		int paidAmount = reservation.getAmount();
+
 		//자금이 결제 금액보다 적을 경우 예약 롤백 및 예외
 		if (nowBalance < paidAmount) {
-			reservationService.cancelReservation(reservationId);
+			reservationService.cancelReservation(reservation.getId());
 			throw new PaymentException(PaymentErrorCode.NOT_ENOUGH_BALANCE);
 		}
 

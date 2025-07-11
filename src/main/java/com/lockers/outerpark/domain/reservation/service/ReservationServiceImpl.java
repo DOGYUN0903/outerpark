@@ -40,7 +40,7 @@ public class ReservationServiceImpl implements ReservationService {
 		List<Seat> seats = seatService.getSeatsForReservation(request.getSeatIds(), concertId);
 		User user = userService.getActiveUserById(userId);
 		Concert concert = concertService.getActiveConcert(concertId);
-		
+
 		Reservation reservation = new Reservation(user, concert, seats.size(),
 			concert.getPrice() * seats.size());
 
@@ -88,6 +88,19 @@ public class ReservationServiceImpl implements ReservationService {
 	public Reservation findReservationById(Long reservationId) {
 		return reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ReservationErrorCode.NOT_FOUND));
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Reservation findReservationByUserIdAndConsortId(Long userId, Long concertId) {
+		List<Reservation> reservationList = reservationRepository
+			.findByUserIdAndConcertIdAndStatus(userId, concertId, ReservationStatus.PENDING);
+
+		//하나의 공연에 PENDING 상태가 2개 이상이거나 없을 경우 예외처리
+		if (reservationList.size() != 1) {
+			throw new ReservationException(ReservationErrorCode.INVALID_RESERVATION_STATE);
+		}
+		return reservationList.get(0);
 	}
 
 	/**
