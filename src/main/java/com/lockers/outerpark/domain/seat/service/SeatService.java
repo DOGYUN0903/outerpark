@@ -34,6 +34,11 @@ public interface SeatService {
 	/**
 	 * 다중 좌석 일괄 검증 및 조회
 	 */
-	List<Seat> getSeatsForReservation(List<Long> seatIds);
+	List<Seat> getSeatsForReservation(List<Long> seatIds, Long concertId);
+
+	/**
+	 * 여러 좌석 예약 가능 여부 검증
+	 */
+	void validateSeatsAvailability(List<Long> seatIds, Long concertId);
 
 }

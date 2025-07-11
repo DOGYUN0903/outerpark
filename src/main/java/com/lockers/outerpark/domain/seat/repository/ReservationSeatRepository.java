@@ -40,12 +40,25 @@ public interface ReservationSeatRepository extends JpaRepository<ReservationSeat
 	/**
 	 * 특정 콘서트에서 특정 좌석의 활성 예약 존재 여부 확인
 	 */
-	@Query("SELECT COUNT(rs) > 0 FROM ReservationSeat rs " +
-		"JOIN rs.reservation r " +
-		"WHERE rs.seat.id = :seatId " +
-		"AND r.concert.id = :concertId " +
-		"AND rs.isDeleted = false " +
-		"AND r.status IN ('PENDING', 'CONFIRMED')")
+	@Query("SELECT COUNT(rs) > 0 FROM ReservationSeat rs "
+		+ "JOIN rs.reservation r "
+		+ "WHERE rs.seat.id = :seatId "
+		+ "AND r.concert.id = :concertId "
+		+ "AND rs.isDeleted = false "
+		+ "AND r.status IN ('PENDING', 'CONFIRMED')")
 	boolean existsActiveBySeatIdAndConcertId(@Param("seatId") Long seatId,
+		@Param("concertId") Long concertId);
+
+	/**
+	 * 주어진 좌석 목록 중 예약 불가능한 좌석 ID들을 반환
+	 * 단일 쿼리로 성능 최적화
+	 */
+	@Query("SELECT rs.seat.id FROM ReservationSeat rs "
+		+ "JOIN rs.reservation r "
+		+ "WHERE rs.seat.id IN :seatIds "
+		+ "AND r.concert.id = :concertId "
+		+ "AND rs.isDeleted = false "
+		+ "AND r.status IN ('PENDING', 'CONFIRMED')")
+	List<Long> findUnavailableSeatIds(@Param("seatIds") List<Long> seatIds,
 		@Param("concertId") Long concertId);
 }
