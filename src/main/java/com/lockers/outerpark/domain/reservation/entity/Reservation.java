@@ -1,14 +1,18 @@
 package com.lockers.outerpark.domain.reservation.entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.lockers.outerpark.domain.concert.entity.Concert;
+import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
 import com.lockers.outerpark.domain.user.entity.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -20,6 +24,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,34 +36,23 @@ import lombok.NoArgsConstructor;
 @EntityListeners(AuditingEntityListener.class)
 public class Reservation {
 
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private ReservationStatus status = ReservationStatus.PENDING;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
-
-	//    @OneToOne(fetch = FetchType.LAZY)
-	//    @JoinColumn(name = "seat_id", nullable = false)
-	//    private Seat seat;
-
-	/**
-	 * 임시 concertId 필드 (ERD의 concert_id 컬럼)
-	 * TODO: 향후 Concert 엔티티 완성 후 @ManyToOne 관계로 변경
-	 */
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "concert_id", nullable = false)
 	private Concert concert;
-
-	@Column(name = "reservation_number", nullable = false)
-	private String reservationNumber;
-
-	@Enumerated(EnumType.STRING)
+	@OneToMany(mappedBy = "reservation", cascade = CascadeType.PERSIST)
+	private List<ReservationSeat> reservationSeats = new ArrayList<>();
 	@Column(nullable = false)
-	private ReservationStatus status = ReservationStatus.CONFIRMED;
-
-	@Column(nullable = false)
+	private int count;
+	@Column(nullable = false, name = "total_amount")
 	private int amount;
 
 	@CreatedDate
@@ -69,10 +63,32 @@ public class Reservation {
 	@Column(name = "cancelled_at")
 	private LocalDate cancelledAt;
 
-	public Reservation(User user, String reservationNumber, int amount) {
+	public Reservation(User user, Concert concert, int count, int totalAmount) {
 		this.user = user;
-		this.reservationNumber = reservationNumber;
-		this.amount = amount;
+		this.concert = concert;
+		this.count = count;
+		this.amount = totalAmount;
 	}
 
+	/**
+	 * 양방향 편의 관계 메서드
+	 */
+	public void addReservationSeat(ReservationSeat reservationSeat) {
+		reservationSeats.add(reservationSeat);
+		reservationSeat.setReservation(this);
+	}
+
+	/**
+	 * 예약 상태 CONFIRMED로 변경
+	 */
+	public void confirm() {
+		this.status = ReservationStatus.CONFIRMED;
+	}
+
+	/**
+	 * 예약 상태 CANCELLED로 변경
+	 */
+	public void cancel() {
+		this.status = ReservationStatus.CANCELLED;
+	}
 }

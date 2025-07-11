@@ -3,6 +3,7 @@ package com.lockers.outerpark.domain.seat.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -47,25 +48,21 @@ public class SeatServiceImpl implements SeatService {
 			reservationSeatRepository.findActiveBySeatIdAndConcertId(seatId, concertId);
 
 		if (activeReservation.isEmpty()) {
-			return null;
+			return null; // 예약 가능
 		}
 
 		ReservationStatus reservationStatus = activeReservation.get().getReservation().getStatus();
 
-		if (reservationStatus == ReservationStatus.CANCELLED) {
-			return null;
+		switch (reservationStatus) {
+			case CONFIRMED:
+				return SeatStatus.CONFIRMED.name();
+			case CANCELLED:
+				return null; // 취소된 예약은 예약 가능으로 처리
+			case PENDING:
+				return SeatStatus.PENDING.name();
+			default:
+				return null;
 		}
-
-		// TODO: PENDING 아직 없음 * 추가 예정
-		// if (reservationStatus == ReservationStatus.PENDING) {
-		// 	return SeatStatus.PENDING.name();
-		// }
-
-		if (reservationStatus == ReservationStatus.CONFIRMED) {
-			return SeatStatus.CONFIRMED.name();
-		}
-
-		return null;
 	}
 
 	@Override
@@ -117,5 +114,73 @@ public class SeatServiceImpl implements SeatService {
 
 		log.debug("예약용 좌석 조회 완료: seatId={}, concertId={}", seatId, concertId);
 		return seat;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<Seat> getSeatsForReservation(List<Long> seatIds, Long concertId) {
+		log.debug("예약용 좌석 일괄 조회 및 검증 시작 - seatIds: {}, concertId: {}", seatIds, concertId);
+
+		// 1. 좌석 예약 가능 여부 일괄 검증
+		validateSeatsAvailability(seatIds, concertId);
+
+		// 2. 좌석 객체 조회 (이미 검증되었으므로 안전)
+		List<Seat> seats = seatRepository.findAllByIdsAndIsDeletedFalse(seatIds);
+
+		// 3. 좌석 번호 순으로 정렬하여 반환
+		List<Seat> sortedSeats = seats.stream()
+			.sorted((s1, s2) -> s1.getSeatNumber().compareTo(s2.getSeatNumber()))
+			.toList();
+
+		log.debug("좌석 조회 및 검증 완료 - {} 개의 유효한 좌석 확인", sortedSeats.size());
+		return sortedSeats;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public void validateSeatsAvailability(List<Long> seatIds, Long concertId) {
+		// 기본 입력값 검증
+		if (seatIds == null || seatIds.isEmpty()) {
+			throw new SeatException.InvalidSeatSelectionException("좌석을 선택해주세요.");
+		}
+
+		// 중복 좌석 검증
+		Set<Long> uniqueSeatIds = Set.copyOf(seatIds);
+		if (uniqueSeatIds.size() != seatIds.size()) {
+			throw new SeatException.InvalidSeatSelectionException("중복된 좌석이 선택되었습니다.");
+		}
+
+		// 좌석 존재 여부 일괄 확인
+		List<Seat> existingSeats = seatRepository.findAllByIdsAndIsDeletedFalse(seatIds);
+		if (existingSeats.size() != seatIds.size()) {
+			Set<Long> foundSeatIds = existingSeats.stream()
+				.map(Seat::getId)
+				.collect(Collectors.toSet());
+
+			List<Long> missingSeatIds = seatIds.stream()
+				.filter(id -> !foundSeatIds.contains(id))
+				.toList();
+
+			throw new SeatException.SeatNotFoundException(
+				String.format("존재하지 않는 좌석: %s", missingSeatIds));
+		}
+
+		List<Long> unavailableSeats = getUnavailableSeats(seatIds, concertId);
+
+		if (!unavailableSeats.isEmpty()) {
+			log.warn("예약 불가능한 좌석 발견 - concertId: {}, unavailableSeats: {}",
+				concertId, unavailableSeats);
+			throw new SeatException.SeatAlreadyReservedException();
+		}
+
+		log.debug("모든 좌석 예약 가능 확인 완료 - concertId: {}, validSeats: {}", concertId, seatIds);
+	}
+
+	/**
+	 * 예약 불가능한 좌석 ID 목록을 반환 (성능 최적화된 단일 쿼리)
+	 */
+	private List<Long> getUnavailableSeats(List<Long> seatIds, Long concertId) {
+		// ReservationSeatRepository에 새로운 메서드 추가 필요
+		return reservationSeatRepository.findUnavailableSeatIds(seatIds, concertId);
 	}
 }

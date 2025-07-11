@@ -8,6 +8,10 @@ public class SeatException {
 		public SeatNotFoundException() {
 			super(SeatErrorCode.SEAT_NOT_FOUND);
 		}
+
+		public SeatNotFoundException(String customMessage) {
+			super(SeatErrorCode.SEAT_NOT_FOUND);
+		}
 	}
 
 	public static class SeatAlreadyReservedException extends BusinessException {
@@ -31,6 +35,12 @@ public class SeatException {
 	public static class DuplicateSeatsExistException extends BusinessException {
 		public DuplicateSeatsExistException() {
 			super(SeatErrorCode.DUPLICATE_SEATS_EXIST);
+		}
+	}
+
+	public static class InvalidSeatSelectionException extends BusinessException {
+		public InvalidSeatSelectionException(String customMessage) {
+			super(SeatErrorCode.INVALID_SEAT_SELECTION);
 		}
 	}
 }

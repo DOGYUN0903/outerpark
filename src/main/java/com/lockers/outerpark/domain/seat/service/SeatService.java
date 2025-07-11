@@ -1,5 +1,7 @@
 package com.lockers.outerpark.domain.seat.service;
 
+import java.util.List;
+
 import com.lockers.outerpark.domain.seat.dto.response.SeatsStatusResponse;
 import com.lockers.outerpark.domain.seat.entity.Seat;
 
@@ -28,5 +30,15 @@ public interface SeatService {
 	 * ReservationSeat 생성을 위한 Seat 객체 조회
 	 */
 	Seat getSeatForReservation(Long seatId, Long concertId);
+
+	/**
+	 * 다중 좌석 일괄 검증 및 조회
+	 */
+	List<Seat> getSeatsForReservation(List<Long> seatIds, Long concertId);
+
+	/**
+	 * 여러 좌석 예약 가능 여부 검증
+	 */
+	void validateSeatsAvailability(List<Long> seatIds, Long concertId);
 
 }
