@@ -43,4 +43,12 @@ public interface ReservationService {
 	 * @return Reservation 엔티티 객체
 	 */
 	Reservation findReservationById(Long reservationId);
+
+	/**
+	 *
+	 * @param userId 유저 ID
+	 * @param concertId 공연 ID
+	 * @return Reservation 엔티티 객체
+	 */
+	Reservation findReservationByUserIdAndConsortId(Long userId, Long concertId);
 }

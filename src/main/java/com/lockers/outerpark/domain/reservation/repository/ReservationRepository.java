@@ -1,5 +1,6 @@
 package com.lockers.outerpark.domain.reservation.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -19,4 +20,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 	@EntityGraph(attributePaths = {"reservationSeats", "reservationSeats.seat", "concert"})
 	@Query("SELECT r FROM Reservation r WHERE r.user.id = :userId AND r.status = :status")
 	Page<Reservation> findAllByUserIdAndStatus(Long userId, ReservationStatus status, Pageable pageable);
+
+	List<Reservation> findByUserIdAndConcertIdAndStatus(Long userId, Long concertId, ReservationStatus status);
 }

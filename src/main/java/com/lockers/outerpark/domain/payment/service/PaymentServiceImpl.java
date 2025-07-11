@@ -33,10 +33,10 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public PaymentSaveResponse savePayment(PaymentRequest request, Long consortsId, Long userId) {
+	public PaymentSaveResponse savePayment(PaymentRequest request, Long concertId, Long userId) {
 
 		//결제 정합성 검사(결제 금액 및 예약 번호 확인)
-		Reservation reservation = processReservationPayment(request, consortsId, userId);
+		Reservation reservation = processReservationPayment(request, concertId, userId);
 
 		//결제 정보 Balance 반영
 		chargePayment(reservation, userId);
@@ -90,9 +90,9 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	//결제 정합성 검사
-	private Reservation processReservationPayment(PaymentRequest request, Long consortsId, Long userId) {
+	private Reservation processReservationPayment(PaymentRequest request, Long concertId, Long userId) {
 
-		Reservation reservation = reservationService.findReservationById(userId);
+		Reservation reservation = reservationService.findReservationByUserIdAndConsortId(userId, concertId);
 
 		//결제 실패 시 예약 롤백 및 예외
 		if (request.getStatus() != PaymentStatus.SUCCESS) {
