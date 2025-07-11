@@ -109,7 +109,7 @@ public class ReservationServiceImpl implements ReservationService {
 	private Reservation reservationAddReservationSeats(List<Seat> seats, Reservation reservation, Concert concert) {
 		for (Seat seat : seats) {
 			String reservationNumber = createReservationNumber(concert, seat.getSeatNumber());
-			ReservationSeat reservationSeat = new ReservationSeat(reservation, seat, reservationNumber);
+			ReservationSeat reservationSeat = new ReservationSeat(seat, reservationNumber);
 
 			reservation.addReservationSeat(reservationSeat);
 		}
