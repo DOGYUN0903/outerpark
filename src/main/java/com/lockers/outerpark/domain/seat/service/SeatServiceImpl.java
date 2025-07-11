@@ -57,10 +57,9 @@ public class SeatServiceImpl implements SeatService {
 			return null;
 		}
 
-		// TODO: PENDING 아직 없음 * 추가 예정
-		// if (reservationStatus == ReservationStatus.PENDING) {
-		// 	return SeatStatus.PENDING.name();
-		// }
+		if (reservationStatus == ReservationStatus.PENDING) {
+			return SeatStatus.PENDING.name();
+		}
 
 		if (reservationStatus == ReservationStatus.CONFIRMED) {
 			return SeatStatus.CONFIRMED.name();
