@@ -22,4 +22,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 	Page<Reservation> findAllByUserIdAndStatus(Long userId, ReservationStatus status, Pageable pageable);
 
 	List<Reservation> findByUserIdAndConcertIdAndStatus(Long userId, Long concertId, ReservationStatus status);
+
+	boolean existsByUserIdAndConcertIdAndStatus(Long userId, Long concertId, ReservationStatus status);
+
 }
