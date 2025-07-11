@@ -37,10 +37,10 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	@Transactional
 	public ReservationResponse createReservation(ReservationRequest request, Long userId, Long concertId) {
+		List<Seat> seats = seatService.getSeatsForReservation(request.getSeatIds(), concertId);
 		User user = userService.getActiveUserById(userId);
 		Concert concert = concertService.getActiveConcert(concertId);
-		List<Seat> seats = seatService.getSeatsForReservation(request.getSeatIds());
-
+		
 		Reservation reservation = new Reservation(user, concert, seats.size(),
 			concert.getPrice() * seats.size());
 
