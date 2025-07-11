@@ -3,6 +3,7 @@ package com.lockers.outerpark.domain.payment.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -11,8 +12,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import com.lockers.outerpark.domain.payment.dto.request.PaymentRequest;
+import com.lockers.outerpark.domain.payment.dto.response.PaymentResponse;
 import com.lockers.outerpark.domain.payment.dto.response.PaymentSaveResponse;
 import com.lockers.outerpark.domain.payment.entity.Payment;
 import com.lockers.outerpark.domain.payment.exception.PaymentErrorCode;
@@ -42,15 +45,15 @@ public class PaymentServiceTest {
 	@Test
 	void 결제가_성공적으로_저장된다() {
 		// given
-		Long reservationId = 1L;
 		Long userId = 42L;
+		Long concertId = 1L;
 		int amount = 100000;
 
-		PaymentRequest request = new PaymentRequest(amount, "CARD", PaymentStatus.SUCCESS);
+		PaymentRequest request = new PaymentRequest("CARD", PaymentStatus.SUCCESS);
 
-		//todo:예약정보 재 구현 필요
 		Reservation reservation = mock(Reservation.class);
 		when(reservation.getAmount()).thenReturn(amount);
+		when(reservationService.findReservationByUserIdAndConsortId(userId, concertId)).thenReturn(reservation);
 
 		User user = mock(User.class);
 		when(user.getBalance()).thenReturn(200000L);
@@ -67,7 +70,7 @@ public class PaymentServiceTest {
 		when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
 		// when
-		PaymentSaveResponse response = paymentService.savePayment(request, reservationId, userId);
+		PaymentSaveResponse response = paymentService.savePayment(request, concertId, userId);
 
 		// then
 		assertNotNull(response);
@@ -76,60 +79,115 @@ public class PaymentServiceTest {
 	}
 
 	@Test
+	void 데이터_무결성_예외_발생시_예약취소_그리고_예외() {
+		// given
+		Long userId = 42L;
+		Long concertId = 1L;
+		int amount = 100000;
+
+		PaymentRequest request = new PaymentRequest("CARD", PaymentStatus.SUCCESS);
+
+		Reservation reservation = mock(Reservation.class);
+		when(reservation.getAmount()).thenReturn(amount);
+		when(reservationService.findReservationByUserIdAndConsortId(userId, concertId)).thenReturn(reservation);
+
+		User user = mock(User.class);
+		when(user.getBalance()).thenReturn(200000L);
+		when(userService.getActiveUserById(userId)).thenReturn(user);
+
+		Payment payment = new Payment();
+
+		when(paymentRepository.save(any(Payment.class)))
+			.thenThrow(new DataIntegrityViolationException("예외 발생"));
+
+		// when & then
+		PaymentException ex = assertThrows(PaymentException.class,
+			() -> paymentService.savePayment(request, concertId, userId)
+		);
+
+		// 예외 코드 확인
+		assertEquals(PaymentErrorCode.INVALID_PAYMENT_REQUEST, ex.getErrorCode());
+
+		// 예약 취소가 호출되었는지 확인
+		verify(reservationService).cancelReservation(reservation.getId());
+	}
+
+	@Test
+	void 예상치_못한_예외_발생시_예약취소_그리고_예외() {
+		// given
+		Long userId = 42L;
+		Long concertId = 1L;
+		int amount = 100000;
+
+		PaymentRequest request = new PaymentRequest("CARD", PaymentStatus.SUCCESS);
+
+		Reservation reservation = mock(Reservation.class);
+		when(reservation.getAmount()).thenReturn(amount);
+		when(reservationService.findReservationByUserIdAndConsortId(userId, concertId)).thenReturn(reservation);
+
+		User user = mock(User.class);
+		when(user.getBalance()).thenReturn(200000L);
+		when(userService.getActiveUserById(userId)).thenReturn(user);
+
+		Payment payment = new Payment();
+
+		when(paymentRepository.save(payment)).thenThrow(RuntimeException.class);
+
+		// when & then
+		PaymentException ex = assertThrows(PaymentException.class,
+			() -> paymentService.savePayment(request, concertId, userId)
+		);
+
+		// 예외 코드 확인
+		assertEquals(PaymentErrorCode.PAYMENT_FAILED, ex.getErrorCode());
+
+		// 예약 취소가 호출되었는지 확인
+		verify(reservationService).cancelReservation(reservation.getId());
+	}
+
+	@Test
 	void 결제_성공이_아닐_경우_예외_발생() {
 		// given
-		Long reservationId = 1L;
+		Long concertId = 1L;
 		Long userId = 33L;
 		PaymentRequest request = mock(PaymentRequest.class);
 		when(request.getStatus()).thenReturn(PaymentStatus.CANCEL);
-		Mockito.doNothing().when(reservationService).cancelReservation(reservationId);
+
+		Reservation reservation = mock(Reservation.class);
+		when(reservation.getId()).thenReturn(1L);
+		when(reservationService.findReservationByUserIdAndConsortId(userId, concertId)).thenReturn(reservation);
 
 		//when
 		PaymentException ex = assertThrows(PaymentException.class, () ->
-			paymentService.savePayment(request, reservationId, userId)
+			paymentService.savePayment(request, concertId, userId)
 		);
 
 		//then
 		assertEquals(PaymentErrorCode.PAYMENT_FAILED, ex.getErrorCode());
 	}
 
-	//todo:reservation 객체 연결 시 재 구현
-	@Test
-	void 결제_금액이_일치하지_않을_경우_예외_발생() {
-		// given
-		Long reservationId = 1L;
-		Long userId = 33L;
-		PaymentRequest request = new PaymentRequest(100000, "POINT", PaymentStatus.SUCCESS);
-		Reservation reservation = mock(Reservation.class);
-		when(reservation.getAmount()).thenReturn(90000);
-		Mockito.doNothing().when(reservationService).cancelReservation(reservationId);
-
-		//when
-		PaymentException ex = assertThrows(PaymentException.class, () ->
-			paymentService.savePayment(request, reservationId, userId)
-		);
-
-		//then
-		assertEquals(PaymentErrorCode.INVALID_AMOUNT_REQUEST, ex.getErrorCode());
-	}
-
-	//todo:reservation 객체 연결 시 재 구현
 	@Test
 	void 결제_금액이_부족할_경우_예외_발생() {
 		// given
-		Long reservationId = 1L;
+		Long concertId = 1L;
 		Long userId = 33L;
-		PaymentRequest request = new PaymentRequest(100000, "POINT", PaymentStatus.SUCCESS);
+		PaymentRequest request = new PaymentRequest("POINT", PaymentStatus.SUCCESS);
+
 		Reservation reservation = mock(Reservation.class);
 		when(reservation.getAmount()).thenReturn(90000);
+		when(reservationService.findReservationByUserIdAndConsortId(userId, concertId)).thenReturn(reservation);
+
+		User user = mock(User.class);
+		when(user.getBalance()).thenReturn(50000L);
+		when(userService.getActiveUserById(userId)).thenReturn(user);
 
 		//when
 		PaymentException ex = assertThrows(PaymentException.class, () ->
-			paymentService.savePayment(request, reservationId, userId)
+			paymentService.savePayment(request, concertId, userId)
 		);
 
 		//then
-		assertEquals(PaymentErrorCode.INVALID_AMOUNT_REQUEST, ex.getErrorCode());
+		assertEquals(PaymentErrorCode.NOT_ENOUGH_BALANCE, ex.getErrorCode());
 	}
 
 	@Test
@@ -137,12 +195,44 @@ public class PaymentServiceTest {
 		//given
 		Long paymentId = 1L;
 
+		Payment payment = Payment.builder()
+			.id(10L)
+			.method("CARD")
+			.status(PaymentStatus.SUCCESS)
+			.build();
+
 		// when
 		PaymentException ex = assertThrows(PaymentException.class, () ->
 			paymentService.findOnePayment(paymentId)
 		);
 
 		assertEquals(PaymentErrorCode.NOT_FOUND_PAYMENT, ex.getErrorCode());
+
+	}
+
+	@Test
+	void 결제_조회시_정상_반환() {
+		// given
+		Long paymentId = 1L;
+		Long reservationId = 10L;
+
+		Reservation reservation = mock(Reservation.class);
+		when(reservation.getId()).thenReturn(reservationId);
+
+		Payment payment = Payment.builder()
+			.id(paymentId)
+			.reservation(reservation)
+			.build();
+
+		Mockito.when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment));
+
+		// when
+		PaymentResponse response = paymentService.findOnePayment(paymentId);
+
+		// then
+		assertNotNull(response);
+		assertEquals(paymentId, response.getId());
+		assertEquals(reservationId, response.getReservationId());
 
 	}
 
@@ -166,7 +256,7 @@ public class PaymentServiceTest {
 
 		// mocking
 		when(paymentRepository.findByIdAndStatus(paymentId, PaymentStatus.SUCCESS)).thenReturn(Optional.of(payment));
-		when(paymentRepository.isCancelable(paymentId)).thenReturn(true);
+		when(paymentRepository.countCancelable(paymentId, LocalDate.now().plusDays(1))).thenReturn(1L);
 		when(userService.getActiveUserById(userId)).thenReturn(user);
 
 		// when
@@ -210,8 +300,8 @@ public class PaymentServiceTest {
 			.thenReturn(Optional.of(mockPayment));
 
 		// 공연 날짜가 이미 지남
-		Mockito.when(paymentRepository.isCancelable(paymentId))
-			.thenReturn(false);
+		Mockito.when(paymentRepository.countCancelable(paymentId, LocalDate.now().plusDays(1)))
+			.thenReturn(0L);
 
 		// when
 		PaymentException ex = assertThrows(PaymentException.class, () ->
