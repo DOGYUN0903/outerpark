@@ -50,6 +50,9 @@ public class PaymentServiceImpl implements PaymentService {
 			//결제 정보 저장
 			Payment savedPayment = paymentRepository.save(payment);
 
+			//예약 정보 Confirm 변경
+			reservation.confirm();
+
 			//결제 정보 ID 반환
 			return new PaymentSaveResponse(savedPayment.getId());
 
