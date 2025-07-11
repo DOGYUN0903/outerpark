@@ -25,6 +25,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 	 * 공연일의 하루 전까지는 취소 가능하다고 판단합니다.
 	 *
 	 * @param paymentId 결제 ID
+ 	 * @param tomorrow 내일 날짜
 	 * @return 취소 가능 조건을 만족하는 개수 (0이면 불가능, 1 이상이면 가능)
 	 */
 	@Query("""
