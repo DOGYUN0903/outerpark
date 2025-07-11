@@ -1,0 +1,40 @@
+name: deploy-test.yml
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cicd/test
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Connect deploy key
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+
+      - name: Set environment variables
+        run: |
+          touch ./.env
+          echo "${{ secrets.SERVER_ENV }}" >> ./.env
+
+      - name: Deploy
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: kimdk0903/outerpark
+          stage: main
+          yaml: |
+            name: cicdtest
+            app: java@17
+            options:
+              ports: 8080
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}
+              preset: java-springboot
