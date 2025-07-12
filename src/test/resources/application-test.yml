@@ -1,0 +1,28 @@
+server:
+  port: ${TEST_SERVER_PORT}
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:${TEST_MYSQL_PORT}/${TEST_MYSQL_DBNAME}?serverTimezone=Asia/Seoul
+    username: ${TEST_MYSQL_USERNAME}
+    password: ${TEST_MYSQL_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  data:
+    redis:
+      host: ${TEST_REDIS_HOST}
+      port: ${TEST_REDIS_PORT}
+  config:
+    import: optional:file:.env[.properties]
+
+jwt:
+  secret:
+    key: ${TEST_JWT_SECRET_KEY}
