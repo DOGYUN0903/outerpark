@@ -39,10 +39,10 @@ public class PaymentController {
 		@PathVariable Long concertId,
 		@RequestBody @Valid PaymentRequest paymentRequest) {
 
-		return new ResponseEntity<>(
-			ApiResponse.success("결제 내역이 생성 되었습니다.",
-				paymentService.savePayment(paymentRequest, concertId, userId)),
-			HttpStatus.CREATED);
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(
+				ApiResponse.success("결제 내역이 생성 되었습니다.",
+					paymentService.savePayment(paymentRequest, concertId, userId)));
 	}
 
 	/**
@@ -53,8 +53,8 @@ public class PaymentController {
 	 */
 	@GetMapping("/api/payments/{paymentId}")
 	public ResponseEntity<ApiResponse<PaymentResponse>> findOnePayment(@PathVariable Long paymentId) {
-		return new ResponseEntity<>(
-			ApiResponse.success("결제 정보를 조회했습니다.", paymentService.findOnePayment(paymentId)), HttpStatus.OK);
+		return ResponseEntity.ok(
+			ApiResponse.success("결제 정보를 조회했습니다.", paymentService.findOnePayment(paymentId)));
 	}
 
 	/**
@@ -65,11 +65,9 @@ public class PaymentController {
 	 * @return 결제 취소 성공 응답 (200 OK)
 	 */
 	@PatchMapping("/api/payments/{paymentId}")
-	public ResponseEntity<ApiResponse<PaymentResponse>> cancelPayment(@AuthenticationPrincipal Long userId,
+	public ResponseEntity<ApiResponse<Void>> cancelPayment(@AuthenticationPrincipal Long userId,
 		@PathVariable Long paymentId) {
 		paymentService.cancelPayment(paymentId, userId);
-		return new ResponseEntity<>(
-			ApiResponse.success("결제가 취소되었습니다.", null),
-			HttpStatus.NO_CONTENT);
+		return ResponseEntity.ok(ApiResponse.success("결제가 취소되었습니다.", null));
 	}
 }
