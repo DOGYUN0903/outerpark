@@ -219,7 +219,8 @@ class ConcertServiceImplTest {
 		List<Concert> concertList = Arrays.asList(concert1, concert2);
 		Page<Concert> concertPage = new PageImpl<>(concertList, pageable, concertList.size());
 
-		when(concertRepository.findAllByIsDeletedFalseOrderByPerformanceDateAscIdAsc(pageable)).thenReturn(concertPage);
+		when(concertRepository.findUpcomingConcerts(
+			LocalDate.now(), pageable)).thenReturn(concertPage);
 
 		// when
 		Page<FindConcertResponse> concerts = concertServiceImpl.findConcerts(pageable);
@@ -238,7 +239,9 @@ class ConcertServiceImplTest {
 		assertEquals(200, second.runningTime());
 		assertEquals(65000, second.price());
 
-		verify(concertRepository).findAllByIsDeletedFalseOrderByPerformanceDateAscIdAsc(pageable);
+		verify(
+			concertRepository).findUpcomingConcerts(
+			LocalDate.now(), pageable);
 	}
 
 	@Test
