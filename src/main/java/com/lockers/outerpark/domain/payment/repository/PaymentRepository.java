@@ -1,5 +1,6 @@
 package com.lockers.outerpark.domain.payment.repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,16 +25,16 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 	 * 공연일의 하루 전까지는 취소 가능하다고 판단합니다.
 	 *
 	 * @param paymentId 결제 ID
-	 * @param now 현재 시간 기준 (LocalDateTime.now()를 호출한 값)
-	 * @return true: 공연일 기준 하루 전까지이면 취소 가능, false: 공연 당일이거나 지났으면 취소 불가
+ 	 * @param tomorrow 내일 날짜
+	 * @return 취소 가능 조건을 만족하는 개수 (0이면 불가능, 1 이상이면 가능)
 	 */
-	@Query(value = """
-		SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END
-		FROM payments p
-		JOIN reservations r ON p.reservation_id = r.id
-		JOIN concerts c ON r.concert_id = c.id
+	@Query("""
+		SELECT COUNT(p)
+		FROM Payment p
+		JOIN p.reservation r
+		JOIN r.concert c
 		WHERE p.id = :paymentId
-		AND c.performance_date >= DATE_ADD(NOW(), INTERVAL 1 DAY)
-		""", nativeQuery = true)
-	boolean isCancelable(@Param("paymentId") Long paymentId);
+		AND c.performanceDate >= :tomorrow
+		""")
+	Long countCancelable(@Param("paymentId") Long paymentId, @Param("tomorrow") LocalDate tomorrow);
 }

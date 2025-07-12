@@ -41,8 +41,7 @@ public class ReservationSeat extends BaseEntity {
 	/**
 	 * 예약과 좌석을 연결하는 ReservationSeat 생성
 	 */
-	public ReservationSeat(Reservation reservation, Seat seat, String reservationNumber) {
-		this.reservation = reservation;
+	public ReservationSeat(Seat seat, String reservationNumber) {
 		this.seat = seat;
 		this.reservationNumber = reservationNumber;
 	}
