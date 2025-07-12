@@ -43,6 +43,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    
+    // aop
+    implementation("org.springframework.boot:spring-boot-starter-aop:3.5.3")
 }
 
 tasks.named('test') {
