@@ -115,7 +115,7 @@ class ReservationServiceImplTest {
                     reservationService.createReservation(req, id, concertId);
                 } catch (Exception e) {
                     exceptions.add(e);
-                    log.warn("예약 실패: userId={}, reason={}", userId, e.getMessage());
+                    log.warn("예약 실패: userId={}, reason={}", id, e.getMessage());
                 } finally {
                     latch.countDown();
                 }
