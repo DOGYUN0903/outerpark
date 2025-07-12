@@ -10,7 +10,7 @@ import com.lockers.outerpark.domain.concert.entity.Concert;
 
 public interface ConcertRepository extends JpaRepository<Concert, Long> {
 
-    Optional<Concert> findByIdAndIsDeletedFalse(Long id);
+	Optional<Concert> findByIdAndIsDeletedFalse(Long id);
 
-    Page<Concert> findAllByIsDeletedFalse(Pageable pageable);
+	Page<Concert> findAllByIsDeletedFalseOrderByPerformanceDateAscIdAsc(Pageable pageable);
 }
