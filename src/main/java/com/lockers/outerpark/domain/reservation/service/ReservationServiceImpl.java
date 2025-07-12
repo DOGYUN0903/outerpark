@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lockers.outerpark.domain.concert.entity.Concert;
 import com.lockers.outerpark.domain.concert.service.ConcertService;
+import com.lockers.outerpark.domain.lock.service.RedisLockService;
 import com.lockers.outerpark.domain.reservation.dto.request.ReservationRequest;
 import com.lockers.outerpark.domain.reservation.dto.response.ReservationResponse;
 import com.lockers.outerpark.domain.reservation.dto.response.UserReservationResponse;
@@ -24,9 +25,11 @@ import com.lockers.outerpark.domain.user.entity.User;
 import com.lockers.outerpark.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReservationServiceImpl implements ReservationService {
 
 	private final UserService userService;
@@ -35,26 +38,29 @@ public class ReservationServiceImpl implements ReservationService {
 	private final ReservationRepository reservationRepository;
 
 	@Override
-	@Transactional
-	public ReservationResponse createReservation(ReservationRequest request, Long userId, Long concertId) {
+  @Transactional
+  public ReservationResponse createReservation(ReservationRequest request, Long userId, Long concertId) {
+      List<Long> seatIds = request.getSeatIds();
 
-		//같은 공연에 이미 PENDING 중인 예약이 있을경우 예외
-		if (reservationRepository.existsByUserIdAndConcertIdAndStatus(userId, concertId, ReservationStatus.PENDING)) {
-			throw new ReservationException(ReservationErrorCode.ALREADY_PENDING);
-		}
+      // 락 획득
+      String lockId = redisLockService.acquireLock(concertId, seatIds);
+      log.info("✅ 예약 시도: userId={}, concertId={}, seatIds={}", userId, concertId, seatIds);
+      try {
+          List<Seat> seats = seatService.getSeatsForReservation(request.getSeatIds(), concertId);
+          User user = userService.getActiveUserById(userId);
+          Concert concert = concertService.getActiveConcert(concertId);
 
-		List<Seat> seats = seatService.getSeatsForReservation(request.getSeatIds(), concertId);
-		User user = userService.getActiveUserById(userId);
-		Concert concert = concertService.getActiveConcert(concertId);
+          Reservation reservation = new Reservation(user, concert, seats.size(),
+              concert.getPrice() * seats.size());
 
-		Reservation reservation = new Reservation(user, concert, seats.size(),
-			concert.getPrice() * seats.size());
+          Reservation savedReservation = reservationRepository.save(
+              reservationAddReservationSeats(seats, reservation, concert));
 
-		Reservation savedReservation = reservationRepository.save(
-			reservationAddReservationSeats(seats, reservation, concert));
-
-		return ReservationResponse.fromEntity(savedReservation);
-	}
+          return ReservationResponse.fromEntity(savedReservation);
+      } finally {
+          redisLockService.releaseLock(concertId, seatIds, lockId);
+      }
+  }
 
 	@Override
 	@Transactional
