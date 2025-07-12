@@ -1,0 +1,55 @@
+name: deploy-dev.yml
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Connect deploy key to GitHub (Cloudtype)
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+
+      - name: Deploy to Cloudtype
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: kimdk0903/outerpark
+          stage: main
+          yaml: |
+            name: outerpark-dev
+            app: java@17
+            options:
+              ports: 8080
+              env:
+              - name: RDS_URL
+                value: ${{ secrets.RDS_URL }}
+              - name: MYSQL_USERNAME
+                value: ${{ secrets.MYSQL_USERNAME }}
+              - name: MYSQL_PASSWORD
+                value: ${{ secrets.MYSQL_PASSWORD }}
+              - name: MYSQL_PORT
+                value: ${{ secrets.MYSQL_PORT }}
+              - name: MYSQL_DBNAME
+                value: ${{ secrets.MYSQL_DBNAME }}
+              - name: JWT_SECRET_KEY
+                value: ${{ secrets.JWT_SECRET_KEY }}
+              - name: REDIS_HOST
+                value: ${{ secrets.REDIS_HOST }}
+              - name: REDIS_PORT
+                value: ${{ secrets.REDIS_PORT }}
+              - name: SERVER_PORT
+                value: 8080
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}
+              preset: java-springboot
