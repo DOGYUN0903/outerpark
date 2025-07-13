@@ -21,6 +21,61 @@
 
 </div>
 
+<div align="center">
+
+### 👥 팀원 소개
+
+ <table>
+   <tr>
+     <td align="center">
+       <a href="https://github.com/DOGYUN0903">
+         <img src="https://github.com/DOGYUN0903.png" width="100px;" alt=""/>
+       </a><br />
+       <sub><b><a href="https://github.com/DOGYUN0903">김도균 (DOGYUN)</a></b></sub><br />
+       <sub>Auth & User, Redis 락</sub>
+     </td>
+     <td align="center">
+       <a href="https://github.com/kimyongjun0129">
+         <img src="https://github.com/kimyongjun0129.png" width="100px;" alt=""/>
+       </a><br />
+       <sub><b><a href="https://github.com/kimyongjun0129">김용준 (kimyongjun0129)</a></b></sub><br />
+       <sub>Concert</sub>
+     </td>
+     <td align="center">
+       <a href="https://github.com/balsohn">
+         <img src="https://github.com/balsohn.png" width="100px;" alt=""/>
+       </a><br />
+       <sub><b><a href="https://github.com/balsohn">손지호 (balsohn)</a></b></sub><br />
+       <sub>Seat</sub>
+     </td>
+   </tr>
+   <tr>
+     <td align="center">
+       <a href="https://github.com/Zyooon">
+         <img src="https://github.com/Zyooon.png" width="100px;" alt=""/>
+       </a><br />
+       <sub><b><a href="https://github.com/Zyooon">우지운 (Zyooon)</a></b></sub><br />
+       <sub>Payment</sub>
+     </td>
+     <td align="center">
+       <a href="https://github.com/kcc5107">
+         <img src="https://github.com/kcc5107.png" width="100px;" alt=""/>
+       </a><br />
+       <sub><b><a href="https://github.com/kcc5107">장경혁 (kcc5107)</a></b></sub><br />
+       <sub>Reservation</sub>
+     </td>
+     <td align="center">
+       <a href="https://github.com/GyeongSe99">
+         <img src="https://github.com/GyeongSe99.png" width="100px;" alt=""/>
+       </a><br />
+       <sub><b><a href="https://github.com/GyeongSe99">천세경 (GyeongSe99)</a></b></sub><br />
+       <sub>CI/CD</sub>
+     </td>
+   </tr>
+ </table>
+
+</div>
+
 ### 📋 주요 기능
 
 #### 🎫 콘서트 예약 시스템
@@ -53,7 +108,9 @@
 
 **Backend**
 
-<img src="https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"> <img src="https://img.shields.io/badge/Spring%20Boot-3.5.3-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> <img src="https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> <img src="https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white"> <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white">
+<img src="https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"> <img src="https://img.shields.io/badge/Spring%20Boot-3.5.3-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> 
+
+<img src="https://img.shields.io/badge/Spring%20Data%20JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> <img src="https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white"> <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white">
 
 **Database**
 
@@ -146,7 +203,7 @@ cd outerpark
 
 ### 📖 API 문서
 
-#### 🔐 Auth (인증) - 담당: 김도균
+#### 🔐 Auth (인증)
 
 <details>
 <summary><code>🟢 POST /api/auth/signup</code> - 회원가입</summary>
@@ -290,7 +347,7 @@ cd outerpark
 
 ---
 
-#### 👤 User (사용자) - 담당: 김도균
+#### 👤 User (사용자)
 
 <details>
 <summary><code>🔵 GET /api/users/me</code> - 내 정보 조회</summary>
@@ -405,7 +462,7 @@ cd outerpark
 
 ---
 
-#### 🎪 Concert (콘서트) - 담당: 김용준
+#### 🎪 Concert (콘서트)
 
 <details>
 <summary><code>🟢 POST /api/concerts</code> - 콘서트 등록 (ADMIN)</summary>
@@ -681,7 +738,7 @@ DELETE /api/concerts/1
 
 ---
 
-#### 🪑 Seat (좌석) - 담당: 손지호
+#### 🪑 Seat (좌석)
 
 <details>
 <summary><code>🔵 GET /api/concerts/{concertId}/seats</code> - 콘서트 좌석 현황 조회</summary>
@@ -765,7 +822,7 @@ GET /api/concerts/1/seats
 
 ---
 
-#### 📝 Reservation (예약) - 담당: 장경혁
+#### 📝 Reservation (예약)
 
 <details>
 <summary><code>🟢 POST /api/reservations/concerts/{concertId}</code> - 좌석 예약</summary>
@@ -922,7 +979,7 @@ DELETE /api/reservations/5
 
 ---
 
-#### 💳 Payment (결제) - 담당: 우지운
+#### 💳 Payment (결제)
 
 <details>
 <summary><code>🟢 POST /api/payments/concerts/{concertId}</code> - 결제 생성</summary>
@@ -1139,63 +1196,10 @@ style: 코드 스타일 수정
 - `dev`: 개발 환경 브랜치
 - `feat/*`: 기능 개발 브랜치
 
-### 👥 팀원 소개
-
-<table>
-  <tr>
-    <td align="center">
-      <a href="https://github.com/DOGYUN0903">
-        <img src="https://github.com/DOGYUN0903.png" width="100px;" alt=""/>
-      </a><br />
-      <sub><b><a href="https://github.com/DOGYUN0903">김도균 (DOGYUN)</a></b></sub><br />
-      <sub>Auth & User, Redis 락</sub>
-    </td>
-    <td align="center">
-      <a href="https://github.com/kimyongjun0129">
-        <img src="https://github.com/kimyongjun0129.png" width="100px;" alt=""/>
-      </a><br />
-      <sub><b><a href="https://github.com/kimyongjun0129">김용준 (kimyongjun0129)</a></b></sub><br />
-      <sub>Concert</sub>
-    </td>
-    <td align="center">
-      <a href="https://github.com/balsohn">
-        <img src="https://github.com/balsohn.png" width="100px;" alt=""/>
-      </a><br />
-      <sub><b><a href="https://github.com/balsohn">손지호 (balsohn)</a></b></sub><br />
-      <sub>Seat</sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <a href="https://github.com/Zyooon">
-        <img src="https://github.com/Zyooon.png" width="100px;" alt=""/>
-      </a><br />
-      <sub><b><a href="https://github.com/Zyooon">우지운 (Zyooon)</a></b></sub><br />
-      <sub>Payment</sub>
-    </td>
-    <td align="center">
-      <a href="https://github.com/kcc5107">
-        <img src="https://github.com/kcc5107.png" width="100px;" alt=""/>
-      </a><br />
-      <sub><b><a href="https://github.com/kcc5107">장경혁 (kcc5107)</a></b></sub><br />
-      <sub>Reservation</sub>
-    </td>
-    <td align="center">
-      <a href="https://github.com/GyeongSe99">
-        <img src="https://github.com/GyeongSe99.png" width="100px;" alt=""/>
-      </a><br />
-      <sub><b><a href="https://github.com/GyeongSe99">천세경 (GyeongSe99)</a></b></sub><br />
-      <sub>CI/CD</sub>
-    </td>
-  </tr>
-</table>
-
 ### 📞 문의
 
-프로젝트에 대한 질문이나 제안사항이 있으시면 언제든지 연락해주세요!
+프로젝트에 대한 질문이나 제안사항이 있으시면 언제든지 [연락](https://github.com/DOGYUN0903/outerpark/issues) 주세요!
 
 ---
 
 ⭐ 이 프로젝트가 도움이 되셨다면 Star를 눌러주세요!
-
-[GitHub](https://github.com)
