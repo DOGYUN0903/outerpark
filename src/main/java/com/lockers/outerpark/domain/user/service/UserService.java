@@ -8,4 +8,6 @@ public interface UserService {
 	UserResponse getUserProfile(Long userId);
 
 	User getActiveUserById(Long userId);
+
+	void validateActiveUserById(Long userId);
 }

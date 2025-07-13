@@ -3,7 +3,7 @@ package com.lockers.outerpark.domain.user.dto.response;
 import java.time.LocalDate;
 
 import com.lockers.outerpark.domain.user.entity.User;
-import com.lockers.outerpark.domain.user.entity.UserRole;
+import com.lockers.outerpark.domain.user.type.UserRole;
 
 public record UserResponse(
 	Long id,

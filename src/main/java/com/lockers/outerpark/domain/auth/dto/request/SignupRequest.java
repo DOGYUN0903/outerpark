@@ -3,7 +3,7 @@ package com.lockers.outerpark.domain.auth.dto.request;
 import java.time.LocalDate;
 
 import com.lockers.outerpark.domain.user.entity.User;
-import com.lockers.outerpark.domain.user.entity.UserRole;
+import com.lockers.outerpark.domain.user.type.UserRole;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

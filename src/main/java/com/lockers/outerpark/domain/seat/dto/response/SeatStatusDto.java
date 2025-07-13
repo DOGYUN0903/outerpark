@@ -1,6 +1,6 @@
 package com.lockers.outerpark.domain.seat.dto.response;
 
-import com.lockers.outerpark.domain.reservation.entity.ReservationStatus;
+import com.lockers.outerpark.domain.reservation.type.ReservationStatus;
 
 import lombok.Getter;
 

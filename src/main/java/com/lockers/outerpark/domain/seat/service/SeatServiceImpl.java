@@ -9,17 +9,17 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.lockers.outerpark.domain.reservation.entity.ReservationStatus;
+import com.lockers.outerpark.domain.reservation.type.ReservationStatus;
 import com.lockers.outerpark.domain.seat.dto.response.SeatResponse;
 import com.lockers.outerpark.domain.seat.dto.response.SeatStatusDto;
 import com.lockers.outerpark.domain.seat.dto.response.SeatsStatusResponse;
 import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
 import com.lockers.outerpark.domain.seat.entity.Seat;
-import com.lockers.outerpark.domain.seat.entity.SeatStatus;
 import com.lockers.outerpark.domain.seat.exception.SeatErrorCode;
 import com.lockers.outerpark.domain.seat.exception.SeatException;
 import com.lockers.outerpark.domain.seat.repository.ReservationSeatRepository;
 import com.lockers.outerpark.domain.seat.repository.SeatRepository;
+import com.lockers.outerpark.domain.seat.type.SeatStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -166,13 +166,6 @@ public class SeatServiceImpl implements SeatService {
 		// 좌석 존재 여부 일괄 확인
 		List<Seat> existingSeats = seatRepository.findAllByIdsAndIsDeletedFalse(seatIds);
 		if (existingSeats.size() != seatIds.size()) {
-			Set<Long> foundSeatIds = existingSeats.stream()
-				.map(Seat::getId)
-				.collect(Collectors.toSet());
-
-			List<Long> missingSeatIds = seatIds.stream()
-				.filter(id -> !foundSeatIds.contains(id))
-				.toList();
 
 			throw new SeatException(SeatErrorCode.SEAT_NOT_FOUND);
 		}

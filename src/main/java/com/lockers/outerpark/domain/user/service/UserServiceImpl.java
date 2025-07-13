@@ -36,4 +36,11 @@ public class UserServiceImpl implements UserService {
 
 		return user;
 	}
+
+	@Override
+	public void validateActiveUserById(Long userId) {
+		if (!userRepository.existsByIdAndIsDeletedFalse(userId)) {
+			throw new UserException(UserErrorCode.USER_NOT_FOUND);
+		}
+	}
 }

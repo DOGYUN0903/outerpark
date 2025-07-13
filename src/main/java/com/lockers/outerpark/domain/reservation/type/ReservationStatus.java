@@ -1,4 +1,4 @@
-package com.lockers.outerpark.domain.reservation.entity;
+package com.lockers.outerpark.domain.reservation.type;
 
 public enum ReservationStatus {
 	CONFIRMED,

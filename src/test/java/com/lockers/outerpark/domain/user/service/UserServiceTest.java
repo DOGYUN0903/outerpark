@@ -15,9 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.lockers.outerpark.domain.user.dto.response.UserResponse;
 import com.lockers.outerpark.domain.user.entity.User;
-import com.lockers.outerpark.domain.user.entity.UserRole;
 import com.lockers.outerpark.domain.user.exception.UserException;
 import com.lockers.outerpark.domain.user.repository.UserRepository;
+import com.lockers.outerpark.domain.user.type.UserRole;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {

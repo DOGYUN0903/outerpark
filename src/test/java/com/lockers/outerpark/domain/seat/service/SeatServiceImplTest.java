@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
-import com.lockers.outerpark.domain.reservation.entity.ReservationStatus;
+import com.lockers.outerpark.domain.reservation.type.ReservationStatus;
 import com.lockers.outerpark.domain.seat.dto.response.SeatStatusDto;
 import com.lockers.outerpark.domain.seat.dto.response.SeatsStatusResponse;
 import com.lockers.outerpark.domain.seat.entity.ReservationSeat;

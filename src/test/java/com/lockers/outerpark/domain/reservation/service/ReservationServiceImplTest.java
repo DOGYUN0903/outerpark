@@ -30,8 +30,8 @@ import com.lockers.outerpark.domain.seat.entity.Seat;
 import com.lockers.outerpark.domain.seat.repository.ReservationSeatRepository;
 import com.lockers.outerpark.domain.seat.repository.SeatRepository;
 import com.lockers.outerpark.domain.user.entity.User;
-import com.lockers.outerpark.domain.user.entity.UserRole;
 import com.lockers.outerpark.domain.user.repository.UserRepository;
+import com.lockers.outerpark.domain.user.type.UserRole;
 
 @ActiveProfiles("test")
 @SpringBootTest

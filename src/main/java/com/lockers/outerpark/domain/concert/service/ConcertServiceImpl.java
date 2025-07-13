@@ -140,7 +140,7 @@ public class ConcertServiceImpl implements ConcertService {
 	public void deleteConcert(Long userId, Long concertId) {
 
 		// 사용자 조회 및 유효성 검사
-		User loginUser = userService.getActiveUserById(userId);
+		userService.validateActiveUserById(userId);
 
 		Concert concert = getActiveConcert(concertId);
 

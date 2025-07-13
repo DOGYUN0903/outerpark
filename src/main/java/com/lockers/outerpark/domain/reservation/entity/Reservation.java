@@ -9,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.lockers.outerpark.domain.concert.entity.Concert;
+import com.lockers.outerpark.domain.reservation.type.ReservationStatus;
 import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
 import com.lockers.outerpark.domain.user.entity.User;
 

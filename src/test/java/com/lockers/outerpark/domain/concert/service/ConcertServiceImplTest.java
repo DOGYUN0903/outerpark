@@ -1,6 +1,6 @@
 package com.lockers.outerpark.domain.concert.service;
 
-import static com.lockers.outerpark.domain.user.entity.UserRole.*;
+import static com.lockers.outerpark.domain.user.type.UserRole.*;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

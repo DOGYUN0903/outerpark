@@ -1,4 +1,4 @@
-package com.lockers.outerpark.domain.seat.entity;
+package com.lockers.outerpark.domain.seat.type;
 
 public enum SeatStatus {
 	PENDING,

@@ -10,7 +10,7 @@ import org.springframework.util.StringUtils;
 
 import com.lockers.outerpark.domain.auth.exception.AuthErrorCode;
 import com.lockers.outerpark.domain.auth.exception.AuthException;
-import com.lockers.outerpark.domain.user.entity.UserRole;
+import com.lockers.outerpark.domain.user.type.UserRole;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

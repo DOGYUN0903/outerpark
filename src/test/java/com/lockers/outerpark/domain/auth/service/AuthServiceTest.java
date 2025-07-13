@@ -21,10 +21,10 @@ import com.lockers.outerpark.domain.auth.dto.request.WithdrawRequest;
 import com.lockers.outerpark.domain.auth.dto.response.SigninResponse;
 import com.lockers.outerpark.domain.auth.dto.response.SignupResponse;
 import com.lockers.outerpark.domain.user.entity.User;
-import com.lockers.outerpark.domain.user.entity.UserRole;
 import com.lockers.outerpark.domain.user.exception.UserException;
 import com.lockers.outerpark.domain.user.repository.UserRepository;
 import com.lockers.outerpark.domain.user.service.UserService;
+import com.lockers.outerpark.domain.user.type.UserRole;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
