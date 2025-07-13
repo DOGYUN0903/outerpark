@@ -53,16 +53,11 @@ public class SeatServiceImpl implements SeatService {
 
 		ReservationStatus reservationStatus = activeReservation.get().getReservation().getStatus();
 
-		switch (reservationStatus) {
-			case CONFIRMED:
-				return SeatStatus.CONFIRMED.name();
-			case CANCELLED:
-				return null; // 취소된 예약은 예약 가능으로 처리
-			case PENDING:
-				return SeatStatus.PENDING.name();
-			default:
-				return null;
-		}
+		return switch (reservationStatus) {
+			case CONFIRMED -> SeatStatus.CONFIRMED.name();
+			case CANCELLED -> null; // 취소된 예약은 예약 가능으로 처리
+			case PENDING -> SeatStatus.PENDING.name();
+		};
 	}
 
 	@Override
@@ -90,7 +85,7 @@ public class SeatServiceImpl implements SeatService {
 		// 통계 계산
 		int totalSeats = seatResponses.size();
 		int reservedSeats = (int)seatResponses.stream()
-			.filter(seat -> "PENDING".equals(seat.getStatus()) || "CONFIRMED".equals(seat.getStatus()))
+			.filter(response -> "PENDING".equals(response.getStatus()) || "CONFIRMED".equals(response.getStatus()))
 			.count();
 		int availableSeats = totalSeats - reservedSeats;
 
@@ -129,11 +124,12 @@ public class SeatServiceImpl implements SeatService {
 			.sorted((s1, s2) -> {
 				String[] parts1 = s1.getSeatNumber().split("-");
 				String[] parts2 = s2.getSeatNumber().split("-");
-				
+
 				// 구역(A, B, C...) 먼저 비교
 				int sectionCompare = parts1[0].compareTo(parts2[0]);
-				if (sectionCompare != 0) return sectionCompare;
-				
+				if (sectionCompare != 0)
+					return sectionCompare;
+
 				// 번호를 숫자로 변환해서 비교
 				int num1 = Integer.parseInt(parts1[1]);
 				int num2 = Integer.parseInt(parts2[1]);

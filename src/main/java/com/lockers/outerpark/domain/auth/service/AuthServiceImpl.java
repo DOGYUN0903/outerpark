@@ -14,7 +14,6 @@ import com.lockers.outerpark.domain.auth.dto.request.WithdrawRequest;
 import com.lockers.outerpark.domain.auth.dto.response.SigninResponse;
 import com.lockers.outerpark.domain.auth.dto.response.SignupResponse;
 import com.lockers.outerpark.domain.user.entity.User;
-import com.lockers.outerpark.domain.user.entity.UserRole;
 import com.lockers.outerpark.domain.user.repository.UserRepository;
 import com.lockers.outerpark.domain.user.service.UserService;
 
@@ -37,14 +36,7 @@ public class AuthServiceImpl implements AuthService {
 		// 비밀번호 암호화
 		String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
 
-		User user = new User(
-			signupRequest.getEmail(),
-			signupRequest.getNickname(),
-			signupRequest.getBirth(),
-			encodedPassword,
-			100000L,
-			UserRole.USER
-		);
+		User user = signupRequest.toEntity(encodedPassword);
 
 		User savedUser = userRepository.save(user);
 

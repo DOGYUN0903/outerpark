@@ -40,10 +40,10 @@ public class PaymentServiceImpl implements PaymentService {
 		//결제 정합성 검사(결제 금액 및 예약 번호 확인)
 		Reservation reservation = processReservationPayment(request, concertId, userId);
 
-		//결제 정보 Balance 반영
-		chargePayment(reservation, userId);
-
 		try {
+			//결제 정보 Balance 반영
+			chargePayment(reservation, userId);
+
 			//RequestDto 를 Entity 로 변환
 			Payment payment = request.toEntity(reservation);
 

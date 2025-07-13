@@ -22,13 +22,7 @@ public class UserServiceImpl implements UserService {
 		// 인증된 유저 찾기
 		User authUser = getActiveUserById(userId);
 
-		return new UserResponse(
-			authUser.getId(),
-			authUser.getNickname(),
-			authUser.getBalance(),
-			authUser.getBirth(),
-			authUser.getUserRole()
-		);
+		return UserResponse.of(authUser);
 	}
 
 	@Transactional(readOnly = true)
