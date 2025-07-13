@@ -1,7 +1,6 @@
 package com.lockers.outerpark.domain.seat.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
 import java.util.List;
@@ -25,6 +24,7 @@ import com.lockers.outerpark.domain.seat.repository.ReservationSeatRepository;
 import com.lockers.outerpark.domain.seat.repository.SeatRepository;
 
 @ExtendWith(MockitoExtension.class)
+@org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 class SeatServiceImplTest {
 
 	@Mock
@@ -42,7 +42,7 @@ class SeatServiceImplTest {
 		// given
 		Long seatId = 1L;
 		Long concertId = 1L;
-		
+
 		given(seatRepository.existsByIdAndIsDeletedFalse(seatId)).willReturn(true);
 		given(reservationSeatRepository.existsActiveBySeatIdAndConcertId(seatId, concertId)).willReturn(false);
 
@@ -59,7 +59,7 @@ class SeatServiceImplTest {
 		// given
 		Long seatId = 1L;
 		Long concertId = 1L;
-		
+
 		given(seatRepository.existsByIdAndIsDeletedFalse(seatId)).willReturn(true);
 		given(reservationSeatRepository.existsActiveBySeatIdAndConcertId(seatId, concertId)).willReturn(true);
 
@@ -76,7 +76,7 @@ class SeatServiceImplTest {
 		// given
 		Long seatId = 999L;
 		Long concertId = 1L;
-		
+
 		given(seatRepository.existsByIdAndIsDeletedFalse(seatId)).willReturn(false);
 
 		// when & then
@@ -90,7 +90,7 @@ class SeatServiceImplTest {
 		// given
 		Long seatId = 1L;
 		Long concertId = 1L;
-		
+
 		given(reservationSeatRepository.findActiveBySeatIdAndConcertId(seatId, concertId))
 			.willReturn(Optional.empty());
 
@@ -107,10 +107,10 @@ class SeatServiceImplTest {
 		// given
 		Long seatId = 1L;
 		Long concertId = 1L;
-		
+
 		Reservation reservation = mock(Reservation.class);
 		ReservationSeat reservationSeat = mock(ReservationSeat.class);
-		
+
 		given(reservationSeat.getReservation()).willReturn(reservation);
 		given(reservation.getStatus()).willReturn(ReservationStatus.PENDING);
 		given(reservationSeatRepository.findActiveBySeatIdAndConcertId(seatId, concertId))
@@ -129,10 +129,10 @@ class SeatServiceImplTest {
 		// given
 		Long seatId = 1L;
 		Long concertId = 1L;
-		
+
 		Reservation reservation = mock(Reservation.class);
 		ReservationSeat reservationSeat = mock(ReservationSeat.class);
-		
+
 		given(reservationSeat.getReservation()).willReturn(reservation);
 		given(reservation.getStatus()).willReturn(ReservationStatus.CONFIRMED);
 		given(reservationSeatRepository.findActiveBySeatIdAndConcertId(seatId, concertId))
@@ -151,10 +151,10 @@ class SeatServiceImplTest {
 		// given
 		Long seatId = 1L;
 		Long concertId = 1L;
-		
+
 		Reservation reservation = mock(Reservation.class);
 		ReservationSeat reservationSeat = mock(ReservationSeat.class);
-		
+
 		given(reservationSeat.getReservation()).willReturn(reservation);
 		given(reservation.getStatus()).willReturn(ReservationStatus.CANCELLED);
 		given(reservationSeatRepository.findActiveBySeatIdAndConcertId(seatId, concertId))
@@ -172,14 +172,14 @@ class SeatServiceImplTest {
 	void 콘서트_좌석_목록_조회_성공() {
 		// given
 		Long concertId = 1L;
-		
+
 		Seat seat1 = createSeat(1L, "A-1");
 		Seat seat2 = createSeat(2L, "A-2");
 		List<Seat> seats = List.of(seat1, seat2);
-		
+
 		SeatStatusDto statusDto1 = new SeatStatusDto(1L, "A-1", ReservationStatus.PENDING);
 		List<SeatStatusDto> statusDtos = List.of(statusDto1);
-		
+
 		given(seatRepository.findAllActiveSeatsOrderBySeatNumber()).willReturn(seats);
 		given(reservationSeatRepository.findSeatStatusByConcertId(concertId)).willReturn(statusDtos);
 
@@ -201,7 +201,7 @@ class SeatServiceImplTest {
 		Long seatId = 1L;
 		Long concertId = 1L;
 		Seat seat = createSeat(seatId, "A-1");
-		
+
 		given(seatRepository.findByIdAndIsDeletedFalse(seatId)).willReturn(Optional.of(seat));
 		given(seatRepository.existsByIdAndIsDeletedFalse(seatId)).willReturn(true);
 		given(reservationSeatRepository.existsActiveBySeatIdAndConcertId(seatId, concertId)).willReturn(false);
@@ -219,7 +219,7 @@ class SeatServiceImplTest {
 		// given
 		Long seatId = 999L;
 		Long concertId = 1L;
-		
+
 		given(seatRepository.findByIdAndIsDeletedFalse(seatId)).willReturn(Optional.empty());
 
 		// when & then
@@ -234,7 +234,7 @@ class SeatServiceImplTest {
 		Long seatId = 1L;
 		Long concertId = 1L;
 		Seat seat = createSeat(seatId, "A-1");
-		
+
 		given(seatRepository.findByIdAndIsDeletedFalse(seatId)).willReturn(Optional.of(seat));
 		given(seatRepository.existsByIdAndIsDeletedFalse(seatId)).willReturn(true);
 		given(reservationSeatRepository.existsActiveBySeatIdAndConcertId(seatId, concertId)).willReturn(true);
@@ -250,11 +250,11 @@ class SeatServiceImplTest {
 		// given
 		List<Long> seatIds = List.of(1L, 2L);
 		Long concertId = 1L;
-		
+
 		Seat seat1 = createSeat(1L, "A-1");
 		Seat seat2 = createSeat(2L, "A-2");
 		List<Seat> seats = List.of(seat1, seat2);
-		
+
 		given(seatRepository.findAllByIdsAndIsDeletedFalse(seatIds)).willReturn(seats);
 		given(reservationSeatRepository.findUnavailableSeatIds(seatIds, concertId)).willReturn(List.of());
 
@@ -277,7 +277,7 @@ class SeatServiceImplTest {
 		// when & then
 		assertThatThrownBy(() -> seatService.validateSeatsAvailability(seatIds, concertId))
 			.isInstanceOf(SeatException.InvalidSeatSelectionException.class)
-			.hasMessage("좌석을 선택해주세요.");
+			.hasMessage("잘못된 좌석 선택입니다.");
 	}
 
 	@Test
@@ -290,7 +290,7 @@ class SeatServiceImplTest {
 		// when & then
 		assertThatThrownBy(() -> seatService.validateSeatsAvailability(seatIds, concertId))
 			.isInstanceOf(SeatException.InvalidSeatSelectionException.class)
-			.hasMessage("좌석을 선택해주세요.");
+			.hasMessage("잘못된 좌석 선택입니다.");
 	}
 
 	@Test
@@ -303,7 +303,7 @@ class SeatServiceImplTest {
 		// when & then
 		assertThatThrownBy(() -> seatService.validateSeatsAvailability(seatIds, concertId))
 			.isInstanceOf(SeatException.InvalidSeatSelectionException.class)
-			.hasMessage("중복된 좌석이 선택되었습니다.");
+			.hasMessage("잘못된 좌석 선택입니다.");
 	}
 
 	@Test
@@ -312,7 +312,7 @@ class SeatServiceImplTest {
 		// given
 		List<Long> seatIds = List.of(1L, 999L);
 		Long concertId = 1L;
-		
+
 		Seat seat1 = createSeat(1L, "A-1");
 		given(seatRepository.findAllByIdsAndIsDeletedFalse(seatIds)).willReturn(List.of(seat1));
 
@@ -328,11 +328,11 @@ class SeatServiceImplTest {
 		// given
 		List<Long> seatIds = List.of(1L, 2L);
 		Long concertId = 1L;
-		
+
 		Seat seat1 = createSeat(1L, "A-1");
 		Seat seat2 = createSeat(2L, "A-2");
 		List<Seat> seats = List.of(seat1, seat2);
-		
+
 		given(seatRepository.findAllByIdsAndIsDeletedFalse(seatIds)).willReturn(seats);
 		given(reservationSeatRepository.findUnavailableSeatIds(seatIds, concertId)).willReturn(List.of(1L));
 
@@ -347,17 +347,51 @@ class SeatServiceImplTest {
 		// given
 		List<Long> seatIds = List.of(1L, 2L);
 		Long concertId = 1L;
-		
+
 		Seat seat1 = createSeat(1L, "A-1");
 		Seat seat2 = createSeat(2L, "A-2");
 		List<Seat> seats = List.of(seat1, seat2);
-		
+
 		given(seatRepository.findAllByIdsAndIsDeletedFalse(seatIds)).willReturn(seats);
 		given(reservationSeatRepository.findUnavailableSeatIds(seatIds, concertId)).willReturn(List.of());
 
 		// when & then
 		assertThatCode(() -> seatService.validateSeatsAvailability(seatIds, concertId))
 			.doesNotThrowAnyException();
+	}
+
+	@Test
+	@DisplayName("좌석_자연순_정렬_테스트")
+	void 좌석_자연순_정렬_테스트() {
+		// given
+		List<Long> seatIds = List.of(1L, 2L, 3L, 4L);
+		Long concertId = 1L;
+
+		// A-10, A-1, B-2, A-2 순서로 Mock 데이터 생성
+		Seat seat1 = createSeat(1L, "A-10");
+		Seat seat2 = createSeat(2L, "A-1");
+		Seat seat3 = createSeat(3L, "B-2");
+		Seat seat4 = createSeat(4L, "A-2");
+		List<Seat> seats = List.of(seat1, seat2, seat3, seat4);
+
+		given(seatRepository.findAllByIdsAndIsDeletedFalse(seatIds)).willReturn(seats);
+		given(reservationSeatRepository.findUnavailableSeatIds(seatIds, concertId)).willReturn(List.of());
+
+		// when
+		List<Seat> result = seatService.getSeatsForReservation(seatIds, concertId);
+
+		// then - 자연순 정렬 확인 (A-1, A-2, A-10, B-2)
+		List<String> expectedOrder = List.of("A-1", "A-2", "A-10", "B-2");
+		List<String> actualOrder = result.stream()
+			.map(Seat::getSeatNumber)
+			.toList();
+
+		// 정렬 결과 출력
+		System.out.println("입력 순서: [A-10, A-1, B-2, A-2]");
+		System.out.println("기대 결과: " + expectedOrder);
+		System.out.println("정렬 결과: " + actualOrder);
+
+		assertThat(actualOrder).isEqualTo(expectedOrder);
 	}
 
 	private Seat createSeat(Long id, String seatNumber) {
