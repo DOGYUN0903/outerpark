@@ -1,8 +1,5 @@
 package com.lockers.outerpark.domain.auth.service;
 
-import static com.lockers.outerpark.domain.auth.exception.AuthException.*;
-import static com.lockers.outerpark.domain.user.exception.UserException.*;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +10,11 @@ import com.lockers.outerpark.domain.auth.dto.request.SignupRequest;
 import com.lockers.outerpark.domain.auth.dto.request.WithdrawRequest;
 import com.lockers.outerpark.domain.auth.dto.response.SigninResponse;
 import com.lockers.outerpark.domain.auth.dto.response.SignupResponse;
+import com.lockers.outerpark.domain.auth.exception.AuthErrorCode;
+import com.lockers.outerpark.domain.auth.exception.AuthException;
 import com.lockers.outerpark.domain.user.entity.User;
+import com.lockers.outerpark.domain.user.exception.UserErrorCode;
+import com.lockers.outerpark.domain.user.exception.UserException;
 import com.lockers.outerpark.domain.user.repository.UserRepository;
 import com.lockers.outerpark.domain.user.service.UserService;
 
@@ -49,15 +50,15 @@ public class AuthServiceImpl implements AuthService {
 	public SigninResponse signin(SigninRequest signinRequest) {
 
 		User findUser = userRepository.findByEmail(signinRequest.getEmail())
-			.orElseThrow(UserNotFoundException::new);
+			.orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
 		if (findUser.getIsDeleted()) {
-			throw new UserDeletedException();
+			throw new UserException(UserErrorCode.USER_ALREADY_DELETED);
 		}
 
 		// 로그인 시 이메일과 비밀번호가 일치하지 않을 경우 401 반환
 		if (!passwordEncoder.matches(signinRequest.getPassword(), findUser.getPassword())) {
-			throw new InvalidPasswordException();
+			throw new AuthException(AuthErrorCode.INVALID_PASSWORD);
 		}
 
 		String bearerToken = jwtUtil.createToken(findUser.getId(), findUser.getUserRole());
@@ -71,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
 		User user = userService.getActiveUserById(userId);
 
 		if (!passwordEncoder.matches(withdrawRequest.getPassword(), user.getPassword())) {
-			throw new InvalidPasswordException();
+			throw new AuthException(AuthErrorCode.INVALID_PASSWORD);
 		}
 		user.softDelete();
 	}
@@ -79,11 +80,11 @@ public class AuthServiceImpl implements AuthService {
 	// 이메일 + 닉네임 중복체크
 	private void validateDuplicateUserInfo(String email, String nickname) {
 		if (userRepository.existsByEmail(email)) {
-			throw new EmailAlreadyExistsException();
+			throw new UserException(UserErrorCode.EMAIL_ALREADY_EXISTS);
 		}
 
 		if (userRepository.existsByNickname(nickname)) {
-			throw new NicknameAlreadyExistsException();
+			throw new UserException(UserErrorCode.NICKNAME_ALREADY_EXISTS);
 		}
 	}
 }

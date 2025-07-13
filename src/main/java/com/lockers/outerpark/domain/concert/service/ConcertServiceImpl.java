@@ -11,6 +11,7 @@ import com.lockers.outerpark.domain.concert.dto.RegisterConcertResponse;
 import com.lockers.outerpark.domain.concert.dto.UpdateConcertRequest;
 import com.lockers.outerpark.domain.concert.dto.UpdateConcertResponse;
 import com.lockers.outerpark.domain.concert.entity.Concert;
+import com.lockers.outerpark.domain.concert.exception.ConcertErrorCode;
 import com.lockers.outerpark.domain.concert.exception.ConcertException;
 import com.lockers.outerpark.domain.concert.repository.ConcertRepository;
 import com.lockers.outerpark.domain.user.entity.User;
@@ -34,7 +35,7 @@ public class ConcertServiceImpl implements ConcertService {
 	 * @param userId 등록 요청을 한 사용자 ID
 	 * @param request 공연 등록에 필요한 정보(title, price, performanceDate 등)
 	 * @return 등록된 공연 정보를 담은 {@link RegisterConcertResponse}
-	 * @throws UserException.InvalidUserRoleException ADMIN이 아닌 경우 발생
+	 * @throws UserException ADMIN이 아닌 경우 발생
 	 * @author kimyongjun0129
 	 */
 	@Override
@@ -58,8 +59,8 @@ public class ConcertServiceImpl implements ConcertService {
 	 * @param userId 수정 작업을 수행하는 사용자의 ID. 해당 사용자를 통해 콘서트를 조회합니다.
 	 * @param request 콘서트 정보를 수정하기 위한 요청 데이터 (제목, 공연 시간, 가격 등 포함).
 	 * @return 수정된 콘서트 정보를 담은 {@link UpdateConcertResponse} 객체.
-	 * @throws UserException.UserNotFoundException 사용자가 존재하지 않는 경우 발생.
-	 * @throws ConcertException.ConcertNotFoundException 공연이 존재하지 않는 경우 발생.
+	 * @throws UserException 사용자가 존재하지 않는 경우 발생.
+	 * @throws ConcertException 공연이 존재하지 않는 경우 발생.
 	 */
 	@Override
 	@Transactional
@@ -97,7 +98,7 @@ public class ConcertServiceImpl implements ConcertService {
 	 *
 	 * @param concertId 조회할 공연 ID
 	 * @return 조회된 공연 정보를 담은 {@link FindConcertResponse} 객체
-	 * @throws ConcertException.ConcertNotFoundException 존재하지 않는 공연일 경우 발생
+	 * @throws ConcertException 존재하지 않는 공연일 경우 발생
 	 * @author kimyongjun0129
 	 */
 	@Override
@@ -130,8 +131,8 @@ public class ConcertServiceImpl implements ConcertService {
 	 *
 	 * @param userId 현재 로그인한 사용자 ID
 	 * @param concertId 삭제 대상 콘서트 ID
-	 * @throws UserException.UserNotFoundException 유효하지 않은 사용자일 경우
-	 * @throws ConcertException.ConcertNotFoundException 해당 콘서트가 없거나 작성자가 일치하지 않는 경우
+	 * @throws UserException 유효하지 않은 사용자일 경우
+	 * @throws ConcertException 해당 콘서트가 없거나 작성자가 일치하지 않는 경우
 	 * @author kimyongjun0129
 	 */
 	@Override
@@ -152,6 +153,6 @@ public class ConcertServiceImpl implements ConcertService {
 	public Concert getActiveConcert(Long concertId) {
 
 		return concertRepository.findByIdAndIsDeletedFalse(concertId)
-			.orElseThrow(ConcertException.ConcertNotFoundException::new);
+			.orElseThrow(() -> new ConcertException(ConcertErrorCode.CONCERT_ALREADY_DELETE));
 	}
 }

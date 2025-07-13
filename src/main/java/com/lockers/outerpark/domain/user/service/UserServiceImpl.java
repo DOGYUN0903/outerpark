@@ -1,12 +1,12 @@
 package com.lockers.outerpark.domain.user.service;
 
-import static com.lockers.outerpark.domain.user.exception.UserException.*;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lockers.outerpark.domain.user.dto.response.UserResponse;
 import com.lockers.outerpark.domain.user.entity.User;
+import com.lockers.outerpark.domain.user.exception.UserErrorCode;
+import com.lockers.outerpark.domain.user.exception.UserException;
 import com.lockers.outerpark.domain.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -28,10 +28,10 @@ public class UserServiceImpl implements UserService {
 	@Transactional(readOnly = true)
 	public User getActiveUserById(Long userId) {
 		User user = userRepository.findById(userId)
-			.orElseThrow(UserNotFoundException::new);
+			.orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
 		if (user.getIsDeleted()) {
-			throw new UserDeletedException();
+			throw new UserException(UserErrorCode.USER_ALREADY_DELETED);
 		}
 
 		return user;
