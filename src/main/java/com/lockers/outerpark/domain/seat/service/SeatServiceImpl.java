@@ -121,15 +121,24 @@ public class SeatServiceImpl implements SeatService {
 	public List<Seat> getSeatsForReservation(List<Long> seatIds, Long concertId) {
 		log.debug("예약용 좌석 일괄 조회 및 검증 시작 - seatIds: {}, concertId: {}", seatIds, concertId);
 
-		// 1. 좌석 예약 가능 여부 일괄 검증
-		validateSeatsAvailability(seatIds, concertId);
+		// 1. 좌석 조회와 검증을 한 번에 처리
+		List<Seat> validatedSeats = validateSeatsAndReturn(seatIds, concertId);
 
-		// 2. 좌석 객체 조회 (이미 검증되었으므로 안전)
-		List<Seat> seats = seatRepository.findAllByIdsAndIsDeletedFalse(seatIds);
-
-		// 3. 좌석 번호 순으로 정렬하여 반환
-		List<Seat> sortedSeats = seats.stream()
-			.sorted((s1, s2) -> s1.getSeatNumber().compareTo(s2.getSeatNumber()))
+		// 2. 좌석 번호 자연순으로 정렬하여 반환 (A-1, A-2, A-3, A-10, A-100...)
+		List<Seat> sortedSeats = validatedSeats.stream()
+			.sorted((s1, s2) -> {
+				String[] parts1 = s1.getSeatNumber().split("-");
+				String[] parts2 = s2.getSeatNumber().split("-");
+				
+				// 구역(A, B, C...) 먼저 비교
+				int sectionCompare = parts1[0].compareTo(parts2[0]);
+				if (sectionCompare != 0) return sectionCompare;
+				
+				// 번호를 숫자로 변환해서 비교
+				int num1 = Integer.parseInt(parts1[1]);
+				int num2 = Integer.parseInt(parts2[1]);
+				return Integer.compare(num1, num2);
+			})
 			.toList();
 
 		log.debug("좌석 조회 및 검증 완료 - {} 개의 유효한 좌석 확인", sortedSeats.size());
@@ -139,6 +148,13 @@ public class SeatServiceImpl implements SeatService {
 	@Override
 	@Transactional(readOnly = true)
 	public void validateSeatsAvailability(List<Long> seatIds, Long concertId) {
+		validateSeatsAndReturn(seatIds, concertId);
+	}
+
+	/**
+	 * 좌석 검증과 조회를 한 번에 처리하여 중복 쿼리 방지
+	 */
+	private List<Seat> validateSeatsAndReturn(List<Long> seatIds, Long concertId) {
 		// 기본 입력값 검증
 		if (seatIds == null || seatIds.isEmpty()) {
 			throw new SeatException.InvalidSeatSelectionException("좌석을 선택해주세요.");
@@ -174,6 +190,7 @@ public class SeatServiceImpl implements SeatService {
 		}
 
 		log.debug("모든 좌석 예약 가능 확인 완료 - concertId: {}, validSeats: {}", concertId, seatIds);
+		return existingSeats;
 	}
 
 	/**
