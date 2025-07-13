@@ -1,4 +1,4 @@
-package com.lockers.outerpark.domain.concert.dto;
+package com.lockers.outerpark.domain.concert.dto.request;
 
 import java.time.LocalDate;
 
