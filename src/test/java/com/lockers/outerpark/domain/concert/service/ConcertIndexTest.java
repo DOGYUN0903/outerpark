@@ -26,7 +26,7 @@ import com.lockers.outerpark.domain.user.repository.UserRepository;
 
 @ActiveProfiles("test")
 @SpringBootTest
-public class ConsertIndexTest {
+public class ConcertIndexTest {
 
 	@Autowired
 	private ConcertRepository concertRepository;
@@ -43,6 +43,7 @@ public class ConsertIndexTest {
 	@Test
 	void 콘서트_전체_조회_인덱싱_적용_테스트() throws Exception {
 
+		//DB 직접 생성해서 테스트 시 사용
 		// if (!initialized) {
 		// 	setupConcertsJdbcBatch();
 		// 	initialized = true;
@@ -66,7 +67,8 @@ public class ConsertIndexTest {
 	@Tag("heavy")
 	@Test
 	void 콘서트_전체_조회_인덱싱_미적용_테스트() throws Exception {
-		
+
+		//DB 직접 생성해서 테스트 시 사용
 		// if (!initialized) {
 		// 	setupConcertsJdbcBatch();
 		// 	initialized = true;
