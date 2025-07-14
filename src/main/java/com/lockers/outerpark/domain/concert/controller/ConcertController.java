@@ -41,21 +41,21 @@ public class ConcertController {
 			HttpStatus.CREATED);
 	}
 
-	@PatchMapping("/{concert_id}")
+	@PatchMapping("/{concertId}")
 	public ResponseEntity<ApiResponse<ConcertUpdateResponse>> updateConcert(
 		@AuthenticationPrincipal Long id,
-		@PathVariable Long concert_id,
+		@PathVariable Long concertId,
 		@RequestBody ConcertUpdateRequest request
 	) {
 		return new ResponseEntity<>(ApiResponse.success("콘서트가 수정되었습니다.",
-			concertService.updateConcert(id, concert_id, request)), HttpStatus.OK);
+			concertService.updateConcert(id, concertId, request)), HttpStatus.OK);
 	}
 
-	@GetMapping("/{concert_id}")
+	@GetMapping("/{concertId}")
 	public ResponseEntity<ApiResponse<ConcertResponse>> findConcert(
-		@PathVariable Long concert_id
+		@PathVariable Long concertId
 	) {
-		return new ResponseEntity<>(ApiResponse.success("콘서트가 조회되었습니다.", concertService.findConcert(concert_id)),
+		return new ResponseEntity<>(ApiResponse.success("콘서트가 조회되었습니다.", concertService.findConcert(concertId)),
 			HttpStatus.OK);
 	}
 
@@ -67,12 +67,12 @@ public class ConcertController {
 			HttpStatus.OK);
 	}
 
-	@DeleteMapping("/{concert_id}")
+	@DeleteMapping("/{concertId}")
 	public ResponseEntity<ApiResponse<ConcertResponse>> deleteConcert(
 		@AuthenticationPrincipal Long id,
-		@PathVariable Long concert_id
+		@PathVariable Long concertId
 	) {
-		concertService.deleteConcert(id, concert_id);
+		concertService.deleteConcert(id, concertId);
 		return new ResponseEntity<>(ApiResponse.success("콘서트가 삭제되었습니다.", null), HttpStatus.OK);
 	}
 }
