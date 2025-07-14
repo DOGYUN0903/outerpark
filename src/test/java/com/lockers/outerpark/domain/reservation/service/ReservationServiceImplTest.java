@@ -39,7 +39,7 @@ class ReservationServiceImplTest {
 
 	private static final Logger log = LoggerFactory.getLogger(ReservationServiceImplTest.class);
 	@Autowired
-	private ReservationService reservationService;
+	private ReservationServiceImpl reservationService;
 
 	@Autowired
 	private ReservationSeatRepository reservationSeatRepository;
@@ -76,7 +76,7 @@ class ReservationServiceImplTest {
 		}
 		User writer = new User("test10@naver.com", "김용준10", LocalDate.parse("2001-01-29"), "213$@ds@D", 100000L,
 			UserRole.ADMIN);
-		
+
 		userRepository.save(writer);
 
 		ConcertRegisterRequest concertRegisterRequest = new ConcertRegisterRequest();

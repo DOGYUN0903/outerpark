@@ -79,6 +79,8 @@ public class SeatServiceImpl implements SeatService {
 		List<SeatStatusResponse> seatStatusResponse = allSeats.stream()
 			.map(seat -> {
 				String status = seatStatusMap.get(seat.getId());
+				if (status == null)
+					status = SeatStatus.CANCELLED.name();
 				return SeatStatusResponse.fromEntityWithStatus(seat, status);
 			})
 			.toList();

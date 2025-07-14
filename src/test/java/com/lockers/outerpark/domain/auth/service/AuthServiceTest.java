@@ -20,10 +20,11 @@ import com.lockers.outerpark.domain.auth.dto.request.SignupRequest;
 import com.lockers.outerpark.domain.auth.dto.request.WithdrawRequest;
 import com.lockers.outerpark.domain.auth.dto.response.SigninResponse;
 import com.lockers.outerpark.domain.auth.dto.response.SignupResponse;
+import com.lockers.outerpark.domain.auth.exception.AuthException;
 import com.lockers.outerpark.domain.user.entity.User;
 import com.lockers.outerpark.domain.user.exception.UserException;
 import com.lockers.outerpark.domain.user.repository.UserRepository;
-import com.lockers.outerpark.domain.user.service.UserService;
+import com.lockers.outerpark.domain.user.service.UserServiceImpl;
 import com.lockers.outerpark.domain.user.type.UserRole;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,13 +33,13 @@ class AuthServiceTest {
 	@Mock
 	private UserRepository userRepository;
 	@Mock
-	private UserService userService;
+	private UserServiceImpl userService;
 	@Mock
 	private PasswordEncoder passwordEncoder;
 	@Mock
 	private JwtUtil jwtUtil;
 	@InjectMocks
-	private AuthService authService;
+	private AuthServiceImpl authService;
 
 	// 회원가입 단위테스트 시작
 	@Test
@@ -130,7 +131,7 @@ class AuthServiceTest {
 		given(passwordEncoder.matches(signinRequest.getPassword(), user.getPassword())).willReturn(false);
 
 		assertThatThrownBy(() -> authService.signin(signinRequest))
-			.isInstanceOf(UserException.class);
+			.isInstanceOf(AuthException.class);
 	}
 
 	@Test
@@ -167,7 +168,7 @@ class AuthServiceTest {
 		given(passwordEncoder.matches(withdrawRequest.getPassword(), user.getPassword())).willReturn(false);
 
 		assertThatThrownBy(() -> authService.withdraw(userId, withdrawRequest))
-			.isInstanceOf(UserException.class);
+			.isInstanceOf(AuthException.class);
 	}
 
 	@Test

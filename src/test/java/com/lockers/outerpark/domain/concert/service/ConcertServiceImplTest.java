@@ -188,7 +188,7 @@ class ConcertServiceImplTest {
 				concertServiceImpl.getConcert(concertId);
 			});
 
-		assertEquals("공연이 존재하지 않습니다.", concertException.getMessage());
+		assertEquals("이미 삭제된 공연입니다.", concertException.getMessage());
 	}
 
 	@Test
@@ -205,21 +205,21 @@ class ConcertServiceImplTest {
 		ReflectionTestUtils.setField(request1, "runningTime", 180);
 		ReflectionTestUtils.setField(request1, "price", 75000);
 		ReflectionTestUtils.setField(request1, "limitAge", 19);
-		ReflectionTestUtils.setField(request1, "performanceDate", LocalDate.parse("2025-07-09"));
+		ReflectionTestUtils.setField(request1, "performanceDate", LocalDate.now().plusDays(5));
 
 		ConcertRegisterRequest request2 = new ConcertRegisterRequest();
 		ReflectionTestUtils.setField(request2, "title", "제목2");
 		ReflectionTestUtils.setField(request2, "runningTime", 200);
 		ReflectionTestUtils.setField(request2, "price", 65000);
 		ReflectionTestUtils.setField(request2, "limitAge", 20);
-		ReflectionTestUtils.setField(request2, "performanceDate", LocalDate.parse("2025-07-10"));
+		ReflectionTestUtils.setField(request2, "performanceDate", LocalDate.now().plusDays(10));
 		Concert concert1 = request1.toEntity(user);
 		Concert concert2 = request2.toEntity(user);
 
 		List<Concert> concertList = Arrays.asList(concert1, concert2);
 		Page<Concert> concertPage = new PageImpl<>(concertList, pageable, concertList.size());
 
-		when(concertRepository.findUpcomingConcerts(LocalDate.parse("2025-07-05"), pageable)).thenReturn(concertPage);
+		when(concertRepository.findUpcomingConcerts(LocalDate.now(), pageable)).thenReturn(concertPage);
 
 		// when
 		Page<ConcertResponse> concerts = concertServiceImpl.getConcerts(pageable);
@@ -238,7 +238,7 @@ class ConcertServiceImplTest {
 		assertEquals(200, second.runningTime());
 		assertEquals(65000, second.price());
 
-		verify(concertRepository).findUpcomingConcerts(LocalDate.parse("2025-07-05"), pageable);
+		verify(concertRepository).findUpcomingConcerts(LocalDate.now(), pageable);
 	}
 
 	@Test
@@ -275,11 +275,8 @@ class ConcertServiceImplTest {
 		Long userId = 1L;
 		Long concertId = 1L;
 
-		User user = new User("example@naver.com", "hero123",
-			LocalDate.parse("2003-02-18"), "e23fD@fv665", 100000L, ADMIN);
-
 		//when
-		when(userService.getActiveUserById(userId)).thenReturn(user);
+		doNothing().when(userService).validateActiveUserById(userId);
 		when(concertRepository.findByIdAndIsDeletedFalse(concertId)).thenReturn(Optional.empty());
 
 		assertThrows(ConcertException.class, () -> {

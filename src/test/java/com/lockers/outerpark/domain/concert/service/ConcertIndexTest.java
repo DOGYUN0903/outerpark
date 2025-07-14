@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
-import javax.sql.DataSource;
-
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.lockers.outerpark.domain.concert.entity.Concert;
 import com.lockers.outerpark.domain.concert.repository.ConcertRepository;
-import com.lockers.outerpark.domain.user.repository.UserRepository;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -26,17 +23,9 @@ public class ConcertIndexTest {
 	@Autowired
 	private ConcertRepository concertRepository;
 
-	@Autowired
-	private UserRepository userRepository;
-
-	static boolean initialized = false;
-
-	@Autowired
-	private DataSource dataSource;
-
 	@Tag("heavy")
 	@Test
-	void 콘서트_전체_조회_인덱싱_적용_테스트() throws Exception {
+	void 콘서트_전체_조회_인덱싱_적용_테스트() {
 
 		Pageable pageable = PageRequest.of(0, 5);
 
@@ -55,7 +44,7 @@ public class ConcertIndexTest {
 
 	@Tag("heavy")
 	@Test
-	void 콘서트_전체_조회_인덱싱_미적용_테스트() throws Exception {
+	void 콘서트_전체_조회_인덱싱_미적용_테스트() {
 
 		Pageable pageable = PageRequest.of(0, 5);
 

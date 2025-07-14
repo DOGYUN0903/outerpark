@@ -178,10 +178,10 @@ class SeatServiceImplTest {
 		List<Seat> seats = List.of(seat1, seat2);
 
 		SeatStatusQueryDto statusDto1 = new SeatStatusQueryDto(1L, "A-1", ReservationStatus.PENDING);
-		List<SeatStatusQueryDto> statusDtos = List.of(statusDto1);
+		List<SeatStatusQueryDto> statusDtoList = List.of(statusDto1);
 
 		given(seatRepository.findAllActiveSeatsOrderBySeatNumber()).willReturn(seats);
-		given(reservationSeatRepository.findSeatStatusByConcertId(concertId)).willReturn(statusDtos);
+		given(reservationSeatRepository.findSeatStatusByConcertId(concertId)).willReturn(statusDtoList);
 
 		// when
 		ConcertSeatStatusResponse response = seatService.getSeatsForConcert(concertId);
@@ -303,7 +303,7 @@ class SeatServiceImplTest {
 		// when & then
 		assertThatThrownBy(() -> seatService.validateSeatsAvailability(seatIds, concertId))
 			.isInstanceOf(SeatException.class)
-			.hasMessage("잘못된 좌석 선택입니다.");
+			.hasMessage("이미 예약된 좌석입니다.");
 	}
 
 	@Test

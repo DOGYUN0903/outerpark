@@ -24,8 +24,9 @@ class UserServiceTest {
 
 	@Mock
 	private UserRepository userRepository;
+	
 	@InjectMocks
-	private UserService userService;
+	private UserServiceImpl userService;
 
 	// getActiveUserById 단위 테스트 시작
 	@Test

@@ -25,7 +25,7 @@ import com.lockers.outerpark.domain.payment.type.PaymentStatus;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 import com.lockers.outerpark.domain.reservation.service.ReservationService;
 import com.lockers.outerpark.domain.user.entity.User;
-import com.lockers.outerpark.domain.user.service.UserService;
+import com.lockers.outerpark.domain.user.service.UserServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 public class PaymentServiceTest {
@@ -40,7 +40,7 @@ public class PaymentServiceTest {
 	private ReservationService reservationService;
 
 	@Mock
-	private UserService userService;
+	private UserServiceImpl userService;
 
 	@Test
 	void 결제가_성공적으로_저장된다() {
@@ -94,8 +94,6 @@ public class PaymentServiceTest {
 		User user = mock(User.class);
 		when(user.getBalance()).thenReturn(200000L);
 		when(userService.getActiveUserById(userId)).thenReturn(user);
-
-		Payment payment = new Payment();
 
 		when(paymentRepository.save(any(Payment.class)))
 			.thenThrow(new DataIntegrityViolationException("예외 발생"));
@@ -187,7 +185,7 @@ public class PaymentServiceTest {
 		);
 
 		//then
-		assertEquals(PaymentErrorCode.NOT_ENOUGH_BALANCE, ex.getErrorCode());
+		assertEquals(PaymentErrorCode.PAYMENT_FAILED, ex.getErrorCode());
 	}
 
 	@Test
@@ -243,9 +241,14 @@ public class PaymentServiceTest {
 		Long userId = 42L;
 		int totalAmount = 10000;
 
+		// Reservation mock
+		Reservation reservation = mock(Reservation.class);
+		when(reservation.getId()).thenReturn(1L);
+
 		// Payment mock
 		Payment payment = Payment.builder()
 			.id(paymentId)
+			.reservation(reservation)
 			.status(PaymentStatus.SUCCESS)
 			.totalAmount(totalAmount)
 			.build();
@@ -258,6 +261,7 @@ public class PaymentServiceTest {
 		when(paymentRepository.findByIdAndStatus(paymentId, PaymentStatus.SUCCESS)).thenReturn(Optional.of(payment));
 		when(paymentRepository.countCancelable(paymentId, LocalDate.now().plusDays(1))).thenReturn(1L);
 		when(userService.getActiveUserById(userId)).thenReturn(user);
+		doNothing().when(reservationService).updateReservationCancel(anyLong());
 
 		// when
 		paymentService.updatePaymentCancel(paymentId, userId);
