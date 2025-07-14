@@ -80,7 +80,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Reservation findReservationByUserIdAndConsortId(Long userId, Long concertId) {
+	public Reservation findReservationByUserIdAndConcertId(Long userId, Long concertId) {
 		List<Reservation> reservationList = reservationRepository
 			.findByUserIdAndConcertIdAndStatus(userId, concertId, ReservationStatus.PENDING);
 

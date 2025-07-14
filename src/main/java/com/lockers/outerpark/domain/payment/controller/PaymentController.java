@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lockers.outerpark.common.response.ApiResponse;
-import com.lockers.outerpark.domain.payment.dto.request.PaymentRequest;
+import com.lockers.outerpark.domain.payment.dto.request.PaymentCreateRequest;
+import com.lockers.outerpark.domain.payment.dto.response.PaymentCreateResponse;
 import com.lockers.outerpark.domain.payment.dto.response.PaymentResponse;
-import com.lockers.outerpark.domain.payment.dto.response.PaymentSaveResponse;
 import com.lockers.outerpark.domain.payment.service.PaymentService;
 
 import jakarta.validation.Valid;
@@ -32,19 +32,19 @@ public class PaymentController {
 	 *
 	 * @param userId 인증된 사용자 ID (스프링 시큐리티에서 주입)
 	 * @param concertId 공연 ID
-	 * @param paymentRequest 결제 요청 정보 (결제 수단, 금액 등)
+	 * @param paymentCreateRequest 결제 요청 정보 (결제 수단, 금액 등)
 	 * @return 결제 생성 성공 응답 (201 Created)
 	 */
 	@PostMapping("/concerts/{concertId}")
-	public ResponseEntity<ApiResponse<PaymentSaveResponse>> createPayment(
+	public ResponseEntity<ApiResponse<PaymentCreateResponse>> createPayment(
 		@AuthenticationPrincipal Long userId,
 		@PathVariable Long concertId,
-		@RequestBody @Valid PaymentRequest paymentRequest) {
+		@RequestBody @Valid PaymentCreateRequest paymentCreateRequest) {
 
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(
 				ApiResponse.success("결제 내역이 생성 되었습니다.",
-					paymentService.createPayment(paymentRequest, concertId, userId)));
+					paymentService.createPayment(paymentCreateRequest, concertId, userId)));
 	}
 
 	/**

@@ -14,9 +14,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import com.lockers.outerpark.domain.payment.dto.request.PaymentRequest;
+import com.lockers.outerpark.domain.payment.dto.request.PaymentCreateRequest;
+import com.lockers.outerpark.domain.payment.dto.response.PaymentCreateResponse;
 import com.lockers.outerpark.domain.payment.dto.response.PaymentResponse;
-import com.lockers.outerpark.domain.payment.dto.response.PaymentSaveResponse;
 import com.lockers.outerpark.domain.payment.entity.Payment;
 import com.lockers.outerpark.domain.payment.exception.PaymentErrorCode;
 import com.lockers.outerpark.domain.payment.exception.PaymentException;
@@ -49,11 +49,11 @@ public class PaymentServiceTest {
 		Long concertId = 1L;
 		int amount = 100000;
 
-		PaymentRequest request = new PaymentRequest("CARD", PaymentStatus.SUCCESS);
+		PaymentCreateRequest request = new PaymentCreateRequest("CARD", PaymentStatus.SUCCESS);
 
 		Reservation reservation = mock(Reservation.class);
 		when(reservation.getAmount()).thenReturn(amount);
-		when(reservationService.findReservationByUserIdAndConsortId(userId, concertId)).thenReturn(reservation);
+		when(reservationService.findReservationByUserIdAndConcertId(userId, concertId)).thenReturn(reservation);
 
 		User user = mock(User.class);
 		when(user.getBalance()).thenReturn(200000L);
@@ -70,7 +70,7 @@ public class PaymentServiceTest {
 		when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
 		// when
-		PaymentSaveResponse response = paymentService.createPayment(request, concertId, userId);
+		PaymentCreateResponse response = paymentService.createPayment(request, concertId, userId);
 
 		// then
 		assertNotNull(response);
@@ -85,11 +85,11 @@ public class PaymentServiceTest {
 		Long concertId = 1L;
 		int amount = 100000;
 
-		PaymentRequest request = new PaymentRequest("CARD", PaymentStatus.SUCCESS);
+		PaymentCreateRequest request = new PaymentCreateRequest("CARD", PaymentStatus.SUCCESS);
 
 		Reservation reservation = mock(Reservation.class);
 		when(reservation.getAmount()).thenReturn(amount);
-		when(reservationService.findReservationByUserIdAndConsortId(userId, concertId)).thenReturn(reservation);
+		when(reservationService.findReservationByUserIdAndConcertId(userId, concertId)).thenReturn(reservation);
 
 		User user = mock(User.class);
 		when(user.getBalance()).thenReturn(200000L);
@@ -119,11 +119,11 @@ public class PaymentServiceTest {
 		Long concertId = 1L;
 		int amount = 100000;
 
-		PaymentRequest request = new PaymentRequest("CARD", PaymentStatus.SUCCESS);
+		PaymentCreateRequest request = new PaymentCreateRequest("CARD", PaymentStatus.SUCCESS);
 
 		Reservation reservation = mock(Reservation.class);
 		when(reservation.getAmount()).thenReturn(amount);
-		when(reservationService.findReservationByUserIdAndConsortId(userId, concertId)).thenReturn(reservation);
+		when(reservationService.findReservationByUserIdAndConcertId(userId, concertId)).thenReturn(reservation);
 
 		User user = mock(User.class);
 		when(user.getBalance()).thenReturn(200000L);
@@ -150,12 +150,12 @@ public class PaymentServiceTest {
 		// given
 		Long concertId = 1L;
 		Long userId = 33L;
-		PaymentRequest request = mock(PaymentRequest.class);
+		PaymentCreateRequest request = mock(PaymentCreateRequest.class);
 		when(request.getStatus()).thenReturn(PaymentStatus.CANCEL);
 
 		Reservation reservation = mock(Reservation.class);
 		when(reservation.getId()).thenReturn(1L);
-		when(reservationService.findReservationByUserIdAndConsortId(userId, concertId)).thenReturn(reservation);
+		when(reservationService.findReservationByUserIdAndConcertId(userId, concertId)).thenReturn(reservation);
 
 		//when
 		PaymentException ex = assertThrows(PaymentException.class, () ->
@@ -171,11 +171,11 @@ public class PaymentServiceTest {
 		// given
 		Long concertId = 1L;
 		Long userId = 33L;
-		PaymentRequest request = new PaymentRequest("POINT", PaymentStatus.SUCCESS);
+		PaymentCreateRequest request = new PaymentCreateRequest("POINT", PaymentStatus.SUCCESS);
 
 		Reservation reservation = mock(Reservation.class);
 		when(reservation.getAmount()).thenReturn(90000);
-		when(reservationService.findReservationByUserIdAndConsortId(userId, concertId)).thenReturn(reservation);
+		when(reservationService.findReservationByUserIdAndConcertId(userId, concertId)).thenReturn(reservation);
 
 		User user = mock(User.class);
 		when(user.getBalance()).thenReturn(50000L);

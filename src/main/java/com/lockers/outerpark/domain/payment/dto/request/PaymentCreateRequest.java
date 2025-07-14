@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentRequest {
+public class PaymentCreateRequest {
 
 	@NotBlank(message = "결제 수단은 필수입니다.")
 	private String method;

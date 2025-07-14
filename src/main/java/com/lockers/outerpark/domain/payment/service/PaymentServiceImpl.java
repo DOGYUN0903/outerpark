@@ -6,9 +6,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.lockers.outerpark.domain.payment.dto.request.PaymentRequest;
+import com.lockers.outerpark.domain.payment.dto.request.PaymentCreateRequest;
+import com.lockers.outerpark.domain.payment.dto.response.PaymentCreateResponse;
 import com.lockers.outerpark.domain.payment.dto.response.PaymentResponse;
-import com.lockers.outerpark.domain.payment.dto.response.PaymentSaveResponse;
 import com.lockers.outerpark.domain.payment.entity.Payment;
 import com.lockers.outerpark.domain.payment.exception.PaymentErrorCode;
 import com.lockers.outerpark.domain.payment.exception.PaymentException;
@@ -36,7 +36,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public PaymentSaveResponse createPayment(PaymentRequest request, Long concertId, Long userId) {
+	public PaymentCreateResponse createPayment(PaymentCreateRequest request, Long concertId, Long userId) {
 
 		//결제 정합성 검사(결제 금액 및 예약 번호 확인)
 		Reservation reservation = processReservationPayment(request, concertId, userId);
@@ -55,7 +55,7 @@ public class PaymentServiceImpl implements PaymentService {
 			reservation.updateStatus(ReservationStatus.CONFIRMED);
 
 			//결제 정보 ID 반환
-			return new PaymentSaveResponse(savedPayment.getId());
+			return new PaymentCreateResponse(savedPayment.getId());
 
 		} catch (DataIntegrityViolationException
 				 | ConstraintViolationException
@@ -96,9 +96,9 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	//결제 정합성 검사
-	private Reservation processReservationPayment(PaymentRequest request, Long concertId, Long userId) {
+	private Reservation processReservationPayment(PaymentCreateRequest request, Long concertId, Long userId) {
 
-		Reservation reservation = reservationService.findReservationByUserIdAndConsortId(userId, concertId);
+		Reservation reservation = reservationService.findReservationByUserIdAndConcertId(userId, concertId);
 
 		//결제 실패 시 예약 롤백 및 예외
 		if (request.getStatus() != PaymentStatus.SUCCESS) {
