@@ -219,7 +219,7 @@ class ConcertServiceImplTest {
 		List<Concert> concertList = Arrays.asList(concert1, concert2);
 		Page<Concert> concertPage = new PageImpl<>(concertList, pageable, concertList.size());
 
-		when(concertRepository.findAllByIsDeletedFalse(pageable)).thenReturn(concertPage);
+		when(concertRepository.findUpcomingConcerts(LocalDate.parse("2025-07-05"), pageable)).thenReturn(concertPage);
 
 		// when
 		Page<ConcertResponse> concerts = concertServiceImpl.getConcerts(pageable);
@@ -238,7 +238,7 @@ class ConcertServiceImplTest {
 		assertEquals(200, second.runningTime());
 		assertEquals(65000, second.price());
 
-		verify(concertRepository).findAllByIsDeletedFalse(pageable);
+		verify(concertRepository).findUpcomingConcerts(LocalDate.parse("2025-07-05"), pageable);
 	}
 
 	@Test

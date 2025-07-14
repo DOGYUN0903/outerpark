@@ -1,7 +1,5 @@
 package com.lockers.outerpark.common.lock.service;
 
-import static com.lockers.outerpark.common.lock.exception.LockException.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -9,6 +7,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.lockers.outerpark.common.lock.repository.RedisLockRepository;
+import com.lockers.outerpark.domain.seat.exception.SeatErrorCode;
+import com.lockers.outerpark.domain.seat.exception.SeatException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,8 +23,9 @@ public class RedisLockService {
 	public String acquireLock(Long concertId, List<Long> seatIds) {
 		String uuid = UUID.randomUUID().toString(); // 락 소유자 식별용
 		List<Long> acquiredSeatIds = new ArrayList<>(); // 지금까지 락을 성공한 seatId 모아둠
+		List<Long> sortedSeatIds = seatIds.stream().sorted().toList();
 
-		for (Long seatId : seatIds) {
+		for (Long seatId : sortedSeatIds) {
 			String key = generateKey(concertId, seatId);
 			boolean isLocked = redisLockRepository.tryLock(key, uuid, LOCK_TTL);
 
@@ -32,7 +33,7 @@ public class RedisLockService {
 				for (Long acquiredId : acquiredSeatIds) {
 					redisLockRepository.unlock(generateKey(concertId, acquiredId), uuid);
 				}
-				throw new SeatAlreadyLockedException();
+				throw new SeatException(SeatErrorCode.SEAT_LOCK_CONFLICT);
 			}
 
 			acquiredSeatIds.add(seatId);

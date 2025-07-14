@@ -1,5 +1,7 @@
 package com.lockers.outerpark.domain.concert.service;
 
+import java.time.LocalDate;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -81,7 +83,7 @@ public class ConcertServiceImpl implements ConcertService {
 	@Override
 	@Transactional(readOnly = true)
 	public Page<ConcertResponse> getConcerts(Pageable pageable) {
-		Page<Concert> concerts = concertRepository.findAllByIsDeletedFalse(pageable);
+		Page<Concert> concerts = concertRepository.findUpcomingConcerts(LocalDate.now(), pageable);
 
 		return concerts.map(ConcertResponse::of);
 	}
