@@ -13,17 +13,6 @@ public class SeatResponse {
 	private String status;
 
 	/**
-	 * Seat 엔티티로부터 SeatResponse 생성
-	 */
-	public static SeatResponse fromEntity(Seat seat) {
-		return SeatResponse.builder()
-			.seatId(seat.getId())
-			.seatNumber(seat.getSeatNumber())
-			.status("AVAILABLE")
-			.build();
-	}
-
-	/**
 	 * 좌석 상태와 함께 SeatResponse 생성
 	 */
 	public static SeatResponse fromEntityWithStatus(Seat seat, String status) {

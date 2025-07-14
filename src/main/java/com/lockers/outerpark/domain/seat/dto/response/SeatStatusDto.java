@@ -6,15 +6,9 @@ import lombok.Getter;
 
 @Getter
 public class SeatStatusDto {
-	private Long seatId;
-	private String seatNumber;
-	private String reservationStatus;
-
-	public SeatStatusDto(Long seatId, String seatNumber, String reservationStatus) {
-		this.seatId = seatId;
-		this.seatNumber = seatNumber;
-		this.reservationStatus = reservationStatus;
-	}
+	private final Long seatId;
+	private final String seatNumber;
+	private final String reservationStatus;
 
 	public SeatStatusDto(Long seatId, String seatNumber, ReservationStatus reservationStatus) {
 		this.seatId = seatId;
