@@ -20,7 +20,7 @@ public class LockAspect {
 
     private final RedisLockService redisLockService;
 
-    @Order
+    @Order(0)
     @Around("execution(* com.lockers.outerpark.domain.reservation.service.ReservationServiceImpl.createReservationV1(..))")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         // ReservationServiceImpl.createReservation 파라미터 가져오기

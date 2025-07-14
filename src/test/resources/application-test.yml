@@ -16,6 +16,7 @@ spring:
         format_sql: true
         use_sql_comments: true
         dialect: org.hibernate.dialect.MySQLDialect
+      jakarta.persistence.lock.timeout: 0
   data:
     redis:
       host: ${REDIS_HOST}
