@@ -1,0 +1,33 @@
+name: pr-test.yml
+on:
+  workflow_dispatch:
+  pull_request:
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      RDS_URL: ${{ secrets.RDS_URL }}
+      MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
+      MYSQL_DBNAME: ${{ secrets.MYSQL_DBNAME }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+      SERVER_PORT: 8080
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: setup jdk
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+      - name: gradlew test
+        run: ./gradlew test
