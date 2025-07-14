@@ -41,12 +41,12 @@ public class ConsertIndexTest {
 
 	@Tag("heavy")
 	@Test
-	void 콘서트_전체_조회_인덱싱_테스트() throws Exception {
+	void 콘서트_전체_조회_인덱싱_적용_테스트() throws Exception {
 
-		if (!initialized) {
-			setupConcertsJdbcBatch(); // 병렬 insert
-			initialized = true;
-		}
+		// if (!initialized) {
+		// 	setupConcertsJdbcBatch();
+		// 	initialized = true;
+		// }
 
 		Pageable pageable = PageRequest.of(0, 5);
 
@@ -58,7 +58,31 @@ public class ConsertIndexTest {
 		long endTime = System.currentTimeMillis();
 		long durationMs = endTime - startTime;
 
-		System.out.println("콘서트 인덱싱 처리 조회 시간: " + durationMs + "ms");
+		System.out.println("콘서트 인덱싱 적용 조회 시간: " + durationMs + "ms");
+
+		assertEquals(5, concerts.getContent().size());
+	}
+
+	@Tag("heavy")
+	@Test
+	void 콘서트_전체_조회_인덱싱_미적용_테스트() throws Exception {
+		
+		// if (!initialized) {
+		// 	setupConcertsJdbcBatch();
+		// 	initialized = true;
+		// }
+
+		Pageable pageable = PageRequest.of(0, 5);
+
+		long startTime = System.currentTimeMillis();
+
+		Page<Concert> concerts = concertRepository.findUpcomingConcerts(
+			LocalDate.now(), pageable);
+
+		long endTime = System.currentTimeMillis();
+		long durationMs = endTime - startTime;
+
+		System.out.println("콘서트 인덱싱 미적용 조회 시간: " + durationMs + "ms");
 
 		assertEquals(5, concerts.getContent().size());
 	}
