@@ -18,16 +18,14 @@ import com.lockers.outerpark.domain.user.entity.User;
 import com.lockers.outerpark.domain.user.exception.UserException;
 import com.lockers.outerpark.domain.user.service.UserService;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ConcertServiceImpl implements ConcertService {
 
 	private final ConcertRepository concertRepository;
 	private final UserService userService;
-
-	public ConcertServiceImpl(ConcertRepository concertRepository, UserService userService) {
-		this.concertRepository = concertRepository;
-		this.userService = userService;
-	}
 
 	/**
 	 * ADMIN 권한을 가진 사용자가 새로운 공연을 등록합니다.

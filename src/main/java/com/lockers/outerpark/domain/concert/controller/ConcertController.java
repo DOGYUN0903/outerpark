@@ -23,16 +23,14 @@ import com.lockers.outerpark.domain.concert.dto.response.ConcertUpdateResponse;
 import com.lockers.outerpark.domain.concert.service.ConcertService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/concerts")
+@RequiredArgsConstructor
 public class ConcertController {
 
 	private final ConcertService concertService;
-
-	public ConcertController(ConcertService concertService) {
-		this.concertService = concertService;
-	}
 
 	@PostMapping
 	public ResponseEntity<ApiResponse<ConcertRegisterResponse>> createConcert(
