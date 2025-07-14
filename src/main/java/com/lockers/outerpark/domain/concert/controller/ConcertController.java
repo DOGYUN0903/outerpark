@@ -15,66 +15,71 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lockers.outerpark.common.response.ApiResponse;
-import com.lockers.outerpark.domain.concert.dto.FindConcertResponse;
-import com.lockers.outerpark.domain.concert.dto.RegisterConcertRequest;
-import com.lockers.outerpark.domain.concert.dto.RegisterConcertResponse;
-import com.lockers.outerpark.domain.concert.dto.UpdateConcertRequest;
-import com.lockers.outerpark.domain.concert.dto.UpdateConcertResponse;
+import com.lockers.outerpark.domain.concert.dto.request.ConcertRegisterRequest;
+import com.lockers.outerpark.domain.concert.dto.request.ConcertUpdateRequest;
+import com.lockers.outerpark.domain.concert.dto.response.ConcertRegisterResponse;
+import com.lockers.outerpark.domain.concert.dto.response.ConcertResponse;
+import com.lockers.outerpark.domain.concert.dto.response.ConcertUpdateResponse;
 import com.lockers.outerpark.domain.concert.service.ConcertService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/concerts")
+@RequiredArgsConstructor
 public class ConcertController {
 
-    private final ConcertService concertService;
+	private final ConcertService concertService;
 
-    public ConcertController(ConcertService concertService) {
-        this.concertService = concertService;
-    }
+	@PostMapping
+	public ResponseEntity<ApiResponse<ConcertRegisterResponse>> createConcert(
+		@AuthenticationPrincipal Long id,
+		@Valid @RequestBody ConcertRegisterRequest request
+	) {
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(ApiResponse.success("콘서트가 등록되었습니다.", concertService.createConcert(id, request)));
+	}
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<RegisterConcertResponse>> createConcert(
-        @AuthenticationPrincipal Long id,
-        @Valid @RequestBody RegisterConcertRequest request
-    ) {
-        return new ResponseEntity<>(ApiResponse.success("콘서트가 등록되었습니다.", concertService.registerConcert(id, request)),
-            HttpStatus.CREATED);
-    }
+	@PatchMapping("/{concertId}")
+	public ResponseEntity<ApiResponse<ConcertUpdateResponse>> updateConcert(
+		@AuthenticationPrincipal Long id,
+		@PathVariable Long concertId,
+		@RequestBody ConcertUpdateRequest request
+	) {
 
-    @PatchMapping("/{concert_id}")
-    public ResponseEntity<ApiResponse<UpdateConcertResponse>> updateConcert(
-        @AuthenticationPrincipal Long id,
-        @PathVariable Long concert_id,
-        @RequestBody UpdateConcertRequest request
-    ) {
-        return new ResponseEntity<>(ApiResponse.success("콘서트가 수정되었습니다.",
-            concertService.updateConcert(id, concert_id, request)), HttpStatus.OK);
-    }
+		return ResponseEntity.ok()
+			.body(ApiResponse.success("콘서트가 수정되었습니다.", concertService.updateConcert(id, concertId, request)));
+	}
 
-    @GetMapping("/{concert_id}")
-    public ResponseEntity<ApiResponse<FindConcertResponse>> findConcert(
-        @PathVariable Long concert_id
-    ) {
-        return new ResponseEntity<>(ApiResponse.success("콘서트가 조회되었습니다.", concertService.findConcert(concert_id)),
-            HttpStatus.OK);
-    }
+	@GetMapping("/{concertId}")
+	public ResponseEntity<ApiResponse<ConcertResponse>> getConcert(
+		@PathVariable Long concertId
+	) {
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<Page<FindConcertResponse>>> findConcerts(
-        Pageable pageable
-    ) {
-        return new ResponseEntity<>(ApiResponse.success("콘서트가 조회되었습니다.", concertService.findConcerts(pageable)),
-            HttpStatus.OK);
-    }
+		return ResponseEntity.ok()
+			.body(ApiResponse.success("콘서트가 조회되었습니다.", concertService.getConcert(concertId)));
+	}
 
-    @DeleteMapping("/{concert_id}")
-    public ResponseEntity<ApiResponse<FindConcertResponse>> deleteConcert(
-        @AuthenticationPrincipal Long id,
-        @PathVariable Long concert_id
-    ) {
-        concertService.deleteConcert(id, concert_id);
-        return new ResponseEntity<>(ApiResponse.success("콘서트가 삭제되었습니다.", null), HttpStatus.OK);
-    }
+	@GetMapping
+	public ResponseEntity<ApiResponse<Page<ConcertResponse>>> getConcertsPage(
+		Pageable pageable
+	) {
+
+		return ResponseEntity.ok()
+			.body(ApiResponse.success("콘서트가 조회되었습니다.", concertService.getConcerts(pageable)));
+	}
+
+	@DeleteMapping("/{concertId}")
+	public ResponseEntity<ApiResponse<ConcertResponse>> deleteConcert(
+		@AuthenticationPrincipal Long id,
+		@PathVariable Long concertId
+	) {
+
+		concertService.deleteConcert(id, concertId);
+
+		return ResponseEntity.ok()
+			.body(ApiResponse.success("콘서트가 삭제되었습니다.", null));
+
+	}
 }

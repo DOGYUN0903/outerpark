@@ -10,21 +10,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
-import com.lockers.outerpark.domain.reservation.entity.ReservationStatus;
+import com.lockers.outerpark.domain.reservation.type.ReservationStatus;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    Optional<Reservation> findByIdAndStatus(Long id, ReservationStatus status);
+	Optional<Reservation> findByIdAndStatusNot(Long reservationId, ReservationStatus reservationStatus);
 
-    Optional<Reservation> findByIdAndStatusNot(Long reservationId, ReservationStatus reservationStatus);
+	@EntityGraph(attributePaths = {"reservationSeats", "reservationSeats.seat", "concert"})
+	@Query("SELECT r FROM Reservation r WHERE r.user.id = :userId AND r.status = :status")
+	Page<Reservation> findAllByUserIdAndStatus(Long userId, ReservationStatus status, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"reservationSeats", "reservationSeats.seat", "concert"})
-    @Query("SELECT r FROM Reservation r WHERE r.user.id = :userId AND r.status = :status")
-    Page<Reservation> findAllByUserIdAndStatus(Long userId, ReservationStatus status, Pageable pageable);
+	List<Reservation> findByConcertId(Long concertId);
 
-    List<Reservation> findByConcertId(Long concertId);
+	List<Reservation> findByUserIdAndConcertIdAndStatus(Long userId, Long concertId, ReservationStatus status);
 
-    List<Reservation> findByUserIdAndConcertIdAndStatus(Long userId, Long concertId, ReservationStatus status);
-  
-    boolean existsByUserIdAndConcertIdAndStatus(Long userId, Long concertId, ReservationStatus status);
+	boolean existsByUserIdAndConcertIdAndStatus(Long userId, Long concertId, ReservationStatus status);
 
 }

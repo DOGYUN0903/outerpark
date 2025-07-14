@@ -1,6 +1,6 @@
 package com.lockers.outerpark.domain.concert.service;
 
-import static com.lockers.outerpark.domain.user.entity.UserRole.*;
+import static com.lockers.outerpark.domain.user.type.UserRole.*;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -23,11 +23,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.lockers.outerpark.domain.concert.dto.FindConcertResponse;
-import com.lockers.outerpark.domain.concert.dto.RegisterConcertRequest;
-import com.lockers.outerpark.domain.concert.dto.RegisterConcertResponse;
-import com.lockers.outerpark.domain.concert.dto.UpdateConcertRequest;
-import com.lockers.outerpark.domain.concert.dto.UpdateConcertResponse;
+import com.lockers.outerpark.domain.concert.dto.request.ConcertRegisterRequest;
+import com.lockers.outerpark.domain.concert.dto.request.ConcertUpdateRequest;
+import com.lockers.outerpark.domain.concert.dto.response.ConcertRegisterResponse;
+import com.lockers.outerpark.domain.concert.dto.response.ConcertResponse;
+import com.lockers.outerpark.domain.concert.dto.response.ConcertUpdateResponse;
 import com.lockers.outerpark.domain.concert.entity.Concert;
 import com.lockers.outerpark.domain.concert.exception.ConcertException;
 import com.lockers.outerpark.domain.concert.repository.ConcertRepository;
@@ -55,19 +55,19 @@ class ConcertServiceImplTest {
 		User user = new User("example@naver.com", "hero123", LocalDate.parse("2003-02-18"), "e23fD@fv665", 100000L,
 			ADMIN);
 
-		RegisterConcertRequest request = new RegisterConcertRequest();
+		ConcertRegisterRequest request = new ConcertRegisterRequest();
 		ReflectionTestUtils.setField(request, "title", "제목");
 		ReflectionTestUtils.setField(request, "runningTime", 180);
 		ReflectionTestUtils.setField(request, "price", 75000);
 		ReflectionTestUtils.setField(request, "limitAge", 19);
 		ReflectionTestUtils.setField(request, "performanceDate", LocalDate.parse("2025-07-09"));
 
-		Concert concert = Concert.of(user, request);
+		Concert concert = request.toEntity(user);
 
 		//when
 		when(userService.getActiveUserById(userId)).thenReturn(user);
 		when(concertRepository.save(any(Concert.class))).thenReturn(concert);
-		RegisterConcertResponse response = concertServiceImpl.registerConcert(userId, request);
+		ConcertRegisterResponse response = concertServiceImpl.createConcert(userId, request);
 
 		//then
 		verify(userService).getActiveUserById(userId);
@@ -88,31 +88,31 @@ class ConcertServiceImplTest {
 		User user = mock(User.class);
 
 		// 기존 공연 생성
-		RegisterConcertRequest request = new RegisterConcertRequest();
+		ConcertRegisterRequest request = new ConcertRegisterRequest();
 		ReflectionTestUtils.setField(request, "title", "제목");
 		ReflectionTestUtils.setField(request, "runningTime", 180);
 		ReflectionTestUtils.setField(request, "price", 75000);
 		ReflectionTestUtils.setField(request, "limitAge", 19);
 		ReflectionTestUtils.setField(request, "performanceDate", LocalDate.parse("2025-07-09"));
 
-		Concert concert = Concert.of(user, request);
+		Concert concert = request.toEntity(user);
 
 		// 업데이트 요청 생성
-		UpdateConcertRequest updateConcertRequest = new UpdateConcertRequest();
-		ReflectionTestUtils.setField(updateConcertRequest, "title", "제목2");
-		ReflectionTestUtils.setField(updateConcertRequest, "runningTime", 180);
-		ReflectionTestUtils.setField(updateConcertRequest, "price", 65000);
-		ReflectionTestUtils.setField(updateConcertRequest, "limitAge", 19);
-		ReflectionTestUtils.setField(updateConcertRequest, "performanceDate", LocalDate.parse("2025-07-10"));
+		ConcertUpdateRequest concertUpdateRequest = new ConcertUpdateRequest();
+		ReflectionTestUtils.setField(concertUpdateRequest, "title", "제목2");
+		ReflectionTestUtils.setField(concertUpdateRequest, "runningTime", 180);
+		ReflectionTestUtils.setField(concertUpdateRequest, "price", 65000);
+		ReflectionTestUtils.setField(concertUpdateRequest, "limitAge", 19);
+		ReflectionTestUtils.setField(concertUpdateRequest, "performanceDate", LocalDate.parse("2025-07-10"));
 
 		// when
 		when(concertRepository.findByIdAndIsDeletedFalse(concertId)).thenReturn(Optional.of(concert));
 
-		UpdateConcertResponse response = concertServiceImpl.updateConcert(userId, concertId, updateConcertRequest);
+		ConcertUpdateResponse response = concertServiceImpl.updateConcert(userId, concertId, concertUpdateRequest);
 
 		// then
 		assertThat(response).isNotNull();
-		assertEquals(updateConcertRequest.getTitle(), response.title());
+		assertEquals(concertUpdateRequest.getTitle(), response.title());
 	}
 
 	@Test
@@ -127,16 +127,16 @@ class ConcertServiceImplTest {
 			LocalDate.parse("2003-02-18"), "e23fD@fv665", 100000L, USER);
 
 		// 업데이트 요청 생성
-		UpdateConcertRequest updateConcertRequest = new UpdateConcertRequest();
-		ReflectionTestUtils.setField(updateConcertRequest, "title", "제목2");
-		ReflectionTestUtils.setField(updateConcertRequest, "runningTime", 180);
-		ReflectionTestUtils.setField(updateConcertRequest, "price", 65000);
-		ReflectionTestUtils.setField(updateConcertRequest, "limitAge", 19);
-		ReflectionTestUtils.setField(updateConcertRequest, "performanceDate", LocalDate.parse("2025-07-10"));
+		ConcertUpdateRequest concertUpdateRequest = new ConcertUpdateRequest();
+		ReflectionTestUtils.setField(concertUpdateRequest, "title", "제목2");
+		ReflectionTestUtils.setField(concertUpdateRequest, "runningTime", 180);
+		ReflectionTestUtils.setField(concertUpdateRequest, "price", 65000);
+		ReflectionTestUtils.setField(concertUpdateRequest, "limitAge", 19);
+		ReflectionTestUtils.setField(concertUpdateRequest, "performanceDate", LocalDate.parse("2025-07-10"));
 
 		// when + then
-		Assertions.assertThrows(ConcertException.ConcertNotFoundException.class, () -> {
-			concertServiceImpl.updateConcert(userId, concertId, updateConcertRequest);
+		Assertions.assertThrows(ConcertException.class, () -> {
+			concertServiceImpl.updateConcert(userId, concertId, concertUpdateRequest);
 		});
 
 	}
@@ -151,28 +151,28 @@ class ConcertServiceImplTest {
 			LocalDate.parse("2003-02-18"), "e23fD@fv665", 100000L, ADMIN);
 
 		// 기존 공연 생성
-		RegisterConcertRequest request = new RegisterConcertRequest();
+		ConcertRegisterRequest request = new ConcertRegisterRequest();
 		ReflectionTestUtils.setField(request, "title", "제목");
 		ReflectionTestUtils.setField(request, "runningTime", 180);
 		ReflectionTestUtils.setField(request, "price", 75000);
 		ReflectionTestUtils.setField(request, "limitAge", 19);
 		ReflectionTestUtils.setField(request, "performanceDate", LocalDate.parse("2025-07-09"));
 
-		Concert concert = Concert.of(user, request);
+		Concert concert = request.toEntity(user);
 
 		//when
 		when(concertRepository.findByIdAndIsDeletedFalse(concertId)).thenReturn(Optional.of(concert));
 
-		FindConcertResponse findConcertResponse = concertServiceImpl.findConcert(concertId);
+		ConcertResponse concertResponse = concertServiceImpl.getConcert(concertId);
 
 		//then
-		assertNotNull(findConcertResponse);
-		assertEquals(request.getTitle(), findConcertResponse.title());
-		assertEquals(request.getRunningTime(), findConcertResponse.runningTime());
-		assertEquals(request.getPrice(), findConcertResponse.price());
-		assertEquals(request.getLimitAge(), findConcertResponse.limitAge());
-		assertEquals(request.getPerformanceDate(), findConcertResponse.performanceDate());
-		assertEquals(user.getId(), findConcertResponse.writerId());
+		assertNotNull(concertResponse);
+		assertEquals(request.getTitle(), concertResponse.title());
+		assertEquals(request.getRunningTime(), concertResponse.runningTime());
+		assertEquals(request.getPrice(), concertResponse.price());
+		assertEquals(request.getLimitAge(), concertResponse.limitAge());
+		assertEquals(request.getPerformanceDate(), concertResponse.performanceDate());
+		assertEquals(user.getId(), concertResponse.writerId());
 	}
 
 	@Test
@@ -183,12 +183,12 @@ class ConcertServiceImplTest {
 
 		//when + then
 		when(concertRepository.findByIdAndIsDeletedFalse(concertId)).thenReturn(Optional.empty());
-		ConcertException.ConcertNotFoundException concertNotFoundException = assertThrows(
-			ConcertException.ConcertNotFoundException.class, () -> {
-				concertServiceImpl.findConcert(concertId);
+		ConcertException concertException = assertThrows(
+			ConcertException.class, () -> {
+				concertServiceImpl.getConcert(concertId);
 			});
 
-		assertEquals("공연이 존재하지 않습니다.", concertNotFoundException.getMessage());
+		assertEquals("이미 삭제된 공연입니다.", concertException.getMessage());
 	}
 
 	@Test
@@ -200,48 +200,45 @@ class ConcertServiceImplTest {
 		User user = new User("test@naver.com", "닉네임",
 			LocalDate.of(2000, 1, 1), "pw1234!", 1000L, USER);
 
-		RegisterConcertRequest request1 = new RegisterConcertRequest();
+		ConcertRegisterRequest request1 = new ConcertRegisterRequest();
 		ReflectionTestUtils.setField(request1, "title", "제목1");
 		ReflectionTestUtils.setField(request1, "runningTime", 180);
 		ReflectionTestUtils.setField(request1, "price", 75000);
 		ReflectionTestUtils.setField(request1, "limitAge", 19);
-		ReflectionTestUtils.setField(request1, "performanceDate", LocalDate.parse("2025-07-09"));
+		ReflectionTestUtils.setField(request1, "performanceDate", LocalDate.now().plusDays(5));
 
-		RegisterConcertRequest request2 = new RegisterConcertRequest();
+		ConcertRegisterRequest request2 = new ConcertRegisterRequest();
 		ReflectionTestUtils.setField(request2, "title", "제목2");
 		ReflectionTestUtils.setField(request2, "runningTime", 200);
 		ReflectionTestUtils.setField(request2, "price", 65000);
 		ReflectionTestUtils.setField(request2, "limitAge", 20);
-		ReflectionTestUtils.setField(request2, "performanceDate", LocalDate.parse("2025-07-10"));
-		Concert concert1 = Concert.of(user, request1);
-		Concert concert2 = Concert.of(user, request2);
+		ReflectionTestUtils.setField(request2, "performanceDate", LocalDate.now().plusDays(10));
+		Concert concert1 = request1.toEntity(user);
+		Concert concert2 = request2.toEntity(user);
 
 		List<Concert> concertList = Arrays.asList(concert1, concert2);
 		Page<Concert> concertPage = new PageImpl<>(concertList, pageable, concertList.size());
 
-		when(concertRepository.findUpcomingConcerts(
-			LocalDate.now(), pageable)).thenReturn(concertPage);
+		when(concertRepository.findUpcomingConcerts(LocalDate.now(), pageable)).thenReturn(concertPage);
 
 		// when
-		Page<FindConcertResponse> concerts = concertServiceImpl.findConcerts(pageable);
+		Page<ConcertResponse> concerts = concertServiceImpl.getConcerts(pageable);
 
 		// then
 		assertNotNull(concerts);
 		assertEquals(2, concerts.getContent().size());
 
-		FindConcertResponse first = concerts.getContent().get(0);
+		ConcertResponse first = concerts.getContent().get(0);
 		assertEquals("제목1", first.title());
 		assertEquals(180, first.runningTime());
 		assertEquals(75000, first.price());
 
-		FindConcertResponse second = concerts.getContent().get(1);
+		ConcertResponse second = concerts.getContent().get(1);
 		assertEquals("제목2", second.title());
 		assertEquals(200, second.runningTime());
 		assertEquals(65000, second.price());
 
-		verify(
-			concertRepository).findUpcomingConcerts(
-			LocalDate.now(), pageable);
+		verify(concertRepository).findUpcomingConcerts(LocalDate.now(), pageable);
 	}
 
 	@Test
@@ -254,14 +251,14 @@ class ConcertServiceImplTest {
 		User user = mock(User.class);
 
 		// 기존 공연 생성
-		RegisterConcertRequest request = new RegisterConcertRequest();
+		ConcertRegisterRequest request = new ConcertRegisterRequest();
 		ReflectionTestUtils.setField(request, "title", "제목");
 		ReflectionTestUtils.setField(request, "runningTime", 180);
 		ReflectionTestUtils.setField(request, "price", 75000);
 		ReflectionTestUtils.setField(request, "limitAge", 19);
 		ReflectionTestUtils.setField(request, "performanceDate", LocalDate.parse("2025-07-09"));
 
-		Concert concert = Concert.of(user, request);
+		Concert concert = request.toEntity(user);
 
 		when(concertRepository.findByIdAndIsDeletedFalse(concertId)).thenReturn(Optional.of(concert));
 
@@ -278,14 +275,11 @@ class ConcertServiceImplTest {
 		Long userId = 1L;
 		Long concertId = 1L;
 
-		User user = new User("example@naver.com", "hero123",
-			LocalDate.parse("2003-02-18"), "e23fD@fv665", 100000L, ADMIN);
-
 		//when
-		when(userService.getActiveUserById(userId)).thenReturn(user);
+		doNothing().when(userService).validateActiveUserById(userId);
 		when(concertRepository.findByIdAndIsDeletedFalse(concertId)).thenReturn(Optional.empty());
 
-		assertThrows(ConcertException.ConcertNotFoundException.class, () -> {
+		assertThrows(ConcertException.class, () -> {
 			concertServiceImpl.deleteConcert(userId, concertId);
 		});
 
