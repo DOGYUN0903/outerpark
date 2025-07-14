@@ -5,11 +5,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.lockers.outerpark.domain.concert.dto.request.RegisterConcertRequest;
-import com.lockers.outerpark.domain.concert.dto.request.UpdateConcertRequest;
-import com.lockers.outerpark.domain.concert.dto.response.FindConcertResponse;
-import com.lockers.outerpark.domain.concert.dto.response.RegisterConcertResponse;
-import com.lockers.outerpark.domain.concert.dto.response.UpdateConcertResponse;
+import com.lockers.outerpark.domain.concert.dto.request.ConcertRegisterRequest;
+import com.lockers.outerpark.domain.concert.dto.request.ConcertUpdateRequest;
+import com.lockers.outerpark.domain.concert.dto.response.ConcertRegisterResponse;
+import com.lockers.outerpark.domain.concert.dto.response.ConcertResponse;
+import com.lockers.outerpark.domain.concert.dto.response.ConcertUpdateResponse;
 import com.lockers.outerpark.domain.concert.entity.Concert;
 import com.lockers.outerpark.domain.concert.exception.ConcertErrorCode;
 import com.lockers.outerpark.domain.concert.exception.ConcertException;
@@ -34,20 +34,20 @@ public class ConcertServiceImpl implements ConcertService {
 	 *
 	 * @param userId 등록 요청을 한 사용자 ID
 	 * @param request 공연 등록에 필요한 정보(title, price, performanceDate 등)
-	 * @return 등록된 공연 정보를 담은 {@link RegisterConcertResponse}
+	 * @return 등록된 공연 정보를 담은 {@link ConcertRegisterResponse}
 	 * @throws UserException ADMIN이 아닌 경우 발생
 	 * @author kimyongjun0129
 	 */
 	@Override
 	@Transactional
-	public RegisterConcertResponse registerConcert(Long userId, RegisterConcertRequest request) {
+	public ConcertRegisterResponse registerConcert(Long userId, ConcertRegisterRequest request) {
 
 		User user = userService.getActiveUserById(userId);
 
 		Concert concert = request.toEntity(user);
 
 		Concert saveConcert = concertRepository.save(concert);
-		return RegisterConcertResponse.of(saveConcert);
+		return ConcertRegisterResponse.of(saveConcert);
 	}
 
 	/**
@@ -58,13 +58,13 @@ public class ConcertServiceImpl implements ConcertService {
 	 *
 	 * @param userId 수정 작업을 수행하는 사용자의 ID. 해당 사용자를 통해 콘서트를 조회합니다.
 	 * @param request 콘서트 정보를 수정하기 위한 요청 데이터 (제목, 공연 시간, 가격 등 포함).
-	 * @return 수정된 콘서트 정보를 담은 {@link UpdateConcertResponse} 객체.
+	 * @return 수정된 콘서트 정보를 담은 {@link ConcertUpdateResponse} 객체.
 	 * @throws UserException 사용자가 존재하지 않는 경우 발생.
 	 * @throws ConcertException 공연이 존재하지 않는 경우 발생.
 	 */
 	@Override
 	@Transactional
-	public UpdateConcertResponse updateConcert(Long userId, Long concertId, UpdateConcertRequest request) {
+	public ConcertUpdateResponse updateConcert(Long userId, Long concertId, ConcertUpdateRequest request) {
 
 		Concert concert = getActiveConcert(concertId);
 
@@ -90,24 +90,24 @@ public class ConcertServiceImpl implements ConcertService {
 			concert.updateLimitAge(request.getLimitAge());
 		}
 
-		return UpdateConcertResponse.of(concert);
+		return ConcertUpdateResponse.of(concert);
 	}
 
 	/**
 	 * 공연 ID를 기반으로 공연 정보를 조회합니다.
 	 *
 	 * @param concertId 조회할 공연 ID
-	 * @return 조회된 공연 정보를 담은 {@link FindConcertResponse} 객체
+	 * @return 조회된 공연 정보를 담은 {@link ConcertResponse} 객체
 	 * @throws ConcertException 존재하지 않는 공연일 경우 발생
 	 * @author kimyongjun0129
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public FindConcertResponse findConcert(Long concertId) {
+	public ConcertResponse findConcert(Long concertId) {
 
 		Concert concert = getActiveConcert(concertId);
 
-		return FindConcertResponse.of(concert);
+		return ConcertResponse.of(concert);
 	}
 
 	/**
@@ -120,10 +120,10 @@ public class ConcertServiceImpl implements ConcertService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Page<FindConcertResponse> findConcerts(Pageable pageable) {
+	public Page<ConcertResponse> findConcerts(Pageable pageable) {
 		Page<Concert> concerts = concertRepository.findAllByIsDeletedFalse(pageable);
 
-		return concerts.map(FindConcertResponse::of);
+		return concerts.map(ConcertResponse::of);
 	}
 
 	/**

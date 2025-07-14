@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lockers.outerpark.common.response.ApiResponse;
-import com.lockers.outerpark.domain.reservation.dto.response.UserReservationResponse;
 import com.lockers.outerpark.domain.reservation.service.ReservationService;
+import com.lockers.outerpark.domain.user.dto.response.UserReservationResponse;
 import com.lockers.outerpark.domain.user.dto.response.UserResponse;
 import com.lockers.outerpark.domain.user.service.UserService;
 

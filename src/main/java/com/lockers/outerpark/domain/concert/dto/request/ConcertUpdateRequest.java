@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import lombok.Getter;
 
 @Getter
-public class UpdateConcertRequest {
+public class ConcertUpdateRequest {
 
 	private String title;
 

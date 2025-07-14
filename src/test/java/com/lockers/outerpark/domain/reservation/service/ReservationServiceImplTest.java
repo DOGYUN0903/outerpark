@@ -20,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.lockers.outerpark.domain.concert.dto.request.RegisterConcertRequest;
+import com.lockers.outerpark.domain.concert.dto.request.ConcertRegisterRequest;
 import com.lockers.outerpark.domain.concert.entity.Concert;
 import com.lockers.outerpark.domain.concert.repository.ConcertRepository;
 import com.lockers.outerpark.domain.reservation.dto.request.ReservationRequest;
@@ -80,13 +80,13 @@ class ReservationServiceImplTest {
 		// userRepository.save(user);
 		userRepository.save(writer);
 
-		RegisterConcertRequest registerConcertRequest = new RegisterConcertRequest();
-		ReflectionTestUtils.setField(registerConcertRequest, "title", "제목");
-		ReflectionTestUtils.setField(registerConcertRequest, "runningTime", 180);
-		ReflectionTestUtils.setField(registerConcertRequest, "price", 65000);
-		ReflectionTestUtils.setField(registerConcertRequest, "limitAge", 19);
-		ReflectionTestUtils.setField(registerConcertRequest, "performanceDate", LocalDate.parse("2025-07-11"));
-		Concert concert = Concert.of(writer, registerConcertRequest);
+		ConcertRegisterRequest concertRegisterRequest = new ConcertRegisterRequest();
+		ReflectionTestUtils.setField(concertRegisterRequest, "title", "제목");
+		ReflectionTestUtils.setField(concertRegisterRequest, "runningTime", 180);
+		ReflectionTestUtils.setField(concertRegisterRequest, "price", 65000);
+		ReflectionTestUtils.setField(concertRegisterRequest, "limitAge", 19);
+		ReflectionTestUtils.setField(concertRegisterRequest, "performanceDate", LocalDate.parse("2025-07-11"));
+		Concert concert = Concert.of(writer, concertRegisterRequest);
 
 		concertRepository.save(concert);
 	}

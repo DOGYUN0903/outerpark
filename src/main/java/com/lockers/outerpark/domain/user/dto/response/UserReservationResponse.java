@@ -1,7 +1,9 @@
-package com.lockers.outerpark.domain.reservation.dto.response;
+package com.lockers.outerpark.domain.user.dto.response;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
+import com.lockers.outerpark.domain.reservation.dto.response.ReservationConcertInfo;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 
 import lombok.Builder;
@@ -13,16 +15,20 @@ public class UserReservationResponse {
 
 	private final Long reservationId;
 
-	private final ConcertInfo concertInfo;
+	private final ReservationConcertInfo reservationConcertInfo;
 
 	private final int totalAmount;
 
 	private final SeatsInfo seatsInfo;
 
+	public record SeatsInfo(List<Long> seatIds, List<String> seatNumbers) {
+
+	}
+
 	public static UserReservationResponse fromEntity(Reservation reservation) {
 		return UserReservationResponse.builder()
 			.reservationId(reservation.getId())
-			.concertInfo(new ConcertInfo(
+			.reservationConcertInfo(new ReservationConcertInfo(
 				reservation.getConcert().getId(),
 				reservation.getConcert().getTitle(),
 				reservation.getConcert().getPerformanceDate()))

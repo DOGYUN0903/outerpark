@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 
 import com.lockers.outerpark.domain.concert.entity.Concert;
 
-public record FindConcertResponse(String title, Integer runningTime, Long writerId, Integer price, Integer limitAge,
-								  LocalDate performanceDate, LocalDateTime updatedAt) {
+public record ConcertResponse(String title, Integer runningTime, Long writerId, Integer price, Integer limitAge,
+							  LocalDate performanceDate, LocalDateTime updatedAt) {
 
-	public static FindConcertResponse of(Concert concert) {
-		return new FindConcertResponse(
+	public static ConcertResponse of(Concert concert) {
+		return new ConcertResponse(
 			concert.getTitle(),
 			concert.getRunningTime(),
 			concert.getWriter().getId(),

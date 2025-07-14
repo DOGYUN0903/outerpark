@@ -5,8 +5,8 @@ import org.springframework.data.domain.Pageable;
 
 import com.lockers.outerpark.domain.reservation.dto.request.ReservationRequest;
 import com.lockers.outerpark.domain.reservation.dto.response.ReservationResponse;
-import com.lockers.outerpark.domain.reservation.dto.response.UserReservationResponse;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
+import com.lockers.outerpark.domain.user.dto.response.UserReservationResponse;
 
 public interface ReservationService {
 

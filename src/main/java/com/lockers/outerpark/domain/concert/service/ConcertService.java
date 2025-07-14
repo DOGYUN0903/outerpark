@@ -3,22 +3,22 @@ package com.lockers.outerpark.domain.concert.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.lockers.outerpark.domain.concert.dto.request.RegisterConcertRequest;
-import com.lockers.outerpark.domain.concert.dto.request.UpdateConcertRequest;
-import com.lockers.outerpark.domain.concert.dto.response.FindConcertResponse;
-import com.lockers.outerpark.domain.concert.dto.response.RegisterConcertResponse;
-import com.lockers.outerpark.domain.concert.dto.response.UpdateConcertResponse;
+import com.lockers.outerpark.domain.concert.dto.request.ConcertRegisterRequest;
+import com.lockers.outerpark.domain.concert.dto.request.ConcertUpdateRequest;
+import com.lockers.outerpark.domain.concert.dto.response.ConcertRegisterResponse;
+import com.lockers.outerpark.domain.concert.dto.response.ConcertResponse;
+import com.lockers.outerpark.domain.concert.dto.response.ConcertUpdateResponse;
 import com.lockers.outerpark.domain.concert.entity.Concert;
 
 public interface ConcertService {
-	RegisterConcertResponse registerConcert(Long userId,
-		RegisterConcertRequest request);
+	ConcertRegisterResponse registerConcert(Long userId,
+		ConcertRegisterRequest request);
 
-	UpdateConcertResponse updateConcert(Long userId, Long concert_id, UpdateConcertRequest request);
+	ConcertUpdateResponse updateConcert(Long userId, Long concert_id, ConcertUpdateRequest request);
 
-	FindConcertResponse findConcert(Long concertId);
+	ConcertResponse findConcert(Long concertId);
 
-	Page<FindConcertResponse> findConcerts(Pageable pageable);
+	Page<ConcertResponse> findConcerts(Pageable pageable);
 
 	void deleteConcert(Long userId, Long concert_id);
 

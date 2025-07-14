@@ -14,7 +14,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 
 @Getter
-public class RegisterConcertRequest {
+public class ConcertRegisterRequest {
 
 	@NotBlank(message = "공연 제목은 필수입니다.")
 	private String title;
