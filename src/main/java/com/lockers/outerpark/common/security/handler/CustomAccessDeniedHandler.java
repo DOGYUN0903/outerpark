@@ -1,4 +1,4 @@
-package com.lockers.outerpark.common.config;
+package com.lockers.outerpark.common.security.handler;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;

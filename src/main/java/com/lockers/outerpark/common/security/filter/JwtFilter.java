@@ -1,4 +1,4 @@
-package com.lockers.outerpark.common.jwt;
+package com.lockers.outerpark.common.security.filter;
 
 import java.io.IOException;
 import java.util.List;
@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.lockers.outerpark.common.security.util.JwtUtil;
 import com.lockers.outerpark.domain.user.type.UserRole;
 
 import io.jsonwebtoken.Claims;

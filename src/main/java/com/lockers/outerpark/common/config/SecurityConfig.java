@@ -12,7 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.lockers.outerpark.common.jwt.JwtFilter;
+import com.lockers.outerpark.common.security.filter.JwtFilter;
+import com.lockers.outerpark.common.security.handler.CustomAccessDeniedHandler;
+import com.lockers.outerpark.common.security.handler.CustomAuthenticationEntryPoint;
 import com.lockers.outerpark.domain.user.type.UserRole;
 
 import lombok.RequiredArgsConstructor;

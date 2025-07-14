@@ -1,4 +1,4 @@
-package com.lockers.outerpark.common.jwt;
+package com.lockers.outerpark.common.security.util;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
