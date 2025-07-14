@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class SeatResponse {
+public class SeatStatusResponse {
 	private Long seatId;
 	private String seatNumber;
 	private String status;
@@ -15,8 +15,8 @@ public class SeatResponse {
 	/**
 	 * 좌석 상태와 함께 SeatResponse 생성
 	 */
-	public static SeatResponse fromEntityWithStatus(Seat seat, String status) {
-		return SeatResponse.builder()
+	public static SeatStatusResponse fromEntityWithStatus(Seat seat, String status) {
+		return SeatStatusResponse.builder()
 			.seatId(seat.getId())
 			.seatNumber(seat.getSeatNumber())
 			.status(status)

@@ -7,19 +7,19 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class SeatsStatusResponse {
+public class ConcertSeatStatusResponse {
 	private Long concertId;
 	private int totalSeats;
 	private int availableSeats;
 	private int reservedSeats;
-	private List<SeatResponse> seats;
+	private List<SeatStatusResponse> seats;
 
 	/**
 	 * 계산된 값들과 함께 SeatsStatusResponse 생성
 	 */
-	public static SeatsStatusResponse of(Long concertId, int totalSeats, int availableSeats,
-		int reservedSeats, List<SeatResponse> seats) {
-		return SeatsStatusResponse.builder()
+	public static ConcertSeatStatusResponse of(Long concertId, int totalSeats, int availableSeats,
+		int reservedSeats, List<SeatStatusResponse> seats) {
+		return ConcertSeatStatusResponse.builder()
 			.concertId(concertId)
 			.totalSeats(totalSeats)
 			.availableSeats(availableSeats)

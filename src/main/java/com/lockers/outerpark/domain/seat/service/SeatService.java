@@ -2,7 +2,7 @@ package com.lockers.outerpark.domain.seat.service;
 
 import java.util.List;
 
-import com.lockers.outerpark.domain.seat.dto.response.SeatsStatusResponse;
+import com.lockers.outerpark.domain.seat.dto.response.ConcertSeatStatusResponse;
 import com.lockers.outerpark.domain.seat.entity.Seat;
 
 public interface SeatService {
@@ -22,7 +22,7 @@ public interface SeatService {
 	/**
 	 * 특정 콘서트의 모든 좌석과 상태 조회
 	 */
-	SeatsStatusResponse getSeatsForConcert(Long concertId);
+	ConcertSeatStatusResponse getSeatsForConcert(Long concertId);
 
 	// ================= Reservation 도메인 지원 메서드 ================
 

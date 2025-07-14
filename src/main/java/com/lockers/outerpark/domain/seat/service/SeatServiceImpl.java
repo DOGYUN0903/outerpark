@@ -10,15 +10,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lockers.outerpark.domain.reservation.type.ReservationStatus;
-import com.lockers.outerpark.domain.seat.dto.response.SeatResponse;
-import com.lockers.outerpark.domain.seat.dto.response.SeatStatusDto;
-import com.lockers.outerpark.domain.seat.dto.response.SeatsStatusResponse;
+import com.lockers.outerpark.domain.seat.dto.response.ConcertSeatStatusResponse;
+import com.lockers.outerpark.domain.seat.dto.response.SeatStatusResponse;
 import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
 import com.lockers.outerpark.domain.seat.entity.Seat;
 import com.lockers.outerpark.domain.seat.exception.SeatErrorCode;
 import com.lockers.outerpark.domain.seat.exception.SeatException;
 import com.lockers.outerpark.domain.seat.repository.ReservationSeatRepository;
 import com.lockers.outerpark.domain.seat.repository.SeatRepository;
+import com.lockers.outerpark.domain.seat.repository.query.SeatStatusInfo;
 import com.lockers.outerpark.domain.seat.type.SeatStatus;
 
 import lombok.RequiredArgsConstructor;
@@ -63,37 +63,38 @@ public class SeatServiceImpl implements SeatService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public SeatsStatusResponse getSeatsForConcert(Long concertId) {
+	public ConcertSeatStatusResponse getSeatsForConcert(Long concertId) {
 		List<Seat> allSeats = seatRepository.findAllActiveSeatsOrderBySeatNumber();
 
 		// DTO Projection을 활용한 성능 최적화
-		List<SeatStatusDto> reservedSeatsStatus = reservationSeatRepository.findSeatStatusByConcertId(concertId);
+		List<SeatStatusInfo> reservedSeatsStatus = reservationSeatRepository.findSeatStatusByConcertId(concertId);
 		Map<Long, String> seatStatusMap = reservedSeatsStatus.stream()
 			.collect(Collectors.toMap(
-				SeatStatusDto::getSeatId,
-				SeatStatusDto::getDisplayStatus,
+				SeatStatusInfo::getSeatId,
+				SeatStatusInfo::getDisplayStatus,
 				(existing, replacement) -> existing
 			));
 
 		// 전체 좌석에 예약 상태 매핑
-		List<SeatResponse> seatResponses = allSeats.stream()
+		List<SeatStatusResponse> seatStatusResponse = allSeats.stream()
 			.map(seat -> {
 				String status = seatStatusMap.get(seat.getId());
-				return SeatResponse.fromEntityWithStatus(seat, status);
+				return SeatStatusResponse.fromEntityWithStatus(seat, status);
 			})
 			.toList();
 
 		// 통계 계산
-		int totalSeats = seatResponses.size();
-		int reservedSeats = (int)seatResponses.stream()
-			.filter(response -> "PENDING".equals(response.getStatus()) || "CONFIRMED".equals(response.getStatus()))
+		int totalSeats = seatStatusResponse.size();
+		int reservedSeats = (int)seatStatusResponse.stream()
+			.map(response -> SeatStatus.valueOf(response.getStatus()))
+			.filter(status -> status == SeatStatus.PENDING || status == SeatStatus.CONFIRMED)
 			.count();
 		int availableSeats = totalSeats - reservedSeats;
 
 		log.info("콘서트 {}의 좌석 현황: 총 {}석, 예약 가능 {}석, 예약됨 {}석",
 			concertId, totalSeats, availableSeats, reservedSeats);
 
-		return SeatsStatusResponse.of(concertId, totalSeats, availableSeats, reservedSeats, seatResponses);
+		return ConcertSeatStatusResponse.of(concertId, totalSeats, availableSeats, reservedSeats, seatStatusResponse);
 	}
 
 	@Override

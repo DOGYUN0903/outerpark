@@ -15,13 +15,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 import com.lockers.outerpark.domain.reservation.type.ReservationStatus;
-import com.lockers.outerpark.domain.seat.dto.response.SeatStatusDto;
-import com.lockers.outerpark.domain.seat.dto.response.SeatsStatusResponse;
+import com.lockers.outerpark.domain.seat.dto.response.ConcertSeatStatusResponse;
 import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
 import com.lockers.outerpark.domain.seat.entity.Seat;
 import com.lockers.outerpark.domain.seat.exception.SeatException;
 import com.lockers.outerpark.domain.seat.repository.ReservationSeatRepository;
 import com.lockers.outerpark.domain.seat.repository.SeatRepository;
+import com.lockers.outerpark.domain.seat.repository.query.SeatStatusInfo;
 
 @ExtendWith(MockitoExtension.class)
 @org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
@@ -177,14 +177,14 @@ class SeatServiceImplTest {
 		Seat seat2 = createSeat(2L, "A-2");
 		List<Seat> seats = List.of(seat1, seat2);
 
-		SeatStatusDto statusDto1 = new SeatStatusDto(1L, "A-1", ReservationStatus.PENDING);
-		List<SeatStatusDto> statusDtos = List.of(statusDto1);
+		SeatStatusInfo statusDto1 = new SeatStatusInfo(1L, "A-1", ReservationStatus.PENDING);
+		List<SeatStatusInfo> statusDtos = List.of(statusDto1);
 
 		given(seatRepository.findAllActiveSeatsOrderBySeatNumber()).willReturn(seats);
 		given(reservationSeatRepository.findSeatStatusByConcertId(concertId)).willReturn(statusDtos);
 
 		// when
-		SeatsStatusResponse response = seatService.getSeatsForConcert(concertId);
+		ConcertSeatStatusResponse response = seatService.getSeatsForConcert(concertId);
 
 		// then
 		assertThat(response.getConcertId()).isEqualTo(concertId);
