@@ -73,8 +73,10 @@ public class PaymentServiceImpl implements PaymentService {
 	@Override
 	@Transactional(readOnly = true)
 	public PaymentResponse getPayment(Long paymentId) {
+		//결제 정보 조회
 		Payment payment = paymentRepository.findById(paymentId)
 			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUND_PAYMENT));
+
 		return PaymentResponse.from(payment, payment.getReservation().getId());
 	}
 
@@ -87,6 +89,9 @@ public class PaymentServiceImpl implements PaymentService {
 
 		//공연 날짜가 당일 포함 지났을 경우 환불 불가 (예외처리)
 		validateCancelable(paymentId);
+
+		//예약 정보 취소
+		reservationService.updateReservationCancel(payment.getReservation().getId());
 
 		//결제 정보 CANCEL 업데이트
 		payment.updateStatus(PaymentStatus.CANCEL);

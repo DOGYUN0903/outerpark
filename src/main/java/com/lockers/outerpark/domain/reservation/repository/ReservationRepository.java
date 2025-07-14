@@ -13,8 +13,6 @@ import com.lockers.outerpark.domain.reservation.entity.Reservation;
 import com.lockers.outerpark.domain.reservation.type.ReservationStatus;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-	Optional<Reservation> findByIdAndStatus(Long id, ReservationStatus status);
-
 	Optional<Reservation> findByIdAndStatusNot(Long reservationId, ReservationStatus reservationStatus);
 
 	@EntityGraph(attributePaths = {"reservationSeats", "reservationSeats.seat", "concert"})
