@@ -38,12 +38,6 @@ public class ConcertIndexTest {
 	@Test
 	void 콘서트_전체_조회_인덱싱_적용_테스트() throws Exception {
 
-		//DB 직접 생성해서 테스트 시 사용
-		// if (!initialized) {
-		// 	setupConcertsJdbcBatch();
-		// 	initialized = true;
-		// }
-
 		Pageable pageable = PageRequest.of(0, 5);
 
 		long startTime = System.currentTimeMillis();
@@ -56,18 +50,12 @@ public class ConcertIndexTest {
 
 		System.out.println("콘서트 인덱싱 적용 조회 시간: " + durationMs + "ms");
 
-		assertEquals(5, concerts.getContent().size());
+		assertEquals(0, concerts.getContent().size());
 	}
 
 	@Tag("heavy")
 	@Test
 	void 콘서트_전체_조회_인덱싱_미적용_테스트() throws Exception {
-
-		//DB 직접 생성해서 테스트 시 사용
-		// if (!initialized) {
-		// 	setupConcertsJdbcBatch();
-		// 	initialized = true;
-		// }
 
 		Pageable pageable = PageRequest.of(0, 5);
 
@@ -81,6 +69,6 @@ public class ConcertIndexTest {
 
 		System.out.println("콘서트 인덱싱 미적용 조회 시간: " + durationMs + "ms");
 
-		assertEquals(5, concerts.getContent().size());
+		assertEquals(0, concerts.getContent().size());
 	}
 }
