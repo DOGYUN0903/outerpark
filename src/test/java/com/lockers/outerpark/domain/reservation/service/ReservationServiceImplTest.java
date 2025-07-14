@@ -76,8 +76,7 @@ class ReservationServiceImplTest {
 		}
 		User writer = new User("test10@naver.com", "김용준10", LocalDate.parse("2001-01-29"), "213$@ds@D", 100000L,
 			UserRole.ADMIN);
-
-		// userRepository.save(user);
+		
 		userRepository.save(writer);
 
 		ConcertRegisterRequest concertRegisterRequest = new ConcertRegisterRequest();
@@ -86,7 +85,7 @@ class ReservationServiceImplTest {
 		ReflectionTestUtils.setField(concertRegisterRequest, "price", 65000);
 		ReflectionTestUtils.setField(concertRegisterRequest, "limitAge", 19);
 		ReflectionTestUtils.setField(concertRegisterRequest, "performanceDate", LocalDate.parse("2025-07-11"));
-		Concert concert = Concert.of(writer, concertRegisterRequest);
+		Concert concert = concertRegisterRequest.toEntity(writer);
 
 		concertRepository.save(concert);
 	}

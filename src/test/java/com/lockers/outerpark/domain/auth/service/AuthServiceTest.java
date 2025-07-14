@@ -85,7 +85,7 @@ class AuthServiceTest {
 		SignupResponse response = authService.signup(signupRequest);
 
 		// then
-		assertThat(response.getToken()).isEqualTo("token123");
+		assertThat(response.token()).isEqualTo("token123");
 	}
 	// 회원가입 단위테스트 끝
 
@@ -149,7 +149,7 @@ class AuthServiceTest {
 		SigninResponse signinResponse = authService.signin(signinRequest);
 
 		// then
-		assertThat(signinResponse.getToken()).isEqualTo("token1234");
+		assertThat(signinResponse.token()).isEqualTo("token1234");
 	}
 	// 로그인 단위테스트 끝
 

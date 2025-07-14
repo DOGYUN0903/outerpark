@@ -81,7 +81,7 @@ class SeatServiceImplTest {
 
 		// when & then
 		assertThatThrownBy(() -> seatService.isAvailable(seatId, concertId))
-			.isInstanceOf(SeatException.SeatNotFoundException.class);
+			.isInstanceOf(SeatException.class);
 	}
 
 	@Test
@@ -224,7 +224,7 @@ class SeatServiceImplTest {
 
 		// when & then
 		assertThatThrownBy(() -> seatService.getSeatForReservation(seatId, concertId))
-			.isInstanceOf(SeatException.SeatNotFoundException.class);
+			.isInstanceOf(SeatException.class);
 	}
 
 	@Test
@@ -241,7 +241,7 @@ class SeatServiceImplTest {
 
 		// when & then
 		assertThatThrownBy(() -> seatService.getSeatForReservation(seatId, concertId))
-			.isInstanceOf(SeatException.SeatNotFoundException.class);
+			.isInstanceOf(SeatException.class);
 	}
 
 	@Test
@@ -276,7 +276,7 @@ class SeatServiceImplTest {
 
 		// when & then
 		assertThatThrownBy(() -> seatService.validateSeatsAvailability(seatIds, concertId))
-			.isInstanceOf(SeatException.InvalidSeatSelectionException.class)
+			.isInstanceOf(SeatException.class)
 			.hasMessage("잘못된 좌석 선택입니다.");
 	}
 
@@ -289,7 +289,7 @@ class SeatServiceImplTest {
 
 		// when & then
 		assertThatThrownBy(() -> seatService.validateSeatsAvailability(seatIds, concertId))
-			.isInstanceOf(SeatException.InvalidSeatSelectionException.class)
+			.isInstanceOf(SeatException.class)
 			.hasMessage("잘못된 좌석 선택입니다.");
 	}
 
@@ -302,7 +302,7 @@ class SeatServiceImplTest {
 
 		// when & then
 		assertThatThrownBy(() -> seatService.validateSeatsAvailability(seatIds, concertId))
-			.isInstanceOf(SeatException.InvalidSeatSelectionException.class)
+			.isInstanceOf(SeatException.class)
 			.hasMessage("잘못된 좌석 선택입니다.");
 	}
 
@@ -318,7 +318,7 @@ class SeatServiceImplTest {
 
 		// when & then
 		assertThatThrownBy(() -> seatService.validateSeatsAvailability(seatIds, concertId))
-			.isInstanceOf(SeatException.SeatNotFoundException.class)
+			.isInstanceOf(SeatException.class)
 			.hasMessageContaining("존재하지 않는 좌석");
 	}
 
@@ -338,7 +338,7 @@ class SeatServiceImplTest {
 
 		// when & then
 		assertThatThrownBy(() -> seatService.validateSeatsAvailability(seatIds, concertId))
-			.isInstanceOf(SeatException.SeatAlreadyReservedException.class);
+			.isInstanceOf(SeatException.class);
 	}
 
 	@Test

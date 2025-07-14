@@ -87,10 +87,10 @@ class UserServiceTest {
 		UserResponse userResponse = userService.getUserProfile(userId);
 
 		// then
-		assertThat(userResponse.getId()).isEqualTo(user.getId());
-		assertThat(userResponse.getNickname()).isEqualTo(user.getNickname());
-		assertThat(userResponse.getBalance()).isEqualTo(user.getBalance());
-		assertThat(userResponse.getBirth()).isEqualTo(user.getBirth());
-		assertThat(userResponse.getUserRole()).isEqualTo(user.getUserRole());
+		assertThat(userResponse.id()).isEqualTo(user.getId());
+		assertThat(userResponse.nickname()).isEqualTo(user.getNickname());
+		assertThat(userResponse.balance()).isEqualTo(user.getBalance());
+		assertThat(userResponse.birth()).isEqualTo(user.getBirth());
+		assertThat(userResponse.userRole()).isEqualTo(user.getUserRole());
 	}
 }

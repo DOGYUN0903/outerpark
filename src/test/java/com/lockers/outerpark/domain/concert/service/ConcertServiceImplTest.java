@@ -62,7 +62,7 @@ class ConcertServiceImplTest {
 		ReflectionTestUtils.setField(request, "limitAge", 19);
 		ReflectionTestUtils.setField(request, "performanceDate", LocalDate.parse("2025-07-09"));
 
-		Concert concert = Concert.of(user, request);
+		Concert concert = request.toEntity(user);
 
 		//when
 		when(userService.getActiveUserById(userId)).thenReturn(user);
@@ -95,7 +95,7 @@ class ConcertServiceImplTest {
 		ReflectionTestUtils.setField(request, "limitAge", 19);
 		ReflectionTestUtils.setField(request, "performanceDate", LocalDate.parse("2025-07-09"));
 
-		Concert concert = Concert.of(user, request);
+		Concert concert = request.toEntity(user);
 
 		// 업데이트 요청 생성
 		ConcertUpdateRequest concertUpdateRequest = new ConcertUpdateRequest();
@@ -135,7 +135,7 @@ class ConcertServiceImplTest {
 		ReflectionTestUtils.setField(concertUpdateRequest, "performanceDate", LocalDate.parse("2025-07-10"));
 
 		// when + then
-		Assertions.assertThrows(ConcertException.ConcertNotFoundException.class, () -> {
+		Assertions.assertThrows(ConcertException.class, () -> {
 			concertServiceImpl.updateConcert(userId, concertId, concertUpdateRequest);
 		});
 
@@ -158,7 +158,7 @@ class ConcertServiceImplTest {
 		ReflectionTestUtils.setField(request, "limitAge", 19);
 		ReflectionTestUtils.setField(request, "performanceDate", LocalDate.parse("2025-07-09"));
 
-		Concert concert = Concert.of(user, request);
+		Concert concert = request.toEntity(user);
 
 		//when
 		when(concertRepository.findByIdAndIsDeletedFalse(concertId)).thenReturn(Optional.of(concert));
@@ -183,12 +183,12 @@ class ConcertServiceImplTest {
 
 		//when + then
 		when(concertRepository.findByIdAndIsDeletedFalse(concertId)).thenReturn(Optional.empty());
-		ConcertException.ConcertNotFoundException concertNotFoundException = assertThrows(
-			ConcertException.ConcertNotFoundException.class, () -> {
+		ConcertException concertException = assertThrows(
+			ConcertException.class, () -> {
 				concertServiceImpl.getConcert(concertId);
 			});
 
-		assertEquals("공연이 존재하지 않습니다.", concertNotFoundException.getMessage());
+		assertEquals("공연이 존재하지 않습니다.", concertException.getMessage());
 	}
 
 	@Test
@@ -213,8 +213,8 @@ class ConcertServiceImplTest {
 		ReflectionTestUtils.setField(request2, "price", 65000);
 		ReflectionTestUtils.setField(request2, "limitAge", 20);
 		ReflectionTestUtils.setField(request2, "performanceDate", LocalDate.parse("2025-07-10"));
-		Concert concert1 = Concert.of(user, request1);
-		Concert concert2 = Concert.of(user, request2);
+		Concert concert1 = request1.toEntity(user);
+		Concert concert2 = request2.toEntity(user);
 
 		List<Concert> concertList = Arrays.asList(concert1, concert2);
 		Page<Concert> concertPage = new PageImpl<>(concertList, pageable, concertList.size());
@@ -258,7 +258,7 @@ class ConcertServiceImplTest {
 		ReflectionTestUtils.setField(request, "limitAge", 19);
 		ReflectionTestUtils.setField(request, "performanceDate", LocalDate.parse("2025-07-09"));
 
-		Concert concert = Concert.of(user, request);
+		Concert concert = request.toEntity(user);
 
 		when(concertRepository.findByIdAndIsDeletedFalse(concertId)).thenReturn(Optional.of(concert));
 
@@ -282,7 +282,7 @@ class ConcertServiceImplTest {
 		when(userService.getActiveUserById(userId)).thenReturn(user);
 		when(concertRepository.findByIdAndIsDeletedFalse(concertId)).thenReturn(Optional.empty());
 
-		assertThrows(ConcertException.ConcertNotFoundException.class, () -> {
+		assertThrows(ConcertException.class, () -> {
 			concertServiceImpl.deleteConcert(userId, concertId);
 		});
 

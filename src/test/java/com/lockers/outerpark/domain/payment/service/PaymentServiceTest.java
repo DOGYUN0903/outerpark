@@ -74,7 +74,7 @@ public class PaymentServiceTest {
 
 		// then
 		assertNotNull(response);
-		assertEquals(10L, response.getId());
+		assertEquals(10L, response.id());
 		verify(paymentRepository).save(any(Payment.class));
 	}
 
@@ -231,8 +231,8 @@ public class PaymentServiceTest {
 
 		// then
 		assertNotNull(response);
-		assertEquals(paymentId, response.getId());
-		assertEquals(reservationId, response.getReservationId());
+		assertEquals(paymentId, response.id());
+		assertEquals(reservationId, response.reservationId());
 
 	}
 
