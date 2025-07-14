@@ -38,7 +38,7 @@ public class ConcertServiceImpl implements ConcertService {
 	 */
 	@Override
 	@Transactional
-	public ConcertRegisterResponse registerConcert(Long userId, ConcertRegisterRequest request) {
+	public ConcertRegisterResponse createConcert(Long userId, ConcertRegisterRequest request) {
 
 		User user = userService.getActiveUserById(userId);
 
@@ -101,7 +101,7 @@ public class ConcertServiceImpl implements ConcertService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public ConcertResponse findConcert(Long concertId) {
+	public ConcertResponse getConcert(Long concertId) {
 
 		Concert concert = getActiveConcert(concertId);
 
@@ -118,7 +118,7 @@ public class ConcertServiceImpl implements ConcertService {
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public Page<ConcertResponse> findConcerts(Pageable pageable) {
+	public Page<ConcertResponse> getConcerts(Pageable pageable) {
 		Page<Concert> concerts = concertRepository.findAllByIsDeletedFalse(pageable);
 
 		return concerts.map(ConcertResponse::of);

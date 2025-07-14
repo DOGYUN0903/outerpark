@@ -67,7 +67,7 @@ class ConcertServiceImplTest {
 		//when
 		when(userService.getActiveUserById(userId)).thenReturn(user);
 		when(concertRepository.save(any(Concert.class))).thenReturn(concert);
-		ConcertRegisterResponse response = concertServiceImpl.registerConcert(userId, request);
+		ConcertRegisterResponse response = concertServiceImpl.createConcert(userId, request);
 
 		//then
 		verify(userService).getActiveUserById(userId);
@@ -163,7 +163,7 @@ class ConcertServiceImplTest {
 		//when
 		when(concertRepository.findByIdAndIsDeletedFalse(concertId)).thenReturn(Optional.of(concert));
 
-		ConcertResponse concertResponse = concertServiceImpl.findConcert(concertId);
+		ConcertResponse concertResponse = concertServiceImpl.getConcert(concertId);
 
 		//then
 		assertNotNull(concertResponse);
@@ -185,7 +185,7 @@ class ConcertServiceImplTest {
 		when(concertRepository.findByIdAndIsDeletedFalse(concertId)).thenReturn(Optional.empty());
 		ConcertException.ConcertNotFoundException concertNotFoundException = assertThrows(
 			ConcertException.ConcertNotFoundException.class, () -> {
-				concertServiceImpl.findConcert(concertId);
+				concertServiceImpl.getConcert(concertId);
 			});
 
 		assertEquals("공연이 존재하지 않습니다.", concertNotFoundException.getMessage());
@@ -222,7 +222,7 @@ class ConcertServiceImplTest {
 		when(concertRepository.findAllByIsDeletedFalse(pageable)).thenReturn(concertPage);
 
 		// when
-		Page<ConcertResponse> concerts = concertServiceImpl.findConcerts(pageable);
+		Page<ConcertResponse> concerts = concertServiceImpl.getConcerts(pageable);
 
 		// then
 		assertNotNull(concerts);

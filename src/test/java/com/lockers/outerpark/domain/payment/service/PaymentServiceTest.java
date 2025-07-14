@@ -70,7 +70,7 @@ public class PaymentServiceTest {
 		when(paymentRepository.save(any(Payment.class))).thenReturn(payment);
 
 		// when
-		PaymentSaveResponse response = paymentService.savePayment(request, concertId, userId);
+		PaymentSaveResponse response = paymentService.createPayment(request, concertId, userId);
 
 		// then
 		assertNotNull(response);
@@ -102,7 +102,7 @@ public class PaymentServiceTest {
 
 		// when & then
 		PaymentException ex = assertThrows(PaymentException.class,
-			() -> paymentService.savePayment(request, concertId, userId)
+			() -> paymentService.createPayment(request, concertId, userId)
 		);
 
 		// 예외 코드 확인
@@ -135,7 +135,7 @@ public class PaymentServiceTest {
 
 		// when & then
 		PaymentException ex = assertThrows(PaymentException.class,
-			() -> paymentService.savePayment(request, concertId, userId)
+			() -> paymentService.createPayment(request, concertId, userId)
 		);
 
 		// 예외 코드 확인
@@ -159,7 +159,7 @@ public class PaymentServiceTest {
 
 		//when
 		PaymentException ex = assertThrows(PaymentException.class, () ->
-			paymentService.savePayment(request, concertId, userId)
+			paymentService.createPayment(request, concertId, userId)
 		);
 
 		//then
@@ -183,7 +183,7 @@ public class PaymentServiceTest {
 
 		//when
 		PaymentException ex = assertThrows(PaymentException.class, () ->
-			paymentService.savePayment(request, concertId, userId)
+			paymentService.createPayment(request, concertId, userId)
 		);
 
 		//then
@@ -203,7 +203,7 @@ public class PaymentServiceTest {
 
 		// when
 		PaymentException ex = assertThrows(PaymentException.class, () ->
-			paymentService.findOnePayment(paymentId)
+			paymentService.getPayment(paymentId)
 		);
 
 		assertEquals(PaymentErrorCode.NOT_FOUND_PAYMENT, ex.getErrorCode());
@@ -227,7 +227,7 @@ public class PaymentServiceTest {
 		Mockito.when(paymentRepository.findById(paymentId)).thenReturn(Optional.of(payment));
 
 		// when
-		PaymentResponse response = paymentService.findOnePayment(paymentId);
+		PaymentResponse response = paymentService.getPayment(paymentId);
 
 		// then
 		assertNotNull(response);

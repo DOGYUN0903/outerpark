@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.lockers.outerpark.common.jwt.JwtUtil;
+import com.lockers.outerpark.common.security.util.JwtUtil;
 import com.lockers.outerpark.domain.auth.dto.request.SigninRequest;
 import com.lockers.outerpark.domain.auth.dto.request.SignupRequest;
 import com.lockers.outerpark.domain.auth.dto.request.WithdrawRequest;

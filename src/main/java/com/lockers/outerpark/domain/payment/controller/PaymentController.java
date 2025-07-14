@@ -36,7 +36,7 @@ public class PaymentController {
 	 * @return 결제 생성 성공 응답 (201 Created)
 	 */
 	@PostMapping("/concerts/{concertId}")
-	public ResponseEntity<ApiResponse<PaymentSaveResponse>> savePayment(
+	public ResponseEntity<ApiResponse<PaymentSaveResponse>> createPayment(
 		@AuthenticationPrincipal Long userId,
 		@PathVariable Long concertId,
 		@RequestBody @Valid PaymentRequest paymentRequest) {
@@ -44,7 +44,7 @@ public class PaymentController {
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(
 				ApiResponse.success("결제 내역이 생성 되었습니다.",
-					paymentService.savePayment(paymentRequest, concertId, userId)));
+					paymentService.createPayment(paymentRequest, concertId, userId)));
 	}
 
 	/**
@@ -54,9 +54,9 @@ public class PaymentController {
 	 * @return 결제 조회 성공 응답 (200 OK)
 	 */
 	@GetMapping("/{paymentId}")
-	public ResponseEntity<ApiResponse<PaymentResponse>> findOnePayment(@PathVariable Long paymentId) {
+	public ResponseEntity<ApiResponse<PaymentResponse>> getPayment(@PathVariable Long paymentId) {
 		return ResponseEntity.ok(
-			ApiResponse.success("결제 정보를 조회했습니다.", paymentService.findOnePayment(paymentId)));
+			ApiResponse.success("결제 정보를 조회했습니다.", paymentService.getPayment(paymentId)));
 	}
 
 	/**

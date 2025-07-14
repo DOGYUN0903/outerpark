@@ -4,7 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.lockers.outerpark.common.jwt.JwtUtil;
+import com.lockers.outerpark.common.security.util.JwtUtil;
 import com.lockers.outerpark.domain.auth.dto.request.SigninRequest;
 import com.lockers.outerpark.domain.auth.dto.request.SignupRequest;
 import com.lockers.outerpark.domain.auth.dto.request.WithdrawRequest;

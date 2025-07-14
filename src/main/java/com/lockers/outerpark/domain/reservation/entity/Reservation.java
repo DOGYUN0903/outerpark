@@ -80,16 +80,10 @@ public class Reservation {
 	}
 
 	/**
-	 * 예약 상태 CONFIRMED로 변경
+	 * 예약 상태 변경
 	 */
-	public void confirm() {
-		this.status = ReservationStatus.CONFIRMED;
-	}
 
-	/**
-	 * 예약 상태 CANCELLED로 변경
-	 */
-	public void cancel() {
-		this.status = ReservationStatus.CANCELLED;
+	public void updateStatus(ReservationStatus status) {
+		this.status = status;
 	}
 }

@@ -11,14 +11,14 @@ import com.lockers.outerpark.domain.concert.dto.response.ConcertUpdateResponse;
 import com.lockers.outerpark.domain.concert.entity.Concert;
 
 public interface ConcertService {
-	ConcertRegisterResponse registerConcert(Long userId,
+	ConcertRegisterResponse createConcert(Long userId,
 		ConcertRegisterRequest request);
 
 	ConcertUpdateResponse updateConcert(Long userId, Long concert_id, ConcertUpdateRequest request);
 
-	ConcertResponse findConcert(Long concertId);
+	ConcertResponse getConcert(Long concertId);
 
-	Page<ConcertResponse> findConcerts(Pageable pageable);
+	Page<ConcertResponse> getConcerts(Pageable pageable);
 
 	void deleteConcert(Long userId, Long concert_id);
 

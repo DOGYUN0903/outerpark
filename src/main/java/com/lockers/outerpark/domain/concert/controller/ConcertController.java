@@ -37,8 +37,8 @@ public class ConcertController {
 		@AuthenticationPrincipal Long id,
 		@Valid @RequestBody ConcertRegisterRequest request
 	) {
-		return new ResponseEntity<>(ApiResponse.success("콘서트가 등록되었습니다.", concertService.registerConcert(id, request)),
-			HttpStatus.CREATED);
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(ApiResponse.success("콘서트가 등록되었습니다.", concertService.createConcert(id, request)));
 	}
 
 	@PatchMapping("/{concertId}")
@@ -47,24 +47,27 @@ public class ConcertController {
 		@PathVariable Long concertId,
 		@RequestBody ConcertUpdateRequest request
 	) {
-		return new ResponseEntity<>(ApiResponse.success("콘서트가 수정되었습니다.",
-			concertService.updateConcert(id, concertId, request)), HttpStatus.OK);
+
+		return ResponseEntity.ok()
+			.body(ApiResponse.success("콘서트가 수정되었습니다.", concertService.updateConcert(id, concertId, request)));
 	}
 
 	@GetMapping("/{concertId}")
-	public ResponseEntity<ApiResponse<ConcertResponse>> findConcert(
+	public ResponseEntity<ApiResponse<ConcertResponse>> getConcert(
 		@PathVariable Long concertId
 	) {
-		return new ResponseEntity<>(ApiResponse.success("콘서트가 조회되었습니다.", concertService.findConcert(concertId)),
-			HttpStatus.OK);
+
+		return ResponseEntity.ok()
+			.body(ApiResponse.success("콘서트가 조회되었습니다.", concertService.getConcert(concertId)));
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponse<Page<ConcertResponse>>> findConcerts(
+	public ResponseEntity<ApiResponse<Page<ConcertResponse>>> getConcertsPage(
 		Pageable pageable
 	) {
-		return new ResponseEntity<>(ApiResponse.success("콘서트가 조회되었습니다.", concertService.findConcerts(pageable)),
-			HttpStatus.OK);
+
+		return ResponseEntity.ok()
+			.body(ApiResponse.success("콘서트가 조회되었습니다.", concertService.getConcerts(pageable)));
 	}
 
 	@DeleteMapping("/{concertId}")
@@ -72,7 +75,11 @@ public class ConcertController {
 		@AuthenticationPrincipal Long id,
 		@PathVariable Long concertId
 	) {
+
 		concertService.deleteConcert(id, concertId);
-		return new ResponseEntity<>(ApiResponse.success("콘서트가 삭제되었습니다.", null), HttpStatus.OK);
+
+		return ResponseEntity.ok()
+			.body(ApiResponse.success("콘서트가 삭제되었습니다.", null));
+
 	}
 }

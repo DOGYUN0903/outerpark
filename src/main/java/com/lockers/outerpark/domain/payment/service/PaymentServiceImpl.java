@@ -16,6 +16,7 @@ import com.lockers.outerpark.domain.payment.repository.PaymentRepository;
 import com.lockers.outerpark.domain.payment.type.PaymentStatus;
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
 import com.lockers.outerpark.domain.reservation.service.ReservationService;
+import com.lockers.outerpark.domain.reservation.type.ReservationStatus;
 import com.lockers.outerpark.domain.user.entity.User;
 import com.lockers.outerpark.domain.user.service.UserService;
 
@@ -35,7 +36,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public PaymentSaveResponse savePayment(PaymentRequest request, Long concertId, Long userId) {
+	public PaymentSaveResponse createPayment(PaymentRequest request, Long concertId, Long userId) {
 
 		//결제 정합성 검사(결제 금액 및 예약 번호 확인)
 		Reservation reservation = processReservationPayment(request, concertId, userId);
@@ -51,7 +52,7 @@ public class PaymentServiceImpl implements PaymentService {
 			Payment savedPayment = paymentRepository.save(payment);
 
 			//예약 정보 Confirm 변경
-			reservation.confirm();
+			reservation.updateStatus(ReservationStatus.CONFIRMED);
 
 			//결제 정보 ID 반환
 			return new PaymentSaveResponse(savedPayment.getId());
@@ -71,7 +72,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public PaymentResponse findOnePayment(Long paymentId) {
+	public PaymentResponse getPayment(Long paymentId) {
 		Payment payment = paymentRepository.findById(paymentId)
 			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUND_PAYMENT));
 		return PaymentResponse.from(payment, payment.getReservation().getId());

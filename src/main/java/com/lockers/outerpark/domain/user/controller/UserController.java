@@ -33,7 +33,7 @@ public class UserController {
 	}
 
 	@GetMapping("/me/reservations")
-	public ResponseEntity<ApiResponse<Page<UserReservationResponse>>> getUserProfile(
+	public ResponseEntity<ApiResponse<Page<UserReservationResponse>>> getUserReservations(
 		@AuthenticationPrincipal Long userId,
 		Pageable pageable) {
 		return ResponseEntity

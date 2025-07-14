@@ -68,16 +68,7 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = reservationRepository.findByIdAndStatusNot(reservationId, ReservationStatus.CANCELLED)
 			.orElseThrow(() -> new ReservationException(ReservationErrorCode.NOT_FOUND));
 
-		reservation.cancel();
-	}
-
-	@Override
-	@Transactional
-	public void confirmReservation(Long reservationId) {
-		Reservation reservation = reservationRepository.findByIdAndStatus(reservationId, ReservationStatus.PENDING)
-			.orElseThrow(() -> new ReservationException(ReservationErrorCode.NOT_FOUND));
-
-		reservation.confirm();
+		reservation.updateStatus(ReservationStatus.CANCELLED);
 	}
 
 	@Override
@@ -85,21 +76,6 @@ public class ReservationServiceImpl implements ReservationService {
 	public Page<UserReservationResponse> getUserReservations(Long userId, Pageable pageable) {
 		return reservationRepository.findAllByUserIdAndStatus(userId,
 			ReservationStatus.CONFIRMED, pageable).map(UserReservationResponse::fromEntity);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public boolean existsReservation(Long reservationId) {
-		if (reservationId == null)
-			return false;
-		return reservationRepository.existsById(reservationId);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public Reservation findReservationById(Long reservationId) {
-		return reservationRepository.findById(reservationId)
-			.orElseThrow(() -> new ReservationException(ReservationErrorCode.NOT_FOUND));
 	}
 
 	@Override

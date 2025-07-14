@@ -15,7 +15,7 @@ public interface PaymentService {
 	 * @return 저장된 결제 응답 정보
 	 * @throws PaymentException 결제 처리 중 오류가 발생한 경우
 	 */
-	PaymentSaveResponse savePayment(PaymentRequest request, Long concertId, Long userId);
+	PaymentSaveResponse createPayment(PaymentRequest request, Long concertId, Long userId);
 
 	/**
 	 * 현재 사용자의 결제 정보를 단건 조회합니다.
@@ -24,7 +24,7 @@ public interface PaymentService {
 	 * @return 해당 사용자의 결제 응답 정보
 	 * @throws PaymentException 결제가 존재하지 않거나 권한이 없는 경우
 	 */
-	PaymentResponse findOnePayment(Long userId);
+	PaymentResponse getPayment(Long userId);
 
 	/**
 	 * 결제를 취소하고 예약 상태를 변경합니다.
