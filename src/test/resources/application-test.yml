@@ -1,12 +1,12 @@
 server:
-  port: ${TEST_SERVER_PORT}
+  port: ${SERVER_PORT}
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:${TEST_MYSQL_PORT}/${TEST_MYSQL_DBNAME}?serverTimezone=Asia/Seoul
-    username: ${TEST_MYSQL_USERNAME}
-    password: ${TEST_MYSQL_PASSWORD}
+    url: jdbc:mysql://${RDS_URL}:${MYSQL_PORT}/${MYSQL_DBNAME}?serverTimezone=Asia/Seoul
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: create
@@ -18,11 +18,11 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
   data:
     redis:
-      host: ${TEST_REDIS_HOST}
-      port: ${TEST_REDIS_PORT}
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
   config:
     import: optional:file:.env[.properties]
 
 jwt:
   secret:
-    key: ${TEST_JWT_SECRET_KEY}
+    key: ${JWT_SECRET_KEY}
