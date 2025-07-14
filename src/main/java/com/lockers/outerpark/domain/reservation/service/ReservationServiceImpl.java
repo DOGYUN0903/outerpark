@@ -38,7 +38,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional
-    public ReservationResponse createReservation(ReservationRequest request, Long userId, Long concertId) {
+    public ReservationResponse createReservationV1(ReservationRequest request, Long userId, Long concertId) {
         List<Long> seatIds = request.getSeatIds();
 
         log.info("✅ 예약 시도: userId={}, concertId={}, seatIds={}", userId, concertId, seatIds);
@@ -49,6 +49,34 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         List<Seat> seats = seatService.getSeatsForReservation(request.getSeatIds(), concertId);
+        User user = userService.getActiveUserById(userId);
+        Concert concert = concertService.getActiveConcert(concertId);
+
+        Reservation reservation = new Reservation(user, concert, seats.size(),
+            concert.getPrice() * seats.size());
+
+        Reservation savedReservation = reservationRepository.save(
+            reservationAddReservationSeats(seats, reservation, concert));
+
+        return ReservationResponse.fromEntity(savedReservation);
+    }
+
+    /*
+     * DB 락 적용을 위한 분기 서비스 로직
+     */
+    @Override
+    @Transactional
+    public ReservationResponse createReservationV2(ReservationRequest request, Long userId, Long concertId) {
+        log.info("✅ 예약 시도: userId={}, concertId={}, seatIds={}", userId, concertId, request.getSeatIds());
+
+        List<Seat> seats = seatService.getSeatsForReservation(request.getSeatIds(), concertId);
+
+        //같은 공연에 이미 PENDING 중인 예약이 있을경우 예외
+        if (reservationRepository.existsByUserIdAndConcertIdAndStatus(userId, concertId,
+            ReservationStatus.PENDING)) {
+            throw new ReservationException(ReservationErrorCode.ALREADY_PENDING);
+        }
+
         User user = userService.getActiveUserById(userId);
         Concert concert = concertService.getActiveConcert(concertId);
 

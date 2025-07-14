@@ -23,8 +23,9 @@ public class RedisLockService {
     public String acquireLock(Long concertId, List<Long> seatIds) {
         String uuid = UUID.randomUUID().toString(); // 락 소유자 식별용
         List<Long> acquiredSeatIds = new ArrayList<>(); // 지금까지 락을 성공한 seatId 모아둠
+        List<Long> sortedSeatIds = seatIds.stream().sorted().toList();
 
-        for (Long seatId : seatIds) {
+        for (Long seatId : sortedSeatIds) {
             String key = generateKey(concertId, seatId);
             boolean isLocked = redisLockRepository.tryLock(key, uuid, LOCK_TTL);
 

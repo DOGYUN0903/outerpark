@@ -65,16 +65,16 @@ class ReservationServiceImplTest {
         userRepository.deleteAll();
 
         if (seatRepository.count() == 0) {
-            for (int i = 1; i <= 100; i++) {
+            for (int i = 1; i <= 2; i++) {
                 seatRepository.save(new Seat("A-" + i));
             }
         }
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             User user = new User("test" + i + "@naver.com", "김용준" + i,
                 LocalDate.parse("2001-01-29"), "213$@ds@D", 100000L, UserRole.USER);
             userRepository.save(user);
         }
-        User writer = new User("test10@naver.com", "김용준10", LocalDate.parse("2001-01-29"), "213$@ds@D", 100000L,
+        User writer = new User("test101@naver.com", "김용준101", LocalDate.parse("2001-01-29"), "213$@ds@D", 100000L,
             UserRole.ADMIN);
 
         // userRepository.save(user);
@@ -98,7 +98,7 @@ class ReservationServiceImplTest {
         Long concertId = 1L;
         List<Long> seatIds = List.of(1L, 2L); // 동일 좌석 충돌 유도
         List<User> all = userRepository.findAll();
-        int THREAD_COUNT = 10;
+        int THREAD_COUNT = 100;
 
         CountDownLatch latch = new CountDownLatch(THREAD_COUNT);
         CyclicBarrier barrier = new CyclicBarrier(THREAD_COUNT);
@@ -112,7 +112,7 @@ class ReservationServiceImplTest {
                 ReflectionTestUtils.setField(req, "seatIds", seatIds);
                 try {
                     barrier.await();
-                    reservationService.createReservation(req, id, concertId);
+                    reservationService.createReservationV2(req, id, concertId);
                 } catch (Exception e) {
                     exceptions.add(e);
                     log.warn("예약 실패: userId={}, reason={}", id, e.getMessage());

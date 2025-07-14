@@ -23,22 +23,22 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/reservations")
 public class ReservationController {
 
-	private final ReservationService reservationService;
+    private final ReservationService reservationService;
 
-	@PostMapping("/concerts/{concertId}")
-	public ResponseEntity<ApiResponse<ReservationResponse>> createReservation(
-		@Valid @RequestBody ReservationRequest request, @AuthenticationPrincipal Long userId,
-		@PathVariable Long concertId) {
-		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(
-				ApiResponse.success("공연 예매에 성공하였습니다.",
-					reservationService.createReservation(request, userId, concertId)));
-	}
+    @PostMapping("/concerts/{concertId}")
+    public ResponseEntity<ApiResponse<ReservationResponse>> createReservation(
+        @Valid @RequestBody ReservationRequest request, @AuthenticationPrincipal Long userId,
+        @PathVariable Long concertId) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(
+                ApiResponse.success("공연 예매에 성공하였습니다.",
+                    reservationService.createReservationV1(request, userId, concertId)));
+    }
 
-	@DeleteMapping("/{reservationId}")
-	public ResponseEntity<ApiResponse<Void>> cancelReservation(@PathVariable Long reservationId) {
-		reservationService.cancelReservation(reservationId);
+    @DeleteMapping("/{reservationId}")
+    public ResponseEntity<ApiResponse<Void>> cancelReservation(@PathVariable Long reservationId) {
+        reservationService.cancelReservation(reservationId);
 
-		return ResponseEntity.ok(ApiResponse.success("예매를 취소하였습니다.", null));
-	}
+        return ResponseEntity.ok(ApiResponse.success("예매를 취소하였습니다.", null));
+    }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import com.lockers.outerpark.domain.lock.service.RedisLockService;
@@ -19,7 +20,8 @@ public class LockAspect {
 
     private final RedisLockService redisLockService;
 
-    @Around("execution(* com.lockers.outerpark.domain.reservation.service.ReservationServiceImpl.createReservation(..))")
+    @Order(0)
+    @Around("execution(* com.lockers.outerpark.domain.reservation.service.ReservationServiceImpl.createReservationV1(..))")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         // ReservationServiceImpl.createReservation 파라미터 가져오기
         Object[] args = joinPoint.getArgs();
