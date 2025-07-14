@@ -5,12 +5,12 @@ import com.lockers.outerpark.domain.reservation.type.ReservationStatus;
 import lombok.Getter;
 
 @Getter
-public class SeatStatusInfo {
+public class SeatStatusQueryDto {
 	private final Long seatId;
 	private final String seatNumber;
 	private final String reservationStatus;
 
-	public SeatStatusInfo(Long seatId, String seatNumber, ReservationStatus reservationStatus) {
+	public SeatStatusQueryDto(Long seatId, String seatNumber, ReservationStatus reservationStatus) {
 		this.seatId = seatId;
 		this.seatNumber = seatNumber;
 		this.reservationStatus = reservationStatus != null ? reservationStatus.name() : null;

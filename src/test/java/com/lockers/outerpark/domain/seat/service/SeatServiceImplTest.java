@@ -21,7 +21,7 @@ import com.lockers.outerpark.domain.seat.entity.Seat;
 import com.lockers.outerpark.domain.seat.exception.SeatException;
 import com.lockers.outerpark.domain.seat.repository.ReservationSeatRepository;
 import com.lockers.outerpark.domain.seat.repository.SeatRepository;
-import com.lockers.outerpark.domain.seat.repository.query.SeatStatusInfo;
+import com.lockers.outerpark.domain.seat.repository.query.SeatStatusQueryDto;
 
 @ExtendWith(MockitoExtension.class)
 @org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
@@ -177,8 +177,8 @@ class SeatServiceImplTest {
 		Seat seat2 = createSeat(2L, "A-2");
 		List<Seat> seats = List.of(seat1, seat2);
 
-		SeatStatusInfo statusDto1 = new SeatStatusInfo(1L, "A-1", ReservationStatus.PENDING);
-		List<SeatStatusInfo> statusDtos = List.of(statusDto1);
+		SeatStatusQueryDto statusDto1 = new SeatStatusQueryDto(1L, "A-1", ReservationStatus.PENDING);
+		List<SeatStatusQueryDto> statusDtos = List.of(statusDto1);
 
 		given(seatRepository.findAllActiveSeatsOrderBySeatNumber()).willReturn(seats);
 		given(reservationSeatRepository.findSeatStatusByConcertId(concertId)).willReturn(statusDtos);

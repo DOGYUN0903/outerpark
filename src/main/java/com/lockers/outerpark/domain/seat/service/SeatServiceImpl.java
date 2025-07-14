@@ -18,7 +18,7 @@ import com.lockers.outerpark.domain.seat.exception.SeatErrorCode;
 import com.lockers.outerpark.domain.seat.exception.SeatException;
 import com.lockers.outerpark.domain.seat.repository.ReservationSeatRepository;
 import com.lockers.outerpark.domain.seat.repository.SeatRepository;
-import com.lockers.outerpark.domain.seat.repository.query.SeatStatusInfo;
+import com.lockers.outerpark.domain.seat.repository.query.SeatStatusQueryDto;
 import com.lockers.outerpark.domain.seat.type.SeatStatus;
 
 import lombok.RequiredArgsConstructor;
@@ -67,11 +67,11 @@ public class SeatServiceImpl implements SeatService {
 		List<Seat> allSeats = seatRepository.findAllActiveSeatsOrderBySeatNumber();
 
 		// DTO Projection을 활용한 성능 최적화
-		List<SeatStatusInfo> reservedSeatsStatus = reservationSeatRepository.findSeatStatusByConcertId(concertId);
+		List<SeatStatusQueryDto> reservedSeatsStatus = reservationSeatRepository.findSeatStatusByConcertId(concertId);
 		Map<Long, String> seatStatusMap = reservedSeatsStatus.stream()
 			.collect(Collectors.toMap(
-				SeatStatusInfo::getSeatId,
-				SeatStatusInfo::getDisplayStatus,
+				SeatStatusQueryDto::getSeatId,
+				SeatStatusQueryDto::getDisplayStatus,
 				(existing, replacement) -> existing
 			));
 
