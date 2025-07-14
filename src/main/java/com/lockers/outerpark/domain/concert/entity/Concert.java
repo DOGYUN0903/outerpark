@@ -16,7 +16,6 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Builder;
 import lombok.Getter;
 
 @Entity
@@ -48,18 +47,6 @@ public class Concert extends BaseEntity {
 	private LocalDate performanceDate;
 
 	public Concert(User writer, String title, int runningTime, int price, int limitAge, LocalDate performanceDate) {
-		this.writer = writer;
-		this.title = title;
-		this.runningTime = runningTime;
-		this.price = price;
-		this.limitAge = limitAge;
-		this.performanceDate = performanceDate;
-	}
-
-	@Builder
-	public Concert(Long id, User writer, String title, int runningTime, int price, int limitAge,
-		LocalDate performanceDate) {
-		this.id = id;
 		this.writer = writer;
 		this.title = title;
 		this.runningTime = runningTime;
