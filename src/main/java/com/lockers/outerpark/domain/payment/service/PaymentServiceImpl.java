@@ -61,11 +61,11 @@ public class PaymentServiceImpl implements PaymentService {
 				 | ConstraintViolationException
 				 | PersistenceException e) {
 			//save 과정 중 문제 있을 시 롤백 및 예외 처리
-			reservationService.cancelReservation(reservation.getId());
+			reservationService.updateReservationCancel(reservation.getId());
 			throw new PaymentException(PaymentErrorCode.INVALID_PAYMENT_REQUEST);
 		} catch (Exception e) {
 			//원인을 알 수 없는 문제 발생 시 롤백 및 예외처리
-			reservationService.cancelReservation(reservation.getId());
+			reservationService.updateReservationCancel(reservation.getId());
 			throw new PaymentException(PaymentErrorCode.PAYMENT_FAILED);
 		}
 	}
@@ -80,7 +80,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	@Override
 	@Transactional
-	public void cancelPayment(Long paymentId, Long userId) {
+	public void updatePaymentCancel(Long paymentId, Long userId) {
 		//PaymentStatus 가 SUCCESS 인 경우 가져옴
 		Payment payment = paymentRepository.findByIdAndStatus(paymentId, PaymentStatus.SUCCESS)
 			.orElseThrow(() -> new PaymentException(PaymentErrorCode.NOT_FOUND_PAYMENT));
@@ -98,11 +98,11 @@ public class PaymentServiceImpl implements PaymentService {
 	//결제 정합성 검사
 	private Reservation processReservationPayment(PaymentCreateRequest request, Long concertId, Long userId) {
 
-		Reservation reservation = reservationService.findReservationByUserIdAndConcertId(userId, concertId);
+		Reservation reservation = reservationService.getReservationByUserIdAndConcertId(userId, concertId);
 
 		//결제 실패 시 예약 롤백 및 예외
 		if (request.getStatus() != PaymentStatus.SUCCESS) {
-			reservationService.cancelReservation(reservation.getId());
+			reservationService.updateReservationCancel(reservation.getId());
 			throw new PaymentException(PaymentErrorCode.PAYMENT_FAILED);
 		}
 
@@ -119,7 +119,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 		//자금이 결제 금액보다 적을 경우 예약 롤백 및 예외
 		if (nowBalance < paidAmount) {
-			reservationService.cancelReservation(reservation.getId());
+			reservationService.updateReservationCancel(reservation.getId());
 			throw new PaymentException(PaymentErrorCode.NOT_ENOUGH_BALANCE);
 		}
 

@@ -28,7 +28,7 @@ public interface ReservationService {
 	 * @param reservationId 취소할 예매 ID
 	 * @throws ReservationException 예매가 존재하지 않거나 취소할 수 없는 상태인 경우
 	 */
-	void cancelReservation(Long reservationId);
+	void updateReservationCancel(Long reservationId);
 
 	/**
 	 * 특정 사용자의 예매 내역을 페이징하여 조회합니다.
@@ -48,5 +48,5 @@ public interface ReservationService {
 	 * @return 일치하는 {@link Reservation} 엔티티
 	 * @throws ReservationException 예매가 존재하지 않거나 일치하는 정보가 없는 경우
 	 */
-	Reservation findReservationByUserIdAndConcertId(Long userId, Long concertId);
+	Reservation getReservationByUserIdAndConcertId(Long userId, Long concertId);
 }

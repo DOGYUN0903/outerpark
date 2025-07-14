@@ -99,7 +99,8 @@ public class ConcertServiceImpl implements ConcertService {
 		concert.softDelete();
 	}
 
-	//콘서트 조회 및 유효성 검사
+	//콘서트 조회 및 유효성 검사\
+	@Override
 	@Transactional(readOnly = true)
 	public Concert getActiveConcert(Long concertId) {
 

@@ -67,9 +67,9 @@ public class PaymentController {
 	 * @return 결제 취소 성공 응답 (200 OK)
 	 */
 	@PatchMapping("/{paymentId}")
-	public ResponseEntity<ApiResponse<Void>> cancelPayment(@AuthenticationPrincipal Long userId,
+	public ResponseEntity<ApiResponse<Void>> updatePaymentCancel(@AuthenticationPrincipal Long userId,
 		@PathVariable Long paymentId) {
-		paymentService.cancelPayment(paymentId, userId);
+		paymentService.updatePaymentCancel(paymentId, userId);
 		return ResponseEntity.ok(ApiResponse.success("결제가 취소되었습니다.", null));
 	}
 }

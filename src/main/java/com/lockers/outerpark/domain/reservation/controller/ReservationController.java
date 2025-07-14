@@ -36,8 +36,8 @@ public class ReservationController {
 	}
 
 	@PatchMapping("/{reservationId}")
-	public ResponseEntity<ApiResponse<Void>> cancelReservation(@PathVariable Long reservationId) {
-		reservationService.cancelReservation(reservationId);
+	public ResponseEntity<ApiResponse<Void>> updateReservationCancel(@PathVariable Long reservationId) {
+		reservationService.updateReservationCancel(reservationId);
 
 		return ResponseEntity.ok(ApiResponse.success("예매를 취소하였습니다.", null));
 	}

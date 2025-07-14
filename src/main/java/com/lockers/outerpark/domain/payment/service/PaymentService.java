@@ -33,5 +33,5 @@ public interface PaymentService {
 	 * @param userId 결제 취소 요청을 하는 사용자 ID
 	 * @throws PaymentException 취소 기한이 지났거나 권한이 없는 경우
 	 */
-	void cancelPayment(Long paymentId, Long userId);
+	void updatePaymentCancel(Long paymentId, Long userId);
 }

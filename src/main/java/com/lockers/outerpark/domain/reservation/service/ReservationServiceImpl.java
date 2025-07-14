@@ -64,7 +64,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void cancelReservation(Long reservationId) {
+	public void updateReservationCancel(Long reservationId) {
 		Reservation reservation = reservationRepository.findByIdAndStatusNot(reservationId, ReservationStatus.CANCELLED)
 			.orElseThrow(() -> new ReservationException(ReservationErrorCode.NOT_FOUND));
 
@@ -80,7 +80,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Reservation findReservationByUserIdAndConcertId(Long userId, Long concertId) {
+	public Reservation getReservationByUserIdAndConcertId(Long userId, Long concertId) {
 		List<Reservation> reservationList = reservationRepository
 			.findByUserIdAndConcertIdAndStatus(userId, concertId, ReservationStatus.PENDING);
 
