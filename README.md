@@ -80,7 +80,7 @@
 - **다중 좌석 예약**: 한 번에 여러 좌석 예약 가능
 - **좌석 검증**: 예약 가능 여부 및 중복 예약 방지
 - **자연순 정렬**: 좌석 번호 자연순 정렬 (A-1, A-2, A-10, B-1...)
-- **예약 서비스 V1/V2**: Redis 락과 DB 락 버전 분리 제공
+- **Redis 분산 락**: AOP 기반 동시성 제어
 - **AOP 기반 락 처리**: 비즈니스 로직과 락 로직 분리
 
 ### 👤 사용자 관리
@@ -252,17 +252,14 @@ List<SeatStatusDto> findSeatStatusByConcertId(@Param("concertId") Long concertId
 
 ### ⚡ 동시성 제어
 
-#### 예약 서비스 V1/V2 버전
+#### Redis 분산 락 시스템
 
-**V1: Redis 분산 락 (기본)**
+**핵심 특징**
 
 - 확장성이 뛰어나고 분산 환경에 적합
 - AOP를 통한 선언적 락 처리
-
-**V2: DB 락 (비교 테스트용)**
-
-- 단순한 구현으로 단일 인스턴스 환경에 적합
-- PESSIMISTIC_WRITE 락 사용
+- Lua 스크립트 기반 원자적 락 획득/해제
+- UUID 기반 락 소유권 검증
 
 #### AOP 기반 분산 락 처리
 
@@ -276,7 +273,7 @@ public class LockAspect {
 	private final RedisLockService redisLockService;
 
 	@Order(0)
-	@Around("execution(* ...ReservationServiceImpl.createReservationV1(..))")
+	@Around("execution(* ...ReservationServiceImpl.createReservation(..))")
 	public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
 		// 락 획득 및 해제 로직
 	}
@@ -290,6 +287,13 @@ public class LockAspect {
 ```java
 List<Long> sortedSeatIds = seatIds.stream().sorted().toList();
 ```
+
+#### 동시성 제어 동작 흐름
+
+1. **AOP 락 획득**: 예약 메서드 실행 전 Redis 락 획득
+2. **비즈니스 로직 실행**: 좌석 검증 및 예약 생성
+3. **자동 락 해제**: 메서드 완료 후 finally 블록에서 락 해제
+4. **실패 시 롤백**: 예외 발생 시에도 락 해제 보장
 
 ### 📖 API 문서
 
@@ -1078,7 +1082,7 @@ DELETE /api/reservations/5
 - Redis 분산 락으로 동시성 제어
 - 예약 상태: `PENDING` → `CONFIRMED` → `CANCELLED`
 - 중복 예약 방지 (같은 공연에 PENDING 예약 존재 시 불가)
-- **V1/V2 버전 제공**: Redis 락과 DB 락 선택 가능
+- **Redis 분산 락**: 확장 가능한 동시성 제어
 - **AOP 기반 락 처리**: 비즈니스 로직과 락 로직 분리
 - **데드락 방지**: 좌석 ID 정렬을 통한 락 순서 보장
 
