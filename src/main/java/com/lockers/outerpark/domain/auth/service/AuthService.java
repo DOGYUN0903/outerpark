@@ -1,97 +1,38 @@
 package com.lockers.outerpark.domain.auth.service;
 
-import static com.lockers.outerpark.domain.auth.exception.AuthException.*;
-import static com.lockers.outerpark.domain.user.exception.UserException.*;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.lockers.outerpark.common.jwt.JwtUtil;
 import com.lockers.outerpark.domain.auth.dto.request.SigninRequest;
 import com.lockers.outerpark.domain.auth.dto.request.SignupRequest;
 import com.lockers.outerpark.domain.auth.dto.request.WithdrawRequest;
 import com.lockers.outerpark.domain.auth.dto.response.SigninResponse;
 import com.lockers.outerpark.domain.auth.dto.response.SignupResponse;
-import com.lockers.outerpark.domain.user.entity.User;
-import com.lockers.outerpark.domain.user.entity.UserRole;
-import com.lockers.outerpark.domain.user.repository.UserRepository;
-import com.lockers.outerpark.domain.user.service.UserService;
+import com.lockers.outerpark.domain.user.exception.UserException;
 
-import lombok.RequiredArgsConstructor;
+public interface AuthService {
 
-@Service
-@RequiredArgsConstructor
-public class AuthService {
+	/**
+	 * 회원가입 요청 정보를 바탕으로 새로운 사용자를 등록합니다.
+	 *
+	 * @param signupRequest 회원가입 요청 정보
+	 * @return 회원가입 결과를 담은 {@link SignupResponse}
+	 * @throws UserException 중복된 사용자 정보가 존재하거나 유효하지 않은 경우
+	 */
+	SignupResponse signup(SignupRequest signupRequest);
 
-    private final UserRepository userRepository;
-    private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+	/**
+	 * 로그인 요청 정보를 기반으로 인증을 수행하고 토큰을 발급합니다.
+	 *
+	 * @param signinRequest 로그인 요청 정보
+	 * @return 로그인 결과를 담은 {@link SigninResponse}
+	 * @throws UserException 이메일 또는 비밀번호가 일치하지 않는 경우
+	 */
+	SigninResponse signin(SigninRequest signinRequest);
 
-    @Transactional
-    public SignupResponse signup(SignupRequest signupRequest) {
-
-        validateDuplicateUserInfo(signupRequest.getEmail(), signupRequest.getNickname());
-
-        // 비밀번호 암호화
-        String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
-
-        User user = new User(
-            signupRequest.getEmail(),
-            signupRequest.getNickname(),
-            signupRequest.getBirth(),
-            encodedPassword,
-            100000L,
-            UserRole.USER
-        );
-
-        User savedUser = userRepository.save(user);
-
-        String bearerToken = jwtUtil.createToken(savedUser.getId(), savedUser.getUserRole());
-
-        return new SignupResponse(bearerToken);
-    }
-
-    @Transactional(readOnly = true)
-    public SigninResponse signin(SigninRequest signinRequest) {
-
-        User findUser = userRepository.findByEmail(signinRequest.getEmail())
-            .orElseThrow(UserNotFoundException::new);
-
-        if (findUser.getIsDeleted()) {
-            throw new UserDeletedException();
-        }
-
-        // 로그인 시 이메일과 비밀번호가 일치하지 않을 경우 401 반환
-        if (!passwordEncoder.matches(signinRequest.getPassword(), findUser.getPassword())) {
-            throw new InvalidPasswordException();
-        }
-
-        String bearerToken = jwtUtil.createToken(findUser.getId(), findUser.getUserRole());
-
-        return new SigninResponse(bearerToken);
-    }
-
-    @Transactional
-    public void withdraw(Long userId, WithdrawRequest withdrawRequest) {
-        // 유저 찾기 + 탈퇴 여부 확인
-        User user = userService.getActiveUserById(userId);
-
-        if (!passwordEncoder.matches(withdrawRequest.getPassword(), user.getPassword())) {
-            throw new InvalidPasswordException();
-        }
-        user.softDelete();
-    }
-
-    // 이메일 + 닉네임 중복체크
-    private void validateDuplicateUserInfo(String email, String nickname) {
-        if (userRepository.existsByEmail(email)) {
-            throw new EmailAlreadyExistsException();
-        }
-
-        if (userRepository.existsByNickname(nickname)) {
-            throw new NicknameAlreadyExistsException();
-        }
-    }
+	/**
+	 * 현재 로그인한 사용자의 회원 탈퇴를 수행합니다.
+	 *
+	 * @param userId 탈퇴를 요청한 사용자 ID
+	 * @param withdrawRequest 탈퇴 요청 관련 정보 (비밀번호 등)
+	 * @throws UserException 비밀번호가 일치하지 않거나 탈퇴 불가능한 상태인 경우
+	 */
+	void withdraw(Long userId, WithdrawRequest withdrawRequest);
 }

@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.lockers.outerpark.domain.seat.dto.response.SeatStatusDto;
 import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
+import com.lockers.outerpark.domain.seat.repository.query.SeatStatusQueryDto;
 
 public interface ReservationSeatRepository extends JpaRepository<ReservationSeat, Long> {
 
@@ -27,7 +27,7 @@ public interface ReservationSeatRepository extends JpaRepository<ReservationSeat
 	/**
 	 * DTO Projection을 활용한 성능 최적화 쿼리 (콘서트, 좌석, 예매 상태만 조회)
 	 */
-	@Query("SELECT new com.lockers.outerpark.domain.seat.dto.response.SeatStatusDto("
+	@Query("SELECT new com.lockers.outerpark.domain.seat.repository.query.SeatStatusQueryDto("
 		+ "s.id, s.seatNumber, r.status) "
 		+ "FROM ReservationSeat rs "
 		+ "JOIN rs.seat s "
@@ -35,7 +35,7 @@ public interface ReservationSeatRepository extends JpaRepository<ReservationSeat
 		+ "WHERE r.concert.id = :concertId "
 		+ "AND r.status != 'CANCELLED' "
 		+ "AND rs.isDeleted = false")
-	List<SeatStatusDto> findSeatStatusByConcertId(@Param("concertId") Long concertId);
+	List<SeatStatusQueryDto> findSeatStatusByConcertId(@Param("concertId") Long concertId);
 
 	/**
 	 * 특정 콘서트에서 특정 좌석의 활성 예약 존재 여부 확인

@@ -2,17 +2,23 @@ package com.lockers.outerpark.domain.user.dto.response;
 
 import java.time.LocalDate;
 
-import com.lockers.outerpark.domain.user.entity.UserRole;
+import com.lockers.outerpark.domain.user.entity.User;
+import com.lockers.outerpark.domain.user.type.UserRole;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
-public class UserResponse {
-	private Long id;
-	private String nickname;
-	private Long balance;
-	private LocalDate birth;
-	private UserRole userRole;
+public record UserResponse(
+	Long id,
+	String nickname,
+	Long balance,
+	LocalDate birth,
+	UserRole userRole
+) {
+	public static UserResponse of(User user) {
+		return new UserResponse(
+			user.getId(),
+			user.getNickname(),
+			user.getBalance(),
+			user.getBirth(),
+			user.getUserRole()
+		);
+	}
 }

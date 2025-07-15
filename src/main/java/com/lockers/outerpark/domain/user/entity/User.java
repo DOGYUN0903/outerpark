@@ -3,6 +3,7 @@ package com.lockers.outerpark.domain.user.entity;
 import java.time.LocalDate;
 
 import com.lockers.outerpark.common.entity.BaseEntity;
+import com.lockers.outerpark.domain.user.type.UserRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

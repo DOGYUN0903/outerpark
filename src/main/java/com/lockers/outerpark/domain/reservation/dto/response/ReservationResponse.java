@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.lockers.outerpark.domain.reservation.entity.Reservation;
-import com.lockers.outerpark.domain.reservation.entity.ReservationStatus;
+import com.lockers.outerpark.domain.reservation.type.ReservationStatus;
 import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
 
 import lombok.Builder;
@@ -29,7 +29,7 @@ public class ReservationResponse {
 
 	private final int totalAmount;
 
-	private final ConcertInfo concertInfo;
+	private final ReservationConcertInfo reservationConcertInfo;
 
 	private final LocalDate reservedAt;
 
@@ -48,8 +48,9 @@ public class ReservationResponse {
 			.count(reservation.getCount())
 			.status(reservation.getStatus())
 			.totalAmount(reservation.getAmount())
-			.concertInfo(new ConcertInfo(reservation.getConcert().getId(), reservation.getConcert().getTitle(),
-				reservation.getConcert().getPerformanceDate()))
+			.reservationConcertInfo(
+				new ReservationConcertInfo(reservation.getConcert().getId(), reservation.getConcert().getTitle(),
+					reservation.getConcert().getPerformanceDate()))
 			.reservedAt(reservation.getReservedAt())
 			.cancelledAt(reservation.getCancelledAt())
 			.build();

@@ -1,6 +1,5 @@
 package com.lockers.outerpark.domain.seat.entity;
 
-
 import com.lockers.outerpark.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -27,12 +26,5 @@ public class Seat extends BaseEntity {
 
 	public Seat(String seatNumber) {
 		this.seatNumber = seatNumber;
-	}
-
-	/**
-	 * 좌석 번호 표시용 문자열 반환
-	 */
-	public String getDisplaySeatNumber() {
-		return this.seatNumber;
 	}
 }

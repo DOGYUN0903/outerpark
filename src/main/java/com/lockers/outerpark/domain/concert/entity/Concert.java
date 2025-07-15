@@ -3,7 +3,6 @@ package com.lockers.outerpark.domain.concert.entity;
 import java.time.LocalDate;
 
 import com.lockers.outerpark.common.entity.BaseEntity;
-import com.lockers.outerpark.domain.concert.dto.RegisterConcertRequest;
 import com.lockers.outerpark.domain.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -12,16 +11,16 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "concerts", indexes = {
-	@Index(name = "idx_isDeleted_performanceDate", columnList = "isDeleted, performanceDate ASC, id ASC")})
+@Table(name = "concerts")
 @Getter
+@NoArgsConstructor
 public class Concert extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,21 +52,6 @@ public class Concert extends BaseEntity {
 		this.price = price;
 		this.limitAge = limitAge;
 		this.performanceDate = performanceDate;
-	}
-
-	public Concert() {
-
-	}
-
-	public static Concert of(User writer, RegisterConcertRequest request) {
-		return new Concert(
-			writer,
-			request.getTitle(),
-			request.getRunningTime(),
-			request.getPrice(),
-			request.getLimitAge(),
-			request.getPerformanceDate()
-		);
 	}
 
 	public void updateTitle(String title) {

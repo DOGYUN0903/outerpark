@@ -9,6 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.lockers.outerpark.domain.concert.entity.Concert;
+import com.lockers.outerpark.domain.reservation.type.ReservationStatus;
 import com.lockers.outerpark.domain.seat.entity.ReservationSeat;
 import com.lockers.outerpark.domain.user.entity.User;
 
@@ -79,16 +80,10 @@ public class Reservation {
 	}
 
 	/**
-	 * 예약 상태 CONFIRMED로 변경
+	 * 예약 상태 변경
 	 */
-	public void confirm() {
-		this.status = ReservationStatus.CONFIRMED;
-	}
 
-	/**
-	 * 예약 상태 CANCELLED로 변경
-	 */
-	public void cancel() {
-		this.status = ReservationStatus.CANCELLED;
+	public void updateStatus(ReservationStatus status) {
+		this.status = status;
 	}
 }
