@@ -21,7 +21,7 @@ public class LockAspect {
 	private final RedisLockService redisLockService;
 
 	@Order(0)
-	@Around("execution(* com.lockers.outerpark.domain.reservation.service.ReservationServiceImpl.createReservationV1(..))")
+	@Around("execution(* com.lockers.outerpark.domain.reservation.service.ReservationServiceImpl.createReservation(..))")
 	public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
 		// ReservationServiceImpl.createReservation 파라미터 가져오기
 		Object[] args = joinPoint.getArgs();
